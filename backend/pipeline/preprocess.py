@@ -1,7 +1,7 @@
 """Preprocess step: grayscale -> binarize -> deskew, in that order.
 
-This part adds deskew, completing all three cleanup functions. 3d wires
-them into an endpoint.
+All three cleanup functions plus run_preprocess() to chain them. Wired
+into an endpoint in main.py.
 """
 
 import numpy as np
@@ -55,3 +55,10 @@ def deskew(img: Image.Image) -> Image.Image:
         angle += 90
 
     return img.rotate(angle, expand=True, fillcolor=255)
+
+
+def run_preprocess(img: Image.Image) -> Image.Image:
+    """Chain grayscale -> binarize -> deskew into one call."""
+    gray = to_grayscale(img)
+    binary = binarize(gray)
+    return deskew(binary)
