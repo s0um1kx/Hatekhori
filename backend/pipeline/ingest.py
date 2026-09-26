@@ -1,21 +1,36 @@
 """Ingest step: sniff the real file type from bytes, then persist.
 
-Size/pixel-dimension caps are added in 2c, EXIF stripping in 2d.
+EXIF stripping is added in 2d.
 """
 
+import io
 import uuid
 from pathlib import Path
 
 import filetype
+import pillow_heif
+from PIL import Image
+
+pillow_heif.register_heif_opener()
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/heic", "image/heif"}
 
+# Placeholders — AGENTS.md/PRD.md both say the real limit should come from
+# actual capture-flow data (open question), not be guessed. These exist so
+# no unbounded upload/decompression-bomb path ships even internally.
+MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024  # 15 MB
+MAX_PIXEL_DIMENSION = 6000  # px, per side
+
 
 class UnsupportedFileType(Exception):
     """Raised when the file's real bytes don't match an accepted image type."""
+
+
+class UploadTooLarge(Exception):
+    """Raised when the file exceeds the size or pixel-dimension cap."""
 
 
 def sniff_image_type(file_bytes: bytes) -> str:
@@ -28,8 +43,24 @@ def sniff_image_type(file_bytes: bytes) -> str:
     return kind.mime
 
 
+def check_size_caps(file_bytes: bytes) -> None:
+    if len(file_bytes) > MAX_FILE_SIZE_BYTES:
+        raise UploadTooLarge(
+            f"That file is larger than the {MAX_FILE_SIZE_BYTES // (1024 * 1024)}MB limit."
+        )
+
+    with Image.open(io.BytesIO(file_bytes)) as img:
+        width, height = img.size
+        if width > MAX_PIXEL_DIMENSION or height > MAX_PIXEL_DIMENSION:
+            raise UploadTooLarge(
+                f"That image's dimensions ({width}x{height}) are larger than "
+                f"the {MAX_PIXEL_DIMENSION}px-per-side limit."
+            )
+
+
 def save_upload(file_bytes: bytes, original_filename: str) -> dict:
     mime = sniff_image_type(file_bytes)
+    check_size_caps(file_bytes)
 
     upload_id = str(uuid.uuid4())
     suffix = Path(original_filename).suffix
@@ -42,4 +73,5 @@ def save_upload(file_bytes: bytes, original_filename: str) -> dict:
         "size_bytes": len(file_bytes),
         "detected_mime": mime,
     }
+
 

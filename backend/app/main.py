@@ -7,7 +7,7 @@ are added in later parts, not here.
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
 
-from pipeline.ingest import UnsupportedFileType, save_upload
+from pipeline.ingest import UnsupportedFileType, UploadTooLarge, save_upload
 
 app = FastAPI(title="Hatekhori", version="0.1.0")
 
@@ -22,5 +22,5 @@ async def ingest(file: UploadFile = File(...)) -> dict:
     file_bytes = await file.read()
     try:
         return save_upload(file_bytes, file.filename)
-    except UnsupportedFileType as e:
+    except (UnsupportedFileType, UploadTooLarge) as e:
         raise HTTPException(status_code=400, detail=str(e))
