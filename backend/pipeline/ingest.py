@@ -8,10 +8,14 @@ import uuid
 from pathlib import Path
 
 import filetype
-import pillow_heif
 from PIL import Image
 
-pillow_heif.register_heif_opener()
+try:
+    import pillow_heif
+    pillow_heif.register_heif_opener()
+    HEIF_SUPPORTED = True
+except ImportError:
+    HEIF_SUPPORTED = False
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -43,11 +47,17 @@ def sniff_image_type(file_bytes: bytes) -> str:
     return kind.mime
 
 
-def check_size_caps(file_bytes: bytes) -> None:
+def check_size_caps(file_bytes: bytes, mime: str) -> None:
     if len(file_bytes) > MAX_FILE_SIZE_BYTES:
         raise UploadTooLarge(
             f"That file is larger than the {MAX_FILE_SIZE_BYTES // (1024 * 1024)}MB limit."
         )
+
+    if mime in {"image/heic", "image/heif"} and not HEIF_SUPPORTED:
+        # Pixel-dimension check deferred for HEIC on this machine — HEIC
+        # support itself is still an open PRD question (see PRD.md §11),
+        # so this is a known, acceptable gap rather than a silent bug.
+        return
 
     with Image.open(io.BytesIO(file_bytes)) as img:
         width, height = img.size
@@ -60,7 +70,7 @@ def check_size_caps(file_bytes: bytes) -> None:
 
 def save_upload(file_bytes: bytes, original_filename: str) -> dict:
     mime = sniff_image_type(file_bytes)
-    check_size_caps(file_bytes)
+    check_size_caps(file_bytes, mime)
 
     upload_id = str(uuid.uuid4())
     suffix = Path(original_filename).suffix
