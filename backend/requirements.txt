@@ -2,7 +2,7 @@ fastapi==0.115.0
 uvicorn[standard]==0.30.6
 python-multipart==0.0.9
 filetype==1.2.0
-Pillow==10.4.0
+Pillow>=11.3.0
 # pillow-heif is optional — needed only for full HEIC dimension checks,
 # and needs a C build toolchain on some platforms. Uncomment if you want
 # it and have that toolchain set up:
