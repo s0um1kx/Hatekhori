@@ -5,7 +5,9 @@ health check. Ingest/preprocess/segment/vectorize/metrics/compile routes
 are added in later parts, not here.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
+
+from pipeline.ingest import save_upload
 
 app = FastAPI(title="Hatekhori", version="0.1.0")
 
@@ -13,3 +15,9 @@ app = FastAPI(title="Hatekhori", version="0.1.0")
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
+
+
+@app.post("/ingest")
+async def ingest(file: UploadFile = File(...)) -> dict:
+    file_bytes = await file.read()
+    return save_upload(file_bytes, file.filename)
