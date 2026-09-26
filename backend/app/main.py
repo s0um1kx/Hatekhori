@@ -5,9 +5,9 @@ health check. Ingest/preprocess/segment/vectorize/metrics/compile routes
 are added in later parts, not here.
 """
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File
 
-from pipeline.ingest import save_upload
+from pipeline.ingest import UnsupportedFileType, save_upload
 
 app = FastAPI(title="Hatekhori", version="0.1.0")
 
@@ -20,4 +20,7 @@ def health() -> dict:
 @app.post("/ingest")
 async def ingest(file: UploadFile = File(...)) -> dict:
     file_bytes = await file.read()
-    return save_upload(file_bytes, file.filename)
+    try:
+        return save_upload(file_bytes, file.filename)
+    except UnsupportedFileType as e:
+        raise HTTPException(status_code=400, detail=str(e))
