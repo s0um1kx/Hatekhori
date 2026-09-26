@@ -1,6 +1,5 @@
-"""Ingest step: sniff the real file type from bytes, then persist.
-
-EXIF stripping is added in 2d.
+"""Ingest step: sniff the real file type, cap size/dimensions, strip
+EXIF, then persist.
 """
 
 import io
@@ -68,9 +67,34 @@ def check_size_caps(file_bytes: bytes, mime: str) -> None:
             )
 
 
+def strip_exif(file_bytes: bytes, mime: str) -> bytes:
+    """Return the image re-encoded from raw pixel data only.
+
+    Rebuilding from pixel data (rather than just deleting the EXIF tag)
+    also drops GPS data hidden in maker-notes and ICC profiles — this is
+    the "always, no exceptions" baseline from AGENTS.md §6, not a
+    best-effort pass.
+    """
+    if mime in {"image/heic", "image/heif"} and not HEIF_SUPPORTED:
+        # Same known, documented gap as the dimension check above — can't
+        # safely re-encode HEIC without pillow-heif installed.
+        return file_bytes
+
+    with Image.open(io.BytesIO(file_bytes)) as img:
+        clean = Image.new(img.mode, img.size)
+        clean.putdata(list(img.getdata()))
+
+        save_format = img.format or ("JPEG" if mime == "image/jpeg" else "PNG")
+        buf = io.BytesIO()
+        save_kwargs = {"quality": 95} if save_format == "JPEG" else {}
+        clean.save(buf, format=save_format, **save_kwargs)
+        return buf.getvalue()
+
+
 def save_upload(file_bytes: bytes, original_filename: str) -> dict:
     mime = sniff_image_type(file_bytes)
     check_size_caps(file_bytes, mime)
+    file_bytes = strip_exif(file_bytes, mime)
 
     upload_id = str(uuid.uuid4())
     suffix = Path(original_filename).suffix
