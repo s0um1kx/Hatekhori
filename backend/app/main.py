@@ -16,6 +16,7 @@ from PIL import Image
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
 from pipeline.segment import char_grid, crop_glyphs
+from pipeline.vectorize import path_to_svg, trace_glyph
 
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -72,3 +73,29 @@ def segment(upload_id: str) -> dict:
         manifest.append({"char": char, "path": str(dest)})
 
     return {"id": upload_id, "glyph_count": len(manifest), "glyphs": manifest}
+
+
+@app.post("/vectorize/{upload_id}")
+def vectorize(upload_id: str) -> dict:
+    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
+    if not glyphs_dir.exists():
+        raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
+
+    vectors_dir = OUTPUT_DIR / upload_id / "vectors"
+    vectors_dir.mkdir(parents=True, exist_ok=True)
+
+    manifest = []
+    for index, char in enumerate(char_grid()):
+        glyph_path = glyphs_dir / f"{index:02d}_{char}.png"
+        if not glyph_path.exists():
+            continue
+
+        with Image.open(glyph_path) as img:
+            path = trace_glyph(img)
+            svg = path_to_svg(path, img.width, img.height)
+
+        dest = vectors_dir / f"{index:02d}_{char}.svg"
+        dest.write_text(svg, encoding="utf-8")
+        manifest.append({"char": char, "path": str(dest)})
+
+    return {"id": upload_id, "vector_count": len(manifest), "vectors": manifest}
