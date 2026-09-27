@@ -38,3 +38,40 @@ def generate_guideline_sheet() -> Image.Image:
         draw.text((x0 + 4, y0 + 2), entry["char"], fill=0, font=font)
 
     return img
+
+
+def generate_synthetic_filled_sheet() -> Image.Image:
+    """Render the sheet with each box already 'filled in' using a system
+    font, standing in for handwriting.
+
+    This is NOT the real kill-test — PRD.md §9 requires real, varied
+    handwriting photos. It exists to sanity-check the pipeline (grid
+    alignment, vectorization, font compilation) end-to-end without a
+    printer, before spending a real printed sheet on it.
+    """
+    img = Image.new("L", (SHEET_WIDTH, SHEET_HEIGHT), color=255)
+    draw = ImageDraw.Draw(img)
+
+    try:
+        glyph_font = ImageFont.truetype("arial.ttf", size=80)
+    except OSError:
+        # No arial.ttf on this machine — fall back to the built-in
+        # bitmap font. It's small, but the point here is a structural
+        # test, not a beautiful synthetic glyph.
+        glyph_font = ImageFont.load_default()
+
+    for entry in compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT):
+        x0, y0, x1, y1 = entry["box"]
+        char = entry["char"]
+
+        bbox = draw.textbbox((0, 0), char, font=glyph_font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+        box_width = x1 - x0
+        box_height = y1 - y0
+
+        text_x = x0 + (box_width - text_width) / 2 - bbox[0]
+        text_y = y0 + (box_height - text_height) / 2 - bbox[1]
+        draw.text((text_x, text_y), char, fill=0, font=glyph_font)
+
+    return img
