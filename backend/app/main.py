@@ -15,6 +15,7 @@ from PIL import Image
 
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
+from pipeline.segment import char_grid, crop_glyphs
 
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -48,3 +49,26 @@ def preprocess(upload_id: str) -> dict:
         cleaned.save(dest, format="PNG")
 
     return {"id": upload_id, "preprocessed_path": str(dest)}
+
+
+@app.post("/segment/{upload_id}")
+def segment(upload_id: str) -> dict:
+    preprocessed_path = OUTPUT_DIR / f"{upload_id}_preprocessed.png"
+    if not preprocessed_path.exists():
+        raise HTTPException(status_code=404, detail="Run /preprocess for this upload id first.")
+
+    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
+    glyphs_dir.mkdir(parents=True, exist_ok=True)
+
+    with Image.open(preprocessed_path) as img:
+        glyphs = crop_glyphs(img)
+
+    manifest = []
+    for index, char in enumerate(char_grid()):
+        # Index prefix avoids Windows filesystem case-insensitivity
+        # colliding "A.png" with "a.png".
+        dest = glyphs_dir / f"{index:02d}_{char}.png"
+        glyphs[char].save(dest, format="PNG")
+        manifest.append({"char": char, "path": str(dest)})
+
+    return {"id": upload_id, "glyph_count": len(manifest), "glyphs": manifest}
