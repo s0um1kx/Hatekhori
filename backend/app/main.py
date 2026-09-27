@@ -5,6 +5,7 @@ health check. Ingest/preprocess/segment/vectorize/metrics/compile routes
 are added in later parts, not here.
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from PIL import Image
 
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
+from pipeline.metrics import compute_global_metrics, glyph_ink_bbox, side_bearings
 from pipeline.segment import char_grid, crop_glyphs
 from pipeline.vectorize import path_to_svg, trace_glyph
 
@@ -99,3 +101,33 @@ def vectorize(upload_id: str) -> dict:
         manifest.append({"char": char, "path": str(dest)})
 
     return {"id": upload_id, "vector_count": len(manifest), "vectors": manifest}
+
+
+@app.post("/metrics/{upload_id}")
+def metrics(upload_id: str) -> dict:
+    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
+    if not glyphs_dir.exists():
+        raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
+
+    per_glyph = {}
+    for index, char in enumerate(char_grid()):
+        glyph_path = glyphs_dir / f"{index:02d}_{char}.png"
+        if not glyph_path.exists():
+            continue
+
+        with Image.open(glyph_path) as img:
+            bbox = glyph_ink_bbox(img)
+            bearings = side_bearings(img, bbox)
+            per_glyph[char] = {
+                "bbox": bbox,
+                "crop_height": img.height,
+                **bearings,
+            }
+
+    global_metrics = compute_global_metrics(per_glyph)
+    result = {"id": upload_id, "global": global_metrics, "glyphs": per_glyph}
+
+    dest = OUTPUT_DIR / upload_id / "metrics.json"
+    dest.write_text(json.dumps(result, indent=2), encoding="utf-8")
+
+    return result

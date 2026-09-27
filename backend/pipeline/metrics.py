@@ -50,3 +50,32 @@ def side_bearings(img: Image.Image, bbox: tuple[int, int, int, int] | None) -> d
         "ink_width": right - left,
         "advance_width": img.width,
     }
+
+
+def compute_global_metrics(per_glyph: dict) -> dict:
+    """Derive baseline/x-height/cap-height from specific reference glyphs.
+
+    `per_glyph` is {char: {"bbox": ink_bbox_or_None, "crop_height": int}}.
+
+    Baseline is assumed to sit at the bottom of each glyph's own box —
+    a simplifying assumption, since there's no real printed guideline
+    sheet yet with actual baseline rules to measure against (M3 is
+    still unbuilt; see PRD.md §11 open questions). x-height and
+    cap-height are measured off 'x' and 'H' specifically, so if either
+    of those boxes came out blank (very likely right now, since the
+    grid geometry isn't validated against a real photo), those values
+    come back None rather than a wrong number.
+    """
+
+    def distance_from_baseline(char: str):
+        entry = per_glyph.get(char)
+        if not entry or entry["bbox"] is None:
+            return None
+        ink_top = entry["bbox"][1]
+        return entry["crop_height"] - ink_top
+
+    return {
+        "baseline_convention": "bottom of each glyph's own box",
+        "x_height": distance_from_baseline("x"),
+        "cap_height": distance_from_baseline("H"),
+    }
