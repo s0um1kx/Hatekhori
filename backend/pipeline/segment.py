@@ -11,6 +11,8 @@ English M1 glyph set: A-Z, a-z, 0-9 (62 glyphs), per AGENTS.md/PRD.md
 
 import string
 
+from PIL import Image
+
 GRID_ROWS = 8
 GRID_COLS = 8
 
@@ -60,3 +62,12 @@ def compute_grid_boxes(img_width: int, img_height: int) -> list[dict]:
         boxes.append({"char": char, "box": (x0, y0, x1, y1)})
 
     return boxes
+
+
+def crop_glyphs(img: Image.Image) -> dict[str, Image.Image]:
+    """Slice each glyph box out of the preprocessed sheet image.
+
+    Returns a dict keyed by character, e.g. {"A": <Image>, "b": <Image>, ...}.
+    """
+    boxes = compute_grid_boxes(img.width, img.height)
+    return {entry["char"]: img.crop(entry["box"]) for entry in boxes}
