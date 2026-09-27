@@ -5,7 +5,10 @@ health check. Ingest/preprocess/segment/vectorize/metrics/compile routes
 are added in later parts, not here.
 """
 
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from PIL import Image
