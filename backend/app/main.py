@@ -14,6 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from PIL import Image
 
+from pipeline.compile import build_font
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
 from pipeline.metrics import compute_global_metrics, glyph_ink_bbox, side_bearings
@@ -131,3 +132,32 @@ def metrics(upload_id: str) -> dict:
     dest.write_text(json.dumps(result, indent=2), encoding="utf-8")
 
     return result
+
+
+@app.post("/compile/{upload_id}")
+def compile_font_endpoint(upload_id: str) -> dict:
+    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
+    if not glyphs_dir.exists():
+        raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
+
+    glyph_entries = {}
+    for index, char in enumerate(char_grid()):
+        glyph_path = glyphs_dir / f"{index:02d}_{char}.png"
+        if not glyph_path.exists():
+            continue
+
+        with Image.open(glyph_path) as img:
+            trace_path = trace_glyph(img)
+            bbox = glyph_ink_bbox(img)
+            bearings = side_bearings(img, bbox)
+            glyph_entries[char] = {
+                "path": trace_path,
+                "crop_height": img.height,
+                "advance_width": bearings["advance_width"],
+            }
+
+    font_builder = build_font(glyph_entries, units_per_em=1000, family_name="Hatekhori Kill-Test")
+    dest = OUTPUT_DIR / upload_id / "font.otf"
+    font_builder.save(str(dest))
+
+    return {"id": upload_id, "font_path": str(dest), "glyph_count": len(glyph_entries)}
