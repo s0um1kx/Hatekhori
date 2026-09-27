@@ -25,3 +25,28 @@ def glyph_ink_bbox(img: Image.Image) -> tuple[int, int, int, int] | None:
         return None
 
     return (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+
+
+def side_bearings(img: Image.Image, bbox: tuple[int, int, int, int] | None) -> dict:
+    """Compute left/right spacing and advance width for a glyph crop.
+
+    `bbox` is the ink bounding box from glyph_ink_bbox — pass None
+    through for an empty crop and this returns zeroed-out spacing
+    rather than raising, so a blank box doesn't break metrics for the
+    rest of the sheet.
+    """
+    if bbox is None:
+        return {
+            "left_bearing": 0,
+            "right_bearing": 0,
+            "ink_width": 0,
+            "advance_width": img.width,
+        }
+
+    left, _, right, _ = bbox
+    return {
+        "left_bearing": left,
+        "right_bearing": img.width - right,
+        "ink_width": right - left,
+        "advance_width": img.width,
+    }
