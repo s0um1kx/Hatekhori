@@ -58,7 +58,19 @@ def deskew(img: Image.Image) -> Image.Image:
 
 
 def run_preprocess(img: Image.Image) -> Image.Image:
-    """Chain grayscale -> binarize -> deskew into one call."""
+    """Chain grayscale -> binarize into one call.
+
+    deskew() is intentionally NOT called here. The self-test (running a
+    perfectly axis-aligned synthetic sheet through the pipeline)
+    revealed it produces a bogus rotation angle on a full page of
+    scattered glyph shapes — PCA over all ink pixels doesn't represent
+    true page skew when the ink is spread out in a grid rather than a
+    single line of text. It was shifting every glyph out of its box.
+
+    Real rotation/perspective correction is a better fit for M3's
+    actual capture flow (correcting against the sheet's known corners),
+    not blind ink-PCA at this stage. deskew() is left defined below in
+    case it's useful later, just not wired into the default chain.
+    """
     gray = to_grayscale(img)
-    binary = binarize(gray)
-    return deskew(binary)
+    return binarize(gray)
