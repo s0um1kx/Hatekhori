@@ -1,8 +1,7 @@
 """Hatekhori backend — FastAPI entrypoint.
 
-Milestone 1 scope only: this file exists so the service boots and has a
-health check. Ingest/preprocess/segment/vectorize/metrics/compile routes
-are added in later parts, not here.
+Pipeline endpoints (ingest -> preprocess -> segment -> vectorize ->
+metrics -> compile) plus serving the frontend as static files at "/".
 """
 
 import json
@@ -12,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
 from pipeline.compile import build_font
@@ -161,3 +161,11 @@ def compile_font_endpoint(upload_id: str) -> dict:
     font_builder.save(str(dest))
 
     return {"id": upload_id, "font_path": str(dest), "glyph_count": len(glyph_entries)}
+
+
+# Mounted LAST and deliberately at "/" — Starlette matches the explicit
+# API routes above first; this only catches whatever they don't. Serves
+# frontend/index.html at "/" and everything else in frontend/ alongside
+# it, so the browser and the API share one origin and never need CORS.
+FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
