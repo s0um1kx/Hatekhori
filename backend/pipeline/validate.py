@@ -70,3 +70,57 @@ def check_ink_density(img: Image.Image) -> None:
             "That photo looks almost entirely dark — check the lighting "
             "and that the photo isn't underexposed or out of focus."
         )
+
+
+# Corner-marker detection. See sheet.py for what's drawn on the sheet —
+# a solid black square in each of the 4 corners. Detection works on a
+# small downscaled thumbnail of each corner region rather than full
+# photo resolution: a phone photo can be many megapixels, and a
+# pure-Python pixel scan at that size would be slow. Shrinking first
+# makes the search trivially fast regardless of input resolution, at
+# the cost of some positional precision — acceptable since the result
+# feeds a perspective correction (part 3), not a pixel-exact crop.
+CORNER_SEARCH_FRACTION = 0.3  # how much of each dimension to search, from each corner
+THUMBNAIL_SIZE = 100
+
+
+def _find_largest_dark_blob(region: Image.Image) -> tuple[int, int, int, int] | None:
+    """Return the bounding box (x0, y0, x1, y1) of the largest connected
+    dark blob in `region`, in that image's own pixel coordinates, or
+    None if there's no ink at all.
+    """
+    gray = region.convert("L") if region.mode != "L" else region
+    arr = np.array(gray) < 128  # True = dark/ink
+    h, w = arr.shape
+    visited = np.zeros_like(arr, dtype=bool)
+
+    best_box = None
+    best_size = 0
+
+    for start_y in range(h):
+        for start_x in range(w):
+            if not arr[start_y, start_x] or visited[start_y, start_x]:
+                continue
+
+            stack = [(start_y, start_x)]
+            visited[start_y, start_x] = True
+            min_x = max_x = start_x
+            min_y = max_y = start_y
+            size = 0
+
+            while stack:
+                cy, cx = stack.pop()
+                size += 1
+                min_x, max_x = min(min_x, cx), max(max_x, cx)
+                min_y, max_y = min(min_y, cy), max(max_y, cy)
+                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    ny, nx = cy + dy, cx + dx
+                    if 0 <= ny < h and 0 <= nx < w and arr[ny, nx] and not visited[ny, nx]:
+                        visited[ny, nx] = True
+                        stack.append((ny, nx))
+
+            if size > best_size:
+                best_size = size
+                best_box = (min_x, min_y, max_x + 1, max_y + 1)
+
+    return best_box
