@@ -7,9 +7,33 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main>
+  <main class="capture-flow">
     <h1>হাতে খড়ি</h1>
-    <p>Pipeline validation in progress. Nothing public yet.</p>
+
+    <section class="step" id="step-sheet">
+      <h2>1. Download the guideline sheet</h2>
+      <p>Print it at 100% scale (not "fit to page"), on A4.</p>
+      <a class="button" id="download-sheet" href="/guideline-sheet.png" download>
+        Download sheet
+      </a>
+    </section>
+
+    <section class="step" id="step-upload">
+      <h2>2. Upload a photo of your filled sheet</h2>
+      <p>Crop the photo tight to the paper's edges before uploading.</p>
+      <input type="file" id="file-input" accept="image/jpeg,image/png,image/heic" />
+      <img id="preview" alt="" hidden />
+      <button class="button" id="generate-button" disabled>Generate Font</button>
+    </section>
+
+    <section class="step" id="step-progress" hidden>
+      <p id="progress-text">Working...</p>
+    </section>
+
+    <section class="step" id="step-result" hidden>
+      <h2>Your font is ready</h2>
+      <a class="button" id="download-font" href="#" download>Download font</a>
+    </section>
   </main>
   <script src="script.js"></script>
 </body>

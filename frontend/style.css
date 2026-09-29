@@ -21,3 +21,51 @@ main {
   margin: 0 auto;
   padding: 64px;
 }
+
+.capture-flow {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.capture-flow h1 {
+  margin-bottom: 48px;
+}
+
+.step {
+  border: 1px solid var(--ink);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.step h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.button {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--stage);
+  border: none;
+  padding: 12px 24px;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.button:disabled {
+  background: var(--tint);
+  cursor: not-allowed;
+}
+
+#preview {
+  display: block;
+  max-width: 100%;
+  margin-top: 16px;
+}
+
+#progress-text {
+  color: var(--ink);
+}
