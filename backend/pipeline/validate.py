@@ -84,10 +84,11 @@ CORNER_SEARCH_FRACTION = 0.3  # how much of each dimension to search, from each 
 THUMBNAIL_SIZE = 100
 
 
-def _find_largest_dark_blob(region: Image.Image) -> tuple[int, int, int, int] | None:
-    """Return the bounding box (x0, y0, x1, y1) of the largest connected
-    dark blob in `region`, in that image's own pixel coordinates, or
-    None if there's no ink at all.
+def _find_largest_dark_blob(region: Image.Image) -> tuple[tuple[int, int, int, int], int] | None:
+    """Return (bounding_box, pixel_count) of the largest connected dark
+    blob in `region`, in that image's own pixel coordinates, or None if
+    there's no ink at all. Pixel count (vs. bounding-box area) is what
+    lets callers check "solidity" — how filled-in the box actually is.
     """
     gray = region.convert("L") if region.mode != "L" else region
     arr = np.array(gray) < 128  # True = dark/ink
@@ -123,4 +124,70 @@ def _find_largest_dark_blob(region: Image.Image) -> tuple[int, int, int, int] | 
                 best_size = size
                 best_box = (min_x, min_y, max_x + 1, max_y + 1)
 
-    return best_box
+    return (best_box, best_size) if best_box is not None else None
+
+
+def find_corner_markers(img: Image.Image) -> dict:
+    """Locate all 4 corner markers in an uploaded photo.
+
+    Returns {corner_name: (x, y)} center points in the ORIGINAL image's
+    pixel coordinates. Raises BadSheetShape if any corner's marker
+    can't be found or doesn't look marker-shaped — this is what
+    actually rejects a non-sheet photo (a selfie, a random object),
+    since aspect-ratio/ink-density checks alone are too permissive.
+    """
+    gray = img.convert("L") if img.mode != "L" else img
+    width, height = gray.size
+    search_w = int(width * CORNER_SEARCH_FRACTION)
+    search_h = int(height * CORNER_SEARCH_FRACTION)
+
+    regions = {
+        "top_left": (0, 0, search_w, search_h),
+        "top_right": (width - search_w, 0, width, search_h),
+        "bottom_left": (0, height - search_h, search_w, height),
+        "bottom_right": (width - search_w, height - search_h, width, height),
+    }
+
+    centers = {}
+    for name, box in regions.items():
+        region = gray.crop(box)
+        scale_x = THUMBNAIL_SIZE / region.width
+        scale_y = THUMBNAIL_SIZE / region.height
+        thumb = region.resize((THUMBNAIL_SIZE, THUMBNAIL_SIZE))
+
+        result = _find_largest_dark_blob(thumb)
+        if result is not None:
+            (bx0, by0, bx1, by1), pixel_count = result
+            blob_w, blob_h = bx1 - bx0, by1 - by0
+            bbox_area = blob_w * blob_h
+            aspect = blob_w / blob_h if blob_h else 0
+            area_fraction = bbox_area / (THUMBNAIL_SIZE * THUMBNAIL_SIZE)
+            solidity = pixel_count / bbox_area if bbox_area else 0
+        else:
+            aspect = area_fraction = solidity = 0
+
+        # Roughly square, roughly marker-sized, and — the key
+        # discriminator — solid: a real marker is a filled black
+        # square (~90%+ of its own bounding box is ink), whereas noise
+        # or ordinary photo content (hair, shadows, clutter) forms
+        # irregular, sparser blobs even when their bounding box happens
+        # to be square-ish and similarly sized.
+        is_valid_marker = (
+            result is not None
+            and 0.4 <= aspect <= 2.5
+            and 0.001 <= area_fraction <= 0.35
+            and solidity >= 0.75
+        )
+        if not is_valid_marker:
+            raise BadSheetShape(
+                "Couldn't find this sheet's corner markers — make sure "
+                "you're using a printed Hatekhori guideline sheet, with "
+                "all four corners visible in the photo."
+            )
+
+        bx0, by0, bx1, by1 = result[0]
+        center_x = box[0] + (bx0 + bx1) / 2 / scale_x
+        center_y = box[1] + (by0 + by1) / 2 / scale_y
+        centers[name] = (center_x, center_y)
+
+    return centers
