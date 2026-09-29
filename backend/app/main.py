@@ -4,6 +4,7 @@ Pipeline endpoints (ingest -> preprocess -> segment -> vectorize ->
 metrics -> compile) plus serving the frontend as static files at "/".
 """
 
+import io
 import json
 import sys
 from pathlib import Path
@@ -11,6 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
@@ -19,6 +21,7 @@ from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, sav
 from pipeline.preprocess import run_preprocess
 from pipeline.metrics import compute_global_metrics, glyph_ink_bbox, side_bearings
 from pipeline.segment import char_grid, crop_glyphs
+from pipeline.sheet import generate_guideline_sheet
 from pipeline.vectorize import path_to_svg, trace_glyph
 
 OUTPUT_DIR = Path("output")
@@ -30,6 +33,14 @@ app = FastAPI(title="Hatekhori", version="0.1.0")
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
+
+
+@app.get("/guideline-sheet.png")
+def guideline_sheet() -> Response:
+    img = generate_guideline_sheet()
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")
 
 
 @app.post("/ingest")
