@@ -85,7 +85,18 @@ def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str =
     metrics = {name: (width, 0) for name, width in advance_widths.items()}
     fb.setupHorizontalMetrics(metrics)
     fb.setupHorizontalHeader(ascent=units_per_em, descent=0)
-    fb.setupNameTable({"familyName": family_name, "styleName": "Regular"})
+
+    ps_name = family_name.replace(" ", "")
+    fb.setupNameTable(
+        {
+            "familyName": family_name,
+            "styleName": "Regular",
+            "uniqueFontIdentifier": f"Hatekhori:{ps_name}:1.0",
+            "fullName": family_name,
+            "psName": ps_name,
+            "version": "Version 1.0",
+        }
+    )
     fb.setupOS2(
         sTypoAscender=units_per_em,
         usWinAscent=units_per_em,
