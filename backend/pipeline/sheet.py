@@ -20,10 +20,37 @@ from pipeline.segment import compute_grid_boxes
 SHEET_WIDTH = 1240
 SHEET_HEIGHT = 1754
 
+# Four solid black squares, one per corner, sitting inside the sheet's
+# outer margin (outside the glyph grid, which starts at MARGIN_FRAC in
+# segment.py — so markers never overlap a glyph box). These let the
+# pipeline (a) confirm a photo is actually of a Hatekhori sheet before
+# processing it, and (b) find the sheet's real corners in a photo to
+# perspective-correct it, rather than assuming the photo is already
+# cropped tight.
+CORNER_MARKER_SIZE = 40
+CORNER_MARKER_INSET = 20
+
+
+def corner_marker_boxes(width: int, height: int) -> dict:
+    """Return {corner_name: (x0, y0, x1, y1)} for all four markers."""
+    s = CORNER_MARKER_SIZE
+    m = CORNER_MARKER_INSET
+    return {
+        "top_left": (m, m, m + s, m + s),
+        "top_right": (width - m - s, m, width - m, m + s),
+        "bottom_left": (m, height - m - s, m + s, height - m),
+        "bottom_right": (width - m - s, height - m - s, width - m, height - m),
+    }
+
+
+def draw_corner_markers(draw: ImageDraw.ImageDraw, width: int, height: int) -> None:
+    for box in corner_marker_boxes(width, height).values():
+        draw.rectangle(box, fill=0)
+
 
 def generate_guideline_sheet() -> Image.Image:
     """Render the printable sheet: one box per glyph, each labeled with
-    the character to write inside it.
+    the character to write inside it, plus corner markers.
     """
     img = Image.new("L", (SHEET_WIDTH, SHEET_HEIGHT), color=255)
     draw = ImageDraw.Draw(img)
@@ -36,6 +63,8 @@ def generate_guideline_sheet() -> Image.Image:
         # be written over — the person writes their own version of the
         # character in the rest of the box.
         draw.text((x0 + 4, y0 + 2), entry["char"], fill=0, font=font)
+
+    draw_corner_markers(draw, SHEET_WIDTH, SHEET_HEIGHT)
 
     return img
 
@@ -73,5 +102,7 @@ def generate_synthetic_filled_sheet() -> Image.Image:
         text_x = x0 + (box_width - text_width) / 2 - bbox[0]
         text_y = y0 + (box_height - text_height) / 2 - bbox[1]
         draw.text((text_x, text_y), char, fill=0, font=glyph_font)
+
+    draw_corner_markers(draw, SHEET_WIDTH, SHEET_HEIGHT)
 
     return img
