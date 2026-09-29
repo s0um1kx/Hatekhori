@@ -174,6 +174,19 @@ def compile_font_endpoint(upload_id: str) -> dict:
     return {"id": upload_id, "font_path": str(dest), "glyph_count": len(glyph_entries)}
 
 
+@app.get("/download-font/{upload_id}")
+def download_font(upload_id: str) -> Response:
+    font_path = OUTPUT_DIR / upload_id / "font.otf"
+    if not font_path.exists():
+        raise HTTPException(status_code=404, detail="Run /compile for this upload id first.")
+
+    return Response(
+        content=font_path.read_bytes(),
+        media_type="font/otf",
+        headers={"Content-Disposition": f'attachment; filename="hatekhori-{upload_id}.otf"'},
+    )
+
+
 # Mounted LAST and deliberately at "/" — Starlette matches the explicit
 # API routes above first; this only catches whatever they don't. Serves
 # frontend/index.html at "/" and everything else in frontend/ alongside
