@@ -22,7 +22,13 @@ from pipeline.preprocess import run_preprocess
 from pipeline.metrics import compute_global_metrics, glyph_ink_bbox, side_bearings
 from pipeline.segment import char_grid, crop_glyphs
 from pipeline.sheet import generate_guideline_sheet
-from pipeline.validate import BadSheetShape, check_aspect_ratio, check_ink_density
+from pipeline.validate import (
+    BadSheetShape,
+    check_aspect_ratio,
+    check_ink_density,
+    find_corner_markers,
+    perspective_correct,
+)
 from pipeline.vectorize import path_to_svg, trace_glyph
 
 OUTPUT_DIR = Path("output")
@@ -63,10 +69,12 @@ def preprocess(upload_id: str) -> dict:
         try:
             check_aspect_ratio(img)
             check_ink_density(img)
+            markers = find_corner_markers(img)
+            corrected = perspective_correct(img, markers)
         except BadSheetShape as e:
             raise HTTPException(status_code=400, detail=str(e))
 
-        cleaned = run_preprocess(img)
+        cleaned = run_preprocess(corrected)
         dest = OUTPUT_DIR / f"{upload_id}_preprocessed.png"
         cleaned.save(dest, format="PNG")
 
