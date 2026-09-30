@@ -16,7 +16,7 @@ import numpy as np
 from PIL import Image
 
 from pipeline.preprocess import binarize
-from pipeline.sheet import SHEET_HEIGHT, SHEET_WIDTH
+from pipeline.sheet import SHEET_HEIGHT, SHEET_WIDTH, corner_marker_boxes
 
 ASPECT_RATIO_TOLERANCE = 0.15  # 15% — generous, since phone photos rarely crop perfectly
 MIN_INK_FRACTION = 0.005  # 0.5% — below this, the sheet looks blank
@@ -191,3 +191,39 @@ def find_corner_markers(img: Image.Image) -> dict:
         centers[name] = (center_x, center_y)
 
     return centers
+
+
+def _solve_perspective_coeffs(source_points: list, target_points: list) -> list:
+    """Solve the 8 coefficients PIL's Image.transform(..., PERSPECTIVE, ...)
+    needs so that each pixel at `target_points[i]` (in the OUTPUT image)
+    samples from `source_points[i]` (in the INPUT image) — i.e. maps
+    output coordinates back to input coordinates, which is the
+    direction PIL's own transform expects.
+    """
+    matrix = []
+    for (sx, sy), (tx, ty) in zip(source_points, target_points):
+        matrix.append([tx, ty, 1, 0, 0, 0, -sx * tx, -sx * ty])
+        matrix.append([0, 0, 0, tx, ty, 1, -sy * tx, -sy * ty])
+
+    a = np.array(matrix, dtype=np.float64)
+    b = np.array(source_points, dtype=np.float64).reshape(8)
+    return np.linalg.solve(a, b).tolist()
+
+
+def perspective_correct(img: Image.Image, marker_centers: dict) -> Image.Image:
+    """Warp a photo so its 4 detected marker positions land exactly on
+    the canonical sheet's marker positions, producing a SHEET_WIDTH x
+    SHEET_HEIGHT image that segment.py's grid math can crop directly —
+    without the person needing to crop the photo tight themselves.
+    """
+    canonical_boxes = corner_marker_boxes(SHEET_WIDTH, SHEET_HEIGHT)
+    canonical_centers = {
+        name: ((x0 + x1) / 2, (y0 + y1) / 2) for name, (x0, y0, x1, y1) in canonical_boxes.items()
+    }
+
+    order = ["top_left", "top_right", "bottom_right", "bottom_left"]
+    source_points = [marker_centers[name] for name in order]
+    target_points = [canonical_centers[name] for name in order]
+
+    coeffs = _solve_perspective_coeffs(source_points, target_points)
+    return img.transform((SHEET_WIDTH, SHEET_HEIGHT), Image.PERSPECTIVE, coeffs, Image.BICUBIC)
