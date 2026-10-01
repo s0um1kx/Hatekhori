@@ -72,6 +72,17 @@ def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str =
     charstrings[".notdef"] = notdef_pen.getCharString()
     advance_widths[".notdef"] = notdef_width
 
+    # Space can't be handwritten — there's no ink to capture for a
+    # blank character — so it's generated here the same way real fonts
+    # do: an empty outline with a fixed advance width, roughly a third
+    # of an em (a common real-world space width proportion).
+    space_width = units_per_em // 3
+    space_pen = T2CharStringPen(space_width, None)
+    glyph_order.append("space")
+    cmap[ord(" ")] = "space"
+    charstrings["space"] = space_pen.getCharString()
+    advance_widths["space"] = space_width
+
     fb = FontBuilder(units_per_em, isTTF=False)
     fb.setupGlyphOrder(glyph_order)
     fb.setupCharacterMap(cmap)

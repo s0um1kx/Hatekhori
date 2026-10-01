@@ -1,20 +1,17 @@
 """Segment step: slice the cleaned guideline sheet into individual glyph
 boxes.
 
-This part (4a) only defines the grid geometry — which character sits in
-which box, and where that box is, as fractions of the image. Actual
-cropping is 4b, and 4c wires it into an endpoint.
-
-English M1 glyph set: A-Z, a-z, 0-9 (62 glyphs), per AGENTS.md/PRD.md
-§9 — this is the internal validation set only, never shown publicly.
+English M1 glyph set: A-Z, a-z, 0-9, plus common punctuation/symbols
+(90 glyphs total) — per PRD.md's own "~60-90 glyphs" budget for English
+internal validation (this is never shown publicly).
 """
 
 import string
 
 from PIL import Image
 
-GRID_ROWS = 8
-GRID_COLS = 8
+GRID_ROWS = 10
+GRID_COLS = 9  # 9x10 = 90, exactly matching the glyph count below, no empty cells
 
 # Margin around the whole grid, and gutter between boxes, as a fraction
 # of image width/height. Placeholders until a real printed sheet exists
@@ -23,10 +20,39 @@ GRID_COLS = 8
 MARGIN_FRAC = 0.05
 GUTTER_FRAC = 0.01
 
+# Common punctuation/symbols, added to the original A-Z/a-z/0-9 set.
+SYMBOLS = list(".,!?'\"()-:;@#$%&*+=/\\_[]{}<>")
+
+# Standard (Adobe Glyph List-style) names for characters that aren't
+# safe as-is — several of these are characters Windows forbids in
+# filenames (/ \ : * ? " < >), and all of them need a real name for the
+# font's internal glyph table anyway, so one mapping serves both uses.
+_GLYPH_NAME_OVERRIDES = {
+    "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four",
+    "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine",
+    ".": "period", ",": "comma", "!": "exclam", "?": "question",
+    "'": "quotesingle", '"': "quotedbl", "(": "parenleft", ")": "parenright",
+    "-": "hyphen", ":": "colon", ";": "semicolon", "@": "at",
+    "#": "numbersign", "$": "dollar", "%": "percent", "&": "ampersand",
+    "*": "asterisk", "+": "plus", "=": "equal", "/": "slash",
+    "\\": "backslash", "_": "underscore", "[": "bracketleft",
+    "]": "bracketright", "{": "braceleft", "}": "braceright",
+    "<": "less", ">": "greater",
+}
+
+
+def glyph_name_for(char: str) -> str:
+    """Filesystem- and font-safe name for a glyph (e.g. '/' -> 'slash').
+
+    Plain letters are already safe and returned as-is; everything else
+    uses the standard glyph-name mapping above.
+    """
+    return _GLYPH_NAME_OVERRIDES.get(char, char)
+
 
 def char_grid() -> list[str]:
-    """Ordered list of the 62 glyphs, reading left-to-right, top-to-bottom."""
-    return list(string.ascii_uppercase + string.ascii_lowercase + string.digits)
+    """Ordered list of the 90 glyphs, reading left-to-right, top-to-bottom."""
+    return list(string.ascii_uppercase + string.ascii_lowercase + string.digits) + SYMBOLS
 
 
 def compute_grid_boxes(img_width: int, img_height: int) -> list[dict]:

@@ -23,7 +23,7 @@ from pipeline.compile import build_font
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
 from pipeline.metrics import compute_global_metrics, glyph_ink_bbox, side_bearings
-from pipeline.segment import char_grid, crop_glyphs
+from pipeline.segment import char_grid, crop_glyphs, glyph_name_for
 from pipeline.sheet import generate_guideline_sheet
 from pipeline.validate import (
     BadSheetShape,
@@ -140,8 +140,9 @@ def segment(upload_id: str) -> dict:
     manifest = []
     for index, char in enumerate(char_grid()):
         # Index prefix avoids Windows filesystem case-insensitivity
-        # colliding "A.png" with "a.png".
-        dest = glyphs_dir / f"{index:02d}_{char}.png"
+        # colliding "A.png" with "a.png"; glyph_name_for() avoids
+        # characters like / \ : * ? " < > that Windows forbids outright.
+        dest = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
         glyphs[char].save(dest, format="PNG")
         manifest.append({"char": char, "path": str(dest)})
 
@@ -159,7 +160,7 @@ def vectorize(upload_id: str) -> dict:
 
     manifest = []
     for index, char in enumerate(char_grid()):
-        glyph_path = glyphs_dir / f"{index:02d}_{char}.png"
+        glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
         if not glyph_path.exists():
             continue
 
@@ -167,7 +168,7 @@ def vectorize(upload_id: str) -> dict:
             path = trace_glyph(img)
             svg = path_to_svg(path, img.width, img.height)
 
-        dest = vectors_dir / f"{index:02d}_{char}.svg"
+        dest = vectors_dir / f"{index:02d}_{glyph_name_for(char)}.svg"
         dest.write_text(svg, encoding="utf-8")
         manifest.append({"char": char, "path": str(dest)})
 
@@ -182,7 +183,7 @@ def metrics(upload_id: str) -> dict:
 
     per_glyph = {}
     for index, char in enumerate(char_grid()):
-        glyph_path = glyphs_dir / f"{index:02d}_{char}.png"
+        glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
         if not glyph_path.exists():
             continue
 
@@ -212,7 +213,7 @@ def compile_font_endpoint(upload_id: str) -> dict:
 
     glyph_entries = {}
     for index, char in enumerate(char_grid()):
-        glyph_path = glyphs_dir / f"{index:02d}_{char}.png"
+        glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
         if not glyph_path.exists():
             continue
 
