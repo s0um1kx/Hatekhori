@@ -70,6 +70,21 @@ def session_qr(session_id: str, request: Request) -> Response:
     return Response(content=buf.getvalue(), media_type="image/png")
 
 
+@app.post("/session/{session_id}/upload")
+async def session_upload(session_id: str, file: UploadFile = File(...)) -> dict:
+    if get_session(session_id) is None:
+        raise HTTPException(status_code=404, detail="This session doesn't exist or has expired.")
+
+    file_bytes = await file.read()
+    try:
+        result = save_upload(file_bytes, file.filename)
+    except (UnsupportedFileType, UploadTooLarge) as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    mark_received(session_id, result["id"])
+    return {"status": "received", "id": result["id"]}
+
+
 @app.post("/ingest")
 async def ingest(file: UploadFile = File(...)) -> dict:
     file_bytes = await file.read()
