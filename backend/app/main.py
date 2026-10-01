@@ -70,6 +70,15 @@ def session_qr(session_id: str, request: Request) -> Response:
     return Response(content=buf.getvalue(), media_type="image/png")
 
 
+@app.get("/session/{session_id}/status")
+def session_status(session_id: str) -> dict:
+    session = get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="This session doesn't exist or has expired.")
+
+    return {"status": session["status"], "upload_id": session["upload_id"]}
+
+
 @app.post("/session/{session_id}/upload")
 async def session_upload(session_id: str, file: UploadFile = File(...)) -> dict:
     if get_session(session_id) is None:
