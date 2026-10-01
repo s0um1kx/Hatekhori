@@ -5,6 +5,7 @@ filetype==1.2.0
 Pillow>=11.3.0
 numpy>=2.0.0
 potracer
+qrcode[pil]
 fonttools>=4.55.0
 # pillow-heif is optional — needed only for full HEIC dimension checks,
 # and needs a C build toolchain on some platforms. Uncomment if you want

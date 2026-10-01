@@ -11,10 +11,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+import qrcode
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
+
+from app.sessions import create_session, get_lan_ip, get_session, mark_received
 
 from pipeline.compile import build_font
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
@@ -47,6 +50,23 @@ def guideline_sheet() -> Response:
     img = generate_guideline_sheet()
     buf = io.BytesIO()
     img.save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")
+
+
+@app.post("/qr-session")
+def qr_session() -> dict:
+    return {"session_id": create_session()}
+
+
+@app.get("/session/{session_id}/qr.png")
+def session_qr(session_id: str, request: Request) -> Response:
+    lan_ip = get_lan_ip()
+    port = request.url.port or 8000
+    capture_url = f"http://{lan_ip}:{port}/mobile-capture.html?session={session_id}"
+
+    qr_img = qrcode.make(capture_url)
+    buf = io.BytesIO()
+    qr_img.save(buf, format="PNG")
     return Response(content=buf.getvalue(), media_type="image/png")
 
 
