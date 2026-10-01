@@ -24,6 +24,13 @@
       <input type="file" id="file-input" accept="image/jpeg,image/png,image/heic" />
       <img id="preview" alt="" hidden />
       <button class="button" id="generate-button" disabled>Generate Font</button>
+
+      <p>— or —</p>
+      <button class="button" id="use-phone-button">Use phone camera instead</button>
+      <div id="qr-area" hidden>
+        <img id="qr-image" alt="QR code — scan with your phone" />
+        <p id="qr-status">Waiting for your phone...</p>
+      </div>
     </section>
 
     <section class="step" id="step-progress" hidden>

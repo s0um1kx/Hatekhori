@@ -69,3 +69,13 @@ main {
 #progress-text {
   color: var(--ink);
 }
+
+#qr-area {
+  margin-top: 16px;
+}
+
+#qr-image {
+  display: block;
+  max-width: 200px;
+  margin-bottom: 8px;
+}
