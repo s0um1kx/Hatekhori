@@ -19,6 +19,7 @@ from PIL import Image
 
 from app.sessions import create_session, get_lan_ip, get_session, mark_received
 
+from pipeline.cleanup import delete_raw_upload
 from pipeline.compile import build_font
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
@@ -135,6 +136,11 @@ def preprocess(upload_id: str) -> dict:
         cleaned = run_preprocess(corrected)
         dest = OUTPUT_DIR / f"{upload_id}_preprocessed.png"
         cleaned.save(dest, format="PNG")
+
+    # The raw photo's only job was feeding preprocessing — nothing
+    # downstream (segment/vectorize/metrics/compile) ever reads it
+    # again, so it's deleted now rather than lingering. Per AGENTS.md §7.
+    delete_raw_upload(upload_id)
 
     return {"id": upload_id, "preprocessed_path": str(dest)}
 
