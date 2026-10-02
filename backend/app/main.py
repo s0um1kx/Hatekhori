@@ -19,7 +19,7 @@ from PIL import Image
 
 from app.sessions import create_session, get_lan_ip, get_session, mark_received
 
-from pipeline.cleanup import delete_raw_upload
+from pipeline.cleanup import OUTPUT_DIR, delete_raw_upload
 from pipeline.compile import build_font
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
@@ -34,9 +34,6 @@ from pipeline.validate import (
     perspective_correct,
 )
 from pipeline.vectorize import path_to_svg, trace_glyph
-
-OUTPUT_DIR = Path("output")
-OUTPUT_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="Hatekhori", version="0.1.0")
 
