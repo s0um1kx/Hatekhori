@@ -60,9 +60,23 @@ def qr_session() -> dict:
 
 @app.get("/session/{session_id}/qr.png")
 def session_qr(session_id: str, request: Request) -> Response:
-    lan_ip = get_lan_ip()
-    port = request.url.port or 8000
-    capture_url = f"http://{lan_ip}:{port}/mobile-capture.html?session={session_id}"
+    host = request.url.hostname
+    scheme = request.url.scheme
+    port = request.url.port
+
+    # 127.0.0.1/localhost only means anything to THIS machine — a phone
+    # can't reach it, so fall back to guessing the LAN IP for local
+    # testing. Once deployed behind a real domain, request.url.hostname
+    # IS the right, phone-reachable address already — no guessing needed.
+    if host in ("127.0.0.1", "localhost"):
+        host = get_lan_ip()
+
+    if port and port not in (80, 443):
+        base = f"{scheme}://{host}:{port}"
+    else:
+        base = f"{scheme}://{host}"
+
+    capture_url = f"{base}/mobile-capture.html?session={session_id}"
 
     qr_img = qrcode.make(capture_url)
     buf = io.BytesIO()
