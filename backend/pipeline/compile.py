@@ -9,17 +9,21 @@ from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.t2CharStringPen import T2CharStringPen
 
 
-def draw_potrace_path(pen, trace_path, crop_height: float) -> None:
+def draw_potrace_path(pen, trace_path, crop_height: float, scale: float = 1.0) -> None:
     """Replay a potrace Path's curves onto a fontTools pen.
 
     Image coordinates have y increasing downward from the top; font
     coordinates have y increasing upward from the baseline. Per the
     baseline convention set in metrics.py (baseline = bottom of the
     glyph's own crop), flipping is just `crop_height - y`.
+
+    `scale` converts from raw source pixels into font design units —
+    without it, every glyph is drawn at whatever pixel size the source
+    photo happened to be, which has no relationship to unitsPerEm.
     """
 
     def flip(point):
-        return (point.x, crop_height - point.y)
+        return (point.x * scale, (crop_height - point.y) * scale)
 
     for curve in trace_path:
         pen.moveTo(flip(curve.start_point))
@@ -45,11 +49,20 @@ def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str =
     OpenType glyph names — the character-to-glyph mapping lives in the
     cmap instead.
 
-    Units/coordinates are currently raw source pixels, not rescaled to
-    a typographic unitsPerEm convention — fine for proving the pipeline
-    produces a structurally real font, not yet tuned for correct visual
-    proportions.
+    Each glyph's raw pixel coordinates are scaled so its crop height
+    maps to BOX_TO_EM_FRACTION of units_per_em — without this, glyphs
+    end up sized however many pixels the source photo happened to have,
+    unrelated to the font's actual unitsPerEm, which would make letters
+    render tiny with huge padding and make two different uploads
+    produce inconsistently-scaled fonts relative to each other.
     """
+    # How much of each glyph box's height maps onto the em square. Less
+    # than 1.0 on purpose — a real em includes some built-in padding
+    # above/below the letterforms (ascender/descender room), so mapping
+    # the box height to the FULL em would make glyphs look oversized
+    # and cramped against neighboring text.
+    BOX_TO_EM_FRACTION = 0.9
+
     glyph_order = [".notdef"]
     cmap = {}
     charstrings = {}
@@ -60,10 +73,13 @@ def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str =
         glyph_order.append(glyph_name)
         cmap[ord(char)] = glyph_name
 
-        advance_width = data["advance_width"]
+        crop_height = data["crop_height"]
+        scale = (units_per_em * BOX_TO_EM_FRACTION) / crop_height if crop_height else 1.0
+        advance_width = data["advance_width"] * scale
+
         pen = T2CharStringPen(advance_width, None)
         if data.get("path") is not None:
-            draw_potrace_path(pen, data["path"], data["crop_height"])
+            draw_potrace_path(pen, data["path"], crop_height, scale=scale)
         charstrings[glyph_name] = pen.getCharString()
         advance_widths[glyph_name] = advance_width
 

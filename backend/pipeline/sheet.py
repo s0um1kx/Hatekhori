@@ -81,8 +81,16 @@ def generate_synthetic_filled_sheet() -> Image.Image:
     img = Image.new("L", (SHEET_WIDTH, SHEET_HEIGHT), color=255)
     draw = ImageDraw.Draw(img)
 
+    # Font size is a fraction of the actual box height, not a hardcoded
+    # value — a fixed size would silently stop filling the box properly
+    # whenever the grid (and therefore box size) changes, making this
+    # self-test quietly unrepresentative of real ink coverage.
+    sample_box = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT)[0]["box"]
+    box_height = sample_box[3] - sample_box[1]
+    font_size = int(box_height * 0.6)
+
     try:
-        glyph_font = ImageFont.truetype("arial.ttf", size=80)
+        glyph_font = ImageFont.truetype("arial.ttf", size=font_size)
     except OSError:
         # No arial.ttf on this machine — fall back to the built-in
         # bitmap font. It's small, but the point here is a structural
