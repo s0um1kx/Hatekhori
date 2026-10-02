@@ -4,6 +4,7 @@ Pipeline endpoints (ingest -> preprocess -> segment -> vectorize ->
 metrics -> compile) plus serving the frontend as static files at "/".
 """
 
+import asyncio
 import io
 import json
 import sys
@@ -19,7 +20,7 @@ from PIL import Image
 
 from app.sessions import create_session, get_lan_ip, get_session, mark_received
 
-from pipeline.cleanup import OUTPUT_DIR, delete_raw_upload
+from pipeline.cleanup import OUTPUT_DIR, delete_raw_upload, sweep_old_outputs, sweep_old_uploads
 from pipeline.compile import build_font
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
 from pipeline.preprocess import run_preprocess
@@ -36,6 +37,25 @@ from pipeline.validate import (
 from pipeline.vectorize import path_to_svg, trace_glyph
 
 app = FastAPI(title="Hatekhori", version="0.1.0")
+
+SWEEP_INTERVAL_SECONDS = 3600  # once an hour
+
+
+async def _periodic_sweep() -> None:
+    while True:
+        try:
+            sweep_old_uploads()
+            sweep_old_outputs()
+        except Exception:
+            # Best-effort background cleanup — a sweep failure should
+            # never take down the app itself.
+            pass
+        await asyncio.sleep(SWEEP_INTERVAL_SECONDS)
+
+
+@app.on_event("startup")
+async def start_background_sweep() -> None:
+    asyncio.create_task(_periodic_sweep())
 
 
 @app.get("/health")
