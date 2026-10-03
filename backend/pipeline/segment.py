@@ -90,10 +90,26 @@ def compute_grid_boxes(img_width: int, img_height: int) -> list[dict]:
     return boxes
 
 
+# How much to shrink each box, on every side, before actually cropping
+# a glyph out of it — as a fraction of the box's own width/height. The
+# printed sheet draws its 1px box border exactly on these same
+# coordinates (see sheet.py), so cropping the box at face value bakes
+# that border line into every glyph's edges. Insetting the crop (but
+# NOT the drawn box itself) keeps the visual guide intact on the sheet
+# while excluding its ink from what gets vectorized.
+CROP_INSET_FRACTION = 0.06
+
+
 def crop_glyphs(img: Image.Image) -> dict[str, Image.Image]:
     """Slice each glyph box out of the preprocessed sheet image.
 
     Returns a dict keyed by character, e.g. {"A": <Image>, "b": <Image>, ...}.
     """
     boxes = compute_grid_boxes(img.width, img.height)
-    return {entry["char"]: img.crop(entry["box"]) for entry in boxes}
+    result = {}
+    for entry in boxes:
+        x0, y0, x1, y1 = entry["box"]
+        inset_x = (x1 - x0) * CROP_INSET_FRACTION
+        inset_y = (y1 - y0) * CROP_INSET_FRACTION
+        result[entry["char"]] = img.crop((x0 + inset_x, y0 + inset_y, x1 - inset_x, y1 - inset_y))
+    return result

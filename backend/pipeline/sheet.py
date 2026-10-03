@@ -58,11 +58,17 @@ def generate_guideline_sheet() -> Image.Image:
 
     for entry in compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT):
         x0, y0, x1, y1 = entry["box"]
+        char = entry["char"]
         draw.rectangle([x0, y0, x1, y1], outline=0, width=1)
-        # Small guide label in the box's top-left corner, not meant to
-        # be written over — the person writes their own version of the
-        # character in the rest of the box.
-        draw.text((x0 + 4, y0 + 2), entry["char"], fill=0, font=font)
+
+        # Label sits in the gutter ABOVE the box, not inside it — unlike
+        # an earlier version that placed it just inside the box's
+        # corner, this guarantees the label's ink can never be captured
+        # by segment.py's crop regardless of inset tuning, since it's
+        # entirely outside the box's own coordinates.
+        label_bbox = draw.textbbox((0, 0), char, font=font)
+        label_height = label_bbox[3] - label_bbox[1]
+        draw.text((x0, y0 - label_height - 3), char, fill=0, font=font)
 
     draw_corner_markers(draw, SHEET_WIDTH, SHEET_HEIGHT)
 

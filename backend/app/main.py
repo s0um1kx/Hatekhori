@@ -31,6 +31,7 @@ from pipeline.validate import (
     BadSheetShape,
     check_aspect_ratio,
     check_ink_density,
+    check_sheet_is_filled,
     find_corner_markers,
     perspective_correct,
 )
@@ -147,6 +148,7 @@ def preprocess(upload_id: str) -> dict:
             check_ink_density(img)
             markers = find_corner_markers(img)
             corrected = perspective_correct(img, markers)
+            check_sheet_is_filled(corrected)
         except BadSheetShape as e:
             raise HTTPException(status_code=400, detail=str(e))
 
@@ -249,14 +251,24 @@ def compile_font_endpoint(upload_id: str) -> dict:
         raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
 
     glyph_entries = {}
+    skipped = []
     for index, char in enumerate(char_grid()):
         glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
         if not glyph_path.exists():
             continue
 
         with Image.open(glyph_path) as img:
-            trace_path = trace_glyph(img)
             bbox = glyph_ink_bbox(img)
+            if bbox is None:
+                # Left blank — don't create a phantom glyph with no
+                # shape but a real (wrong) advance width. Skipping it
+                # means typing this character falls back to the font's
+                # normal "unknown character" behavior, which is correct:
+                # the person never actually wrote this one.
+                skipped.append(char)
+                continue
+
+            trace_path = trace_glyph(img)
             bearings = side_bearings(img, bbox)
             glyph_entries[char] = {
                 "path": trace_path,
@@ -268,7 +280,12 @@ def compile_font_endpoint(upload_id: str) -> dict:
     dest = OUTPUT_DIR / upload_id / "font.otf"
     font_builder.save(str(dest))
 
-    return {"id": upload_id, "font_path": str(dest), "glyph_count": len(glyph_entries)}
+    return {
+        "id": upload_id,
+        "font_path": str(dest),
+        "glyph_count": len(glyph_entries),
+        "skipped_blank": skipped,
+    }
 
 
 @app.get("/download-font/{upload_id}")

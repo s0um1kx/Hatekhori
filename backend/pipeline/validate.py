@@ -15,8 +15,12 @@ wires both into the actual upload flow.
 import numpy as np
 from PIL import Image
 
+from pipeline.metrics import glyph_ink_bbox
 from pipeline.preprocess import binarize
+from pipeline.segment import crop_glyphs
 from pipeline.sheet import SHEET_HEIGHT, SHEET_WIDTH, corner_marker_boxes
+
+MIN_FILLED_BOX_FRACTION = 0.15  # at least 15% of boxes need actual ink
 
 ASPECT_RATIO_TOLERANCE = 0.15  # 15% — generous, since phone photos rarely crop perfectly
 MIN_INK_FRACTION = 0.005  # 0.5% — below this, the sheet looks blank
@@ -69,6 +73,31 @@ def check_ink_density(img: Image.Image) -> None:
         raise BadSheetShape(
             "That photo looks almost entirely dark — check the lighting "
             "and that the photo isn't underexposed or out of focus."
+        )
+
+
+def check_sheet_is_filled(corrected_img: Image.Image) -> None:
+    """Reject a sheet where most individual boxes are actually empty.
+
+    Stronger than check_ink_density: that check only looks at the
+    page as a whole, which could in principle still pass even if
+    nearly every box is blank (stray marks, the corner markers
+    themselves, etc. can be enough ink to clear a page-wide
+    threshold). This checks each of the 90 boxes individually and
+    counts how many actually have handwriting in them.
+
+    Expects an already perspective-corrected, SHEET_WIDTH x
+    SHEET_HEIGHT image — call this after perspective_correct(), not on
+    the raw upload.
+    """
+    glyphs = crop_glyphs(corrected_img)
+    filled_count = sum(1 for img in glyphs.values() if glyph_ink_bbox(img) is not None)
+    fraction_filled = filled_count / len(glyphs)
+
+    if fraction_filled < MIN_FILLED_BOX_FRACTION:
+        raise BadSheetShape(
+            "Most of this sheet's boxes look empty — make sure you've "
+            "written in them before photographing and uploading it."
         )
 
 
