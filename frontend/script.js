@@ -5,6 +5,9 @@ const progressSection = document.getElementById("step-progress");
 const progressText = document.getElementById("progress-text");
 const resultSection = document.getElementById("step-result");
 const downloadFontLink = document.getElementById("download-font");
+const previewText = document.getElementById("preview-text");
+const previewSize = document.getElementById("preview-size");
+const previewNote = document.getElementById("preview-note");
 const usePhoneButton = document.getElementById("use-phone-button");
 const qrArea = document.getElementById("qr-area");
 const qrImage = document.getElementById("qr-image");
@@ -23,6 +26,30 @@ fileInput.addEventListener("change", () => {
   preview.hidden = false;
   generateButton.disabled = false;
 });
+
+// Live preview: load the generated font into the page and apply it to
+// the text box, so what you type is shown in your own handwriting.
+async function loadPreviewFont(id) {
+  previewNote.hidden = true;
+  try {
+    const family = `HatekhoriPreview-${id}`;
+    const face = new FontFace(family, `url(/download-font/${id}?inline=true)`);
+    await face.load();
+    document.fonts.add(face);
+    previewText.style.fontFamily = `"${family}", sans-serif`;
+    applyPreviewSize();
+  } catch (err) {
+    previewNote.textContent = "Couldn't load the live preview — the font is still ready to download.";
+    previewNote.hidden = false;
+  }
+}
+
+function applyPreviewSize() {
+  previewText.style.fontSize = `${previewSize.value}px`;
+}
+
+previewSize.addEventListener("input", applyPreviewSize);
+applyPreviewSize();
 
 async function postJson(path) {
   const response = await fetch(path, { method: "POST" });
@@ -59,6 +86,7 @@ async function runPipelineFromUploadId(id) {
     progressSection.hidden = true;
     downloadFontLink.href = `/download-font/${id}`;
     resultSection.hidden = false;
+    await loadPreviewFont(id);
   } catch (err) {
     progressText.textContent = err.message || "Something went wrong.";
   }
