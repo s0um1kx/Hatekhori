@@ -23,125 +23,89 @@ def check_sheet_is_filled(glyphs: dict) -> None:
         )
 
 
-# Corner-marker detection. See sheet.py for what's drawn on the sheet —
-# a solid black square in each of the 4 corners. Detection works on a
-# small downscaled thumbnail of each corner region rather than full
-# photo resolution: a phone photo can be many megapixels, and a
-# pure-Python pixel scan at that size would be slow. Shrinking first
-# makes the search trivially fast regardless of input resolution, at
-# the cost of some positional precision — acceptable since the result
-# feeds a perspective correction (part 3), not a pixel-exact crop.
+# Corner-marker detection. The sheet has a solid black square in each corner (sheet.py).
+# Each corner region is shrunk to a small thumbnail first: a phone photo can be many
+# megapixels and a pure-Python pixel scan at that size is slow.
 CORNER_SEARCH_FRACTION = 0.3  # how much of each dimension to search, from each corner
-THUMBNAIL_SIZE = 100
+THUMBNAIL_SIZE = 128  # longest side of a corner thumbnail
+MAX_MARKER_SIZE_RATIO = 2.5  # the four markers should look about the same size
 
 
-def _find_largest_dark_blob(region: Image.Image) -> tuple[tuple[int, int, int, int], int] | None:
-    """Return (bounding_box, pixel_count) of the largest connected dark
-    blob in `region`, in that image's own pixel coordinates, or None if
-    there's no ink at all. Pixel count (vs. bounding-box area) is what
-    lets callers check "solidity" — how filled-in the box actually is.
-    """
-    gray = region.convert("L") if region.mode != "L" else region
-    arr = np.array(gray) < 128  # True = dark/ink
-    h, w = arr.shape
-    visited = np.zeros_like(arr, dtype=bool)
+def _erode(mask: np.ndarray) -> np.ndarray:
+    """3x3 erosion. Wipes out lines thinner than 3px, so a frame line or edge next to a
+    marker can't merge with it; a solid square just shrinks by one pixel per side."""
+    h, w = mask.shape
+    padded = np.pad(mask, 1)
+    out = np.ones_like(mask)
+    for dy in range(3):
+        for dx in range(3):
+            out &= padded[dy : dy + h, dx : dx + w]
+    return out
 
-    best_box = None
-    best_size = 0
 
-    for start_y in range(h):
-        for start_x in range(w):
-            if not arr[start_y, start_x] or visited[start_y, start_x]:
+def _blobs(mask: np.ndarray):
+    """Yield (x0, y0, x1, y1, pixel_count) for every 4-connected blob in a boolean mask."""
+    h, w = mask.shape
+    seen = np.zeros_like(mask)
+    for sy in range(h):
+        for sx in range(w):
+            if not mask[sy, sx] or seen[sy, sx]:
                 continue
-
-            stack = [(start_y, start_x)]
-            visited[start_y, start_x] = True
-            min_x = max_x = start_x
-            min_y = max_y = start_y
-            size = 0
-
+            stack, seen[sy, sx] = [(sy, sx)], True
+            x0 = x1 = sx
+            y0 = y1 = sy
+            n = 0
             while stack:
-                cy, cx = stack.pop()
-                size += 1
-                min_x, max_x = min(min_x, cx), max(max_x, cx)
-                min_y, max_y = min(min_y, cy), max(max_y, cy)
-                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    ny, nx = cy + dy, cx + dx
-                    if 0 <= ny < h and 0 <= nx < w and arr[ny, nx] and not visited[ny, nx]:
-                        visited[ny, nx] = True
+                y, x = stack.pop()
+                n += 1
+                x0, x1, y0, y1 = min(x0, x), max(x1, x), min(y0, y), max(y1, y)
+                for ny, nx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+                    if 0 <= ny < h and 0 <= nx < w and mask[ny, nx] and not seen[ny, nx]:
+                        seen[ny, nx] = True
                         stack.append((ny, nx))
+            yield x0, y0, x1 + 1, y1 + 1, n
 
-            if size > best_size:
-                best_size = size
-                best_box = (min_x, min_y, max_x + 1, max_y + 1)
 
-    return (best_box, best_size) if best_box is not None else None
+def _find_marker(region: Image.Image):
+    """The marker in one corner region: (center_x, center_y, size) in the region's own
+    pixels, or None. Marker-shaped = a solid, squarish blob of plausible size. There must be
+    exactly ONE: bars, frame lines and handwriting don't qualify, but textured clutter
+    (grass, brick) is full of such blobs, so several candidates means this isn't a clean sheet."""
+    scale = THUMBNAIL_SIZE / max(region.size)
+    tw, th = max(1, round(region.width * scale)), max(1, round(region.height * scale))
+    mask = _erode(np.array(region.resize((tw, th))) < 128)
+
+    candidates = [
+        ((x0 + x1) / 2 / scale, (y0 + y1) / 2 / scale, ((x1 - x0 + 2) * (y1 - y0 + 2)) ** 0.5 / scale)  # +2: undo erosion
+        for x0, y0, x1, y1, n in _blobs(mask)
+        if x1 - x0 >= 3 and y1 - y0 >= 3 and 0.5 <= (x1 - x0) / (y1 - y0) <= 2.0
+        and n / ((x1 - x0) * (y1 - y0)) >= 0.7 and (x1 - x0) * (y1 - y0) <= 0.1 * tw * th
+    ]
+    return candidates[0] if len(candidates) == 1 else None
 
 
 def find_corner_markers(img: Image.Image) -> dict:
-    """Locate all 4 corner markers in an uploaded photo.
-
-    Returns {corner_name: (x, y)} center points in the ORIGINAL image's
-    pixel coordinates. Raises BadSheetShape if any corner's marker
-    can't be found or doesn't look marker-shaped — this is what
-    actually rejects a non-sheet photo (a selfie, a random object),
-    since aspect-ratio/ink-density checks alone are too permissive.
-    """
-    gray = img.convert("L") if img.mode != "L" else img
+    """Locate the 4 corner markers: {corner_name: (x, y)} in the photo's own pixels.
+    Raises BadSheetShape if any is missing — this is what rejects a non-sheet photo."""
+    gray = img.convert("L")
     width, height = gray.size
-    search_w = int(width * CORNER_SEARCH_FRACTION)
-    search_h = int(height * CORNER_SEARCH_FRACTION)
-
+    sw, sh = int(width * CORNER_SEARCH_FRACTION), int(height * CORNER_SEARCH_FRACTION)
     regions = {
-        "top_left": (0, 0, search_w, search_h),
-        "top_right": (width - search_w, 0, width, search_h),
-        "bottom_left": (0, height - search_h, search_w, height),
-        "bottom_right": (width - search_w, height - search_h, width, height),
+        "top_left": (0, 0, sw, sh),
+        "top_right": (width - sw, 0, width, sh),
+        "bottom_left": (0, height - sh, sw, height),
+        "bottom_right": (width - sw, height - sh, width, height),
     }
 
-    centers = {}
-    for name, box in regions.items():
-        region = gray.crop(box)
-        scale_x = THUMBNAIL_SIZE / region.width
-        scale_y = THUMBNAIL_SIZE / region.height
-        thumb = region.resize((THUMBNAIL_SIZE, THUMBNAIL_SIZE))
-
-        result = _find_largest_dark_blob(thumb)
-        if result is not None:
-            (bx0, by0, bx1, by1), pixel_count = result
-            blob_w, blob_h = bx1 - bx0, by1 - by0
-            bbox_area = blob_w * blob_h
-            aspect = blob_w / blob_h if blob_h else 0
-            area_fraction = bbox_area / (THUMBNAIL_SIZE * THUMBNAIL_SIZE)
-            solidity = pixel_count / bbox_area if bbox_area else 0
-        else:
-            aspect = area_fraction = solidity = 0
-
-        # Roughly square, roughly marker-sized, and — the key
-        # discriminator — solid: a real marker is a filled black
-        # square (~90%+ of its own bounding box is ink), whereas noise
-        # or ordinary photo content (hair, shadows, clutter) forms
-        # irregular, sparser blobs even when their bounding box happens
-        # to be square-ish and similarly sized.
-        is_valid_marker = (
-            result is not None
-            and 0.4 <= aspect <= 2.5
-            and 0.001 <= area_fraction <= 0.35
-            and solidity >= 0.75
+    found = {name: _find_marker(gray.crop(box)) for name, box in regions.items()}
+    sizes = [f[2] for f in found.values() if f]
+    if len(sizes) < 4 or max(sizes) / min(sizes) > MAX_MARKER_SIZE_RATIO:
+        raise BadSheetShape(
+            "Couldn't find this sheet's corner markers — make sure "
+            "you're using a printed Hatekhori guideline sheet, with "
+            "all four corners visible in the photo."
         )
-        if not is_valid_marker:
-            raise BadSheetShape(
-                "Couldn't find this sheet's corner markers — make sure "
-                "you're using a printed Hatekhori guideline sheet, with "
-                "all four corners visible in the photo."
-            )
-
-        bx0, by0, bx1, by1 = result[0]
-        center_x = box[0] + (bx0 + bx1) / 2 / scale_x
-        center_y = box[1] + (by0 + by1) / 2 / scale_y
-        centers[name] = (center_x, center_y)
-
-    return centers
+    return {name: (regions[name][0] + f[0], regions[name][1] + f[1]) for name, f in found.items()}
 
 
 def _solve_perspective_coeffs(source_points: list, target_points: list) -> list:

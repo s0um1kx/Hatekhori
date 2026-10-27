@@ -71,6 +71,18 @@ def test_tall_photo_still_accepted():
     assert client.post(f"/generate/{uid}").status_code == 200
 
 
+def test_screenshot_clutter_accepted():
+    """A screenshot of the sheet: dark title bar on top, thick black frame lines down both sides."""
+    shot = Image.new("L", (660, 900), 235)
+    shot.paste(filled_sheet().resize((604, 854)), (28, 40))
+    draw = ImageDraw.Draw(shot)
+    draw.rectangle([0, 0, 660, 32], fill=57)
+    draw.rectangle([18, 0, 22, 900], fill=5)
+    draw.rectangle([640, 0, 644, 900], fill=5)
+    uid = make_id(encode(shot))
+    assert client.post(f"/generate/{uid}").status_code == 200
+
+
 def test_rejections():
     for name, data in {
         "not an image": b"definitely not an image",
