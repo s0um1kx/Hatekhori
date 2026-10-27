@@ -1,100 +1,22 @@
-"""Guideline-sheet structural validation.
-
-Per AGENTS.md §6: check the upload actually looks like a filled
-guideline sheet before it goes further into the pipeline. This doubles
-as a security check — junk/inappropriate images mostly won't match the
-expected shape.
-
-This is a heuristic, not real structural detection (no corner/marker
-detection exists yet — that's a fair chunk of what M3's "real" capture
-flow, with QR-based perspective correction, is meant to eventually
-provide). This part (2b) adds aspect-ratio + ink-density checks; 2c
-wires both into the actual upload flow.
-"""
+"""Is this photo a filled Hatekhori sheet? Four corner markers, then enough written boxes (AGENTS.md §6)."""
 
 import numpy as np
 from PIL import Image
 
 from pipeline.metrics import glyph_ink_bbox
-from pipeline.preprocess import binarize
-from pipeline.segment import crop_glyphs
 from pipeline.sheet import SHEET_HEIGHT, SHEET_WIDTH, corner_marker_boxes
 
 MIN_FILLED_BOX_FRACTION = 0.15  # at least 15% of boxes need actual ink
 
-ASPECT_RATIO_TOLERANCE = 0.15  # 15% — generous, since phone photos rarely crop perfectly
-MIN_INK_FRACTION = 0.005  # 0.5% — below this, the sheet looks blank
-MAX_INK_FRACTION = 0.7  # 70% — above this, looks solid-black/overexposed rather than written-on
-
 
 class BadSheetShape(Exception):
-    """Raised when the photo's proportions don't resemble the guideline sheet."""
+    """The photo is not a usable, filled guideline sheet."""
 
 
-def check_aspect_ratio(img: Image.Image) -> None:
-    """Reject a photo whose proportions are way off from an A4 sheet.
-
-    Accepts either portrait or landscape orientation (a sideways photo
-    is still a valid photo of the sheet), just not something wildly
-    off-shape like a square selfie or a panorama.
-    """
-    expected_ratio = SHEET_WIDTH / SHEET_HEIGHT
-    actual_ratio = img.width / img.height
-
-    # Compare against the expected ratio and its reciprocal (landscape).
-    ratios = (expected_ratio, 1 / expected_ratio)
-    if not any(abs(actual_ratio - r) / r <= ASPECT_RATIO_TOLERANCE for r in ratios):
-        raise BadSheetShape(
-            "That photo's proportions don't look like a guideline sheet — "
-            "make sure it's cropped to just the paper, not the surroundings."
-        )
-
-
-def check_ink_density(img: Image.Image) -> None:
-    """Reject a photo that's essentially blank, or essentially solid ink.
-
-    A blank sheet (nothing written yet) and a heavily over/underexposed
-    or scribbled-over photo both fail downstream in unhelpful ways —
-    catching them here gives a clearer, kinder error up front instead.
-    """
-    gray = img.convert("L") if img.mode != "L" else img
-    binary = binarize(gray)
-    arr = np.array(binary)
-
-    ink_fraction = (arr < 128).sum() / arr.size
-
-    if ink_fraction < MIN_INK_FRACTION:
-        raise BadSheetShape(
-            "That photo looks blank — make sure you've written in the "
-            "guideline sheet's boxes before photographing it."
-        )
-
-    if ink_fraction > MAX_INK_FRACTION:
-        raise BadSheetShape(
-            "That photo looks almost entirely dark — check the lighting "
-            "and that the photo isn't underexposed or out of focus."
-        )
-
-
-def check_sheet_is_filled(corrected_img: Image.Image) -> None:
-    """Reject a sheet where most individual boxes are actually empty.
-
-    Stronger than check_ink_density: that check only looks at the
-    page as a whole, which could in principle still pass even if
-    nearly every box is blank (stray marks, the corner markers
-    themselves, etc. can be enough ink to clear a page-wide
-    threshold). This checks each of the 90 boxes individually and
-    counts how many actually have handwriting in them.
-
-    Expects an already perspective-corrected, SHEET_WIDTH x
-    SHEET_HEIGHT image — call this after perspective_correct(), not on
-    the raw upload.
-    """
-    glyphs = crop_glyphs(corrected_img)
-    filled_count = sum(1 for img in glyphs.values() if glyph_ink_bbox(img) is not None)
-    fraction_filled = filled_count / len(glyphs)
-
-    if fraction_filled < MIN_FILLED_BOX_FRACTION:
+def check_sheet_is_filled(glyphs: dict) -> None:
+    """Reject a sheet where most boxes are empty. `glyphs` is crop_glyphs() output."""
+    filled = sum(1 for g in glyphs.values() if glyph_ink_bbox(g) is not None)
+    if filled / len(glyphs) < MIN_FILLED_BOX_FRACTION:
         raise BadSheetShape(
             "Most of this sheet's boxes look empty — make sure you've "
             "written in them before photographing and uploading it."

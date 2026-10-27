@@ -1,14 +1,8 @@
-"""Hatekhori backend — FastAPI entrypoint.
-
-Pipeline endpoints (ingest -> preprocess -> segment -> vectorize ->
-metrics -> compile) plus serving the frontend as static files at "/".
-"""
-
 import asyncio
 import io
-import json
 import sys
 from pathlib import Path
+from uuid import UUID
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -16,26 +10,13 @@ import qrcode
 from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
-from PIL import Image
 
 from app.sessions import create_session, get_lan_ip, get_session, mark_received
-
-from pipeline.cleanup import OUTPUT_DIR, delete_raw_upload, sweep_old_outputs, sweep_old_uploads
-from pipeline.compile import build_font
-from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload
-from pipeline.preprocess import run_preprocess
-from pipeline.metrics import compute_global_metrics, glyph_ink_bbox, side_bearings
-from pipeline.segment import char_grid, crop_glyphs, glyph_name_for
+from pipeline.cleanup import OUTPUT_DIR, OUTPUT_MAX_AGE_S, UPLOAD_MAX_AGE_S, sweep
+from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload, upload_path
+from pipeline.run import make_font
 from pipeline.sheet import generate_guideline_sheet
-from pipeline.validate import (
-    BadSheetShape,
-    check_aspect_ratio,
-    check_ink_density,
-    check_sheet_is_filled,
-    find_corner_markers,
-    perspective_correct,
-)
-from pipeline.vectorize import path_to_svg, trace_glyph
+from pipeline.validate import BadSheetShape
 
 app = FastAPI(title="Hatekhori", version="0.1.0")
 
@@ -45,12 +26,10 @@ SWEEP_INTERVAL_SECONDS = 3600  # once an hour
 async def _periodic_sweep() -> None:
     while True:
         try:
-            sweep_old_uploads()
-            sweep_old_outputs()
+            sweep(UPLOAD_DIR, UPLOAD_MAX_AGE_S)
+            sweep(OUTPUT_DIR, OUTPUT_MAX_AGE_S)
         except Exception:
-            # Best-effort background cleanup — a sweep failure should
-            # never take down the app itself.
-            pass
+            pass  # best-effort: a failed sweep must never take the app down
         await asyncio.sleep(SWEEP_INTERVAL_SECONDS)
 
 
@@ -112,187 +91,49 @@ def session_status(session_id: str) -> dict:
     return {"status": session["status"], "upload_id": session["upload_id"]}
 
 
+async def _store(file: UploadFile) -> str:
+    try:
+        return save_upload(await file.read())
+    except (UnsupportedFileType, UploadTooLarge) as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.post("/session/{session_id}/upload")
 async def session_upload(session_id: str, file: UploadFile = File(...)) -> dict:
     if get_session(session_id) is None:
         raise HTTPException(status_code=404, detail="This session doesn't exist or has expired.")
-
-    file_bytes = await file.read()
-    try:
-        result = save_upload(file_bytes, file.filename)
-    except (UnsupportedFileType, UploadTooLarge) as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    mark_received(session_id, result["id"])
-    return {"status": "received", "id": result["id"]}
+    upload_id = await _store(file)
+    mark_received(session_id, upload_id)
+    return {"status": "received", "id": upload_id}
 
 
 @app.post("/ingest")
 async def ingest(file: UploadFile = File(...)) -> dict:
-    file_bytes = await file.read()
-    try:
-        return save_upload(file_bytes, file.filename)
-    except (UnsupportedFileType, UploadTooLarge) as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    return {"id": await _store(file)}
 
 
-@app.post("/preprocess/{upload_id}")
-def preprocess(upload_id: str) -> dict:
-    matches = list(UPLOAD_DIR.glob(f"{upload_id}.*"))
-    if not matches:
+def _font_path(upload_id: UUID) -> Path:
+    return OUTPUT_DIR / f"{upload_id}.otf"
+
+
+@app.post("/generate/{upload_id}")
+def generate(upload_id: UUID) -> dict:
+    photo = upload_path(upload_id)
+    if not photo.exists():
         raise HTTPException(status_code=404, detail="No upload found with that id.")
-
-    with Image.open(matches[0]) as img:
-        try:
-            check_aspect_ratio(img)
-            check_ink_density(img)
-            markers = find_corner_markers(img)
-            corrected = perspective_correct(img, markers)
-            check_sheet_is_filled(corrected)
-        except BadSheetShape as e:
-            raise HTTPException(status_code=400, detail=str(e))
-
-        cleaned = run_preprocess(corrected)
-        dest = OUTPUT_DIR / f"{upload_id}_preprocessed.png"
-        cleaned.save(dest, format="PNG")
-
-    # The raw photo's only job was feeding preprocessing — nothing
-    # downstream (segment/vectorize/metrics/compile) ever reads it
-    # again, so it's deleted now rather than lingering. Per AGENTS.md §7.
-    delete_raw_upload(upload_id)
-
-    return {"id": upload_id, "preprocessed_path": str(dest)}
-
-
-@app.post("/segment/{upload_id}")
-def segment(upload_id: str) -> dict:
-    preprocessed_path = OUTPUT_DIR / f"{upload_id}_preprocessed.png"
-    if not preprocessed_path.exists():
-        raise HTTPException(status_code=404, detail="Run /preprocess for this upload id first.")
-
-    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
-    glyphs_dir.mkdir(parents=True, exist_ok=True)
-
-    with Image.open(preprocessed_path) as img:
-        glyphs = crop_glyphs(img)
-
-    manifest = []
-    for index, char in enumerate(char_grid()):
-        # Index prefix avoids Windows filesystem case-insensitivity
-        # colliding "A.png" with "a.png"; glyph_name_for() avoids
-        # characters like / \ : * ? " < > that Windows forbids outright.
-        dest = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
-        glyphs[char].save(dest, format="PNG")
-        manifest.append({"char": char, "path": str(dest)})
-
-    return {"id": upload_id, "glyph_count": len(manifest), "glyphs": manifest}
-
-
-@app.post("/vectorize/{upload_id}")
-def vectorize(upload_id: str) -> dict:
-    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
-    if not glyphs_dir.exists():
-        raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
-
-    vectors_dir = OUTPUT_DIR / upload_id / "vectors"
-    vectors_dir.mkdir(parents=True, exist_ok=True)
-
-    manifest = []
-    for index, char in enumerate(char_grid()):
-        glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
-        if not glyph_path.exists():
-            continue
-
-        with Image.open(glyph_path) as img:
-            path = trace_glyph(img)
-            svg = path_to_svg(path, img.width, img.height)
-
-        dest = vectors_dir / f"{index:02d}_{glyph_name_for(char)}.svg"
-        dest.write_text(svg, encoding="utf-8")
-        manifest.append({"char": char, "path": str(dest)})
-
-    return {"id": upload_id, "vector_count": len(manifest), "vectors": manifest}
-
-
-@app.post("/metrics/{upload_id}")
-def metrics(upload_id: str) -> dict:
-    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
-    if not glyphs_dir.exists():
-        raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
-
-    per_glyph = {}
-    for index, char in enumerate(char_grid()):
-        glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
-        if not glyph_path.exists():
-            continue
-
-        with Image.open(glyph_path) as img:
-            bbox = glyph_ink_bbox(img)
-            bearings = side_bearings(img, bbox)
-            per_glyph[char] = {
-                "bbox": bbox,
-                "crop_height": img.height,
-                **bearings,
-            }
-
-    global_metrics = compute_global_metrics(per_glyph)
-    result = {"id": upload_id, "global": global_metrics, "glyphs": per_glyph}
-
-    dest = OUTPUT_DIR / upload_id / "metrics.json"
-    dest.write_text(json.dumps(result, indent=2), encoding="utf-8")
-
-    return result
-
-
-@app.post("/compile/{upload_id}")
-def compile_font_endpoint(upload_id: str) -> dict:
-    glyphs_dir = OUTPUT_DIR / upload_id / "glyphs"
-    if not glyphs_dir.exists():
-        raise HTTPException(status_code=404, detail="Run /segment for this upload id first.")
-
-    glyph_entries = {}
-    skipped = []
-    for index, char in enumerate(char_grid()):
-        glyph_path = glyphs_dir / f"{index:02d}_{glyph_name_for(char)}.png"
-        if not glyph_path.exists():
-            continue
-
-        with Image.open(glyph_path) as img:
-            bbox = glyph_ink_bbox(img)
-            if bbox is None:
-                # Left blank — don't create a phantom glyph with no
-                # shape but a real (wrong) advance width. Skipping it
-                # means typing this character falls back to the font's
-                # normal "unknown character" behavior, which is correct:
-                # the person never actually wrote this one.
-                skipped.append(char)
-                continue
-
-            trace_path = trace_glyph(img)
-            bearings = side_bearings(img, bbox)
-            glyph_entries[char] = {
-                "path": trace_path,
-                "crop_height": img.height,
-                "advance_width": bearings["advance_width"],
-            }
-
-    font_builder = build_font(glyph_entries, units_per_em=1000, family_name="Hatekhori Kill-Test")
-    dest = OUTPUT_DIR / upload_id / "font.otf"
-    font_builder.save(str(dest))
-
-    return {
-        "id": upload_id,
-        "font_path": str(dest),
-        "glyph_count": len(glyph_entries),
-        "skipped_blank": skipped,
-    }
+    try:
+        return make_font(photo, _font_path(upload_id))
+    except BadSheetShape as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        photo.unlink(missing_ok=True)  # the raw photo is never kept past its one use (AGENTS.md §7)
 
 
 @app.get("/download-font/{upload_id}")
-def download_font(upload_id: str, inline: bool = False) -> Response:
-    font_path = OUTPUT_DIR / upload_id / "font.otf"
+def download_font(upload_id: UUID, inline: bool = False) -> Response:
+    font_path = _font_path(upload_id)
     if not font_path.exists():
-        raise HTTPException(status_code=404, detail="Run /compile for this upload id first.")
+        raise HTTPException(status_code=404, detail="No font for this id yet.")
 
     # inline=true is what the in-page live preview loads as a web font;
     # without it the browser is told to save the file instead.

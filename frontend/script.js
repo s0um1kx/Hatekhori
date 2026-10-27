@@ -68,20 +68,8 @@ async function runPipelineFromUploadId(id) {
   progressSection.hidden = false;
 
   try {
-    progressText.textContent = "Cleaning up the image...";
-    await postJson(`/preprocess/${id}`);
-
-    progressText.textContent = "Finding each letter...";
-    await postJson(`/segment/${id}`);
-
-    progressText.textContent = "Tracing shapes...";
-    await postJson(`/vectorize/${id}`);
-
-    progressText.textContent = "Measuring spacing...";
-    await postJson(`/metrics/${id}`);
-
     progressText.textContent = "Building your font...";
-    await postJson(`/compile/${id}`);
+    await postJson(`/generate/${id}`);
 
     progressSection.hidden = true;
     downloadFontLink.href = `/download-font/${id}`;
