@@ -6,12 +6,10 @@ from uuid import UUID
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import qrcode
-from fastapi import FastAPI, HTTPException, Request, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 
-from app.sessions import create_session, get_lan_ip, get_session, mark_received
 from pipeline.cleanup import OUTPUT_DIR, OUTPUT_MAX_AGE_S, UPLOAD_MAX_AGE_S, sweep
 from pipeline.ingest import UPLOAD_DIR, UnsupportedFileType, UploadTooLarge, save_upload, upload_path
 from pipeline.run import make_font
@@ -51,65 +49,12 @@ def guideline_sheet() -> Response:
     return Response(content=buf.getvalue(), media_type="image/png")
 
 
-@app.post("/qr-session")
-def qr_session() -> dict:
-    return {"session_id": create_session()}
-
-
-@app.get("/session/{session_id}/qr.png")
-def session_qr(session_id: str, request: Request) -> Response:
-    host = request.url.hostname
-    scheme = request.url.scheme
-    port = request.url.port
-
-    # 127.0.0.1/localhost only means anything to THIS machine — a phone
-    # can't reach it, so fall back to guessing the LAN IP for local
-    # testing. Once deployed behind a real domain, request.url.hostname
-    # IS the right, phone-reachable address already — no guessing needed.
-    if host in ("127.0.0.1", "localhost"):
-        host = get_lan_ip()
-
-    if port and port not in (80, 443):
-        base = f"{scheme}://{host}:{port}"
-    else:
-        base = f"{scheme}://{host}"
-
-    capture_url = f"{base}/mobile-capture.html?session={session_id}"
-
-    qr_img = qrcode.make(capture_url)
-    buf = io.BytesIO()
-    qr_img.save(buf, format="PNG")
-    return Response(content=buf.getvalue(), media_type="image/png")
-
-
-@app.get("/session/{session_id}/status")
-def session_status(session_id: str) -> dict:
-    session = get_session(session_id)
-    if session is None:
-        raise HTTPException(status_code=404, detail="This session doesn't exist or has expired.")
-
-    return {"status": session["status"], "upload_id": session["upload_id"]}
-
-
-async def _store(file: UploadFile) -> str:
-    try:
-        return save_upload(await file.read())
-    except (UnsupportedFileType, UploadTooLarge) as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.post("/session/{session_id}/upload")
-async def session_upload(session_id: str, file: UploadFile = File(...)) -> dict:
-    if get_session(session_id) is None:
-        raise HTTPException(status_code=404, detail="This session doesn't exist or has expired.")
-    upload_id = await _store(file)
-    mark_received(session_id, upload_id)
-    return {"status": "received", "id": upload_id}
-
-
 @app.post("/ingest")
 async def ingest(file: UploadFile = File(...)) -> dict:
-    return {"id": await _store(file)}
+    try:
+        return {"id": save_upload(await file.read())}
+    except (UnsupportedFileType, UploadTooLarge) as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 def _font_path(upload_id: UUID) -> Path:
