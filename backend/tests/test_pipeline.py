@@ -9,20 +9,29 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.chdir(tempfile.mkdtemp())  # uploads/ and output/ are cwd-relative; keep them out of the repo
 
+import numpy as np
 from fastapi.testclient import TestClient
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFont
 
 from app.main import app
-from pipeline.segment import char_grid, compute_grid_boxes
-from pipeline.sheet import SHEET_HEIGHT, SHEET_WIDTH, draw_corner_markers, generate_guideline_sheet
-from pipeline.validate import _solve_perspective_coeffs
+from pipeline.segment import char_grid, compute_grid_boxes, crop_glyphs
+from pipeline.sheet import (
+    SHEET_HEIGHT,
+    SHEET_WIDTH,
+    corner_marker_boxes,
+    draw_corner_markers,
+    draw_orientation_bar,
+    generate_guideline_sheet,
+)
+from pipeline.validate import _solve_perspective_coeffs, straighten
 
 client = TestClient(app)
 
 
-def filled_sheet() -> Image.Image:
-    """A sheet with every box 'written in' (system-independent stand-in for handwriting)."""
+def filled_sheet(bar: bool = True) -> Image.Image:
+    """A sheet with every box 'written in' (system-independent stand-in for handwriting).
+    bar=False imitates a sheet printed before the orientation bar existed."""
     img = Image.new("L", (SHEET_WIDTH, SHEET_HEIGHT), 255)
     draw = ImageDraw.Draw(img)
     font = ImageFont.load_default(size=80)
@@ -30,6 +39,8 @@ def filled_sheet() -> Image.Image:
         x0, y0, x1, y1 = box["box"]
         draw.text(((x0 + x1) / 2, (y0 + y1) / 2), char, font=font, fill=0, anchor="mm")
     draw_corner_markers(draw, SHEET_WIDTH, SHEET_HEIGHT)
+    if bar:
+        draw_orientation_bar(draw, SHEET_WIDTH, SHEET_HEIGHT)
     return img
 
 
@@ -81,6 +92,69 @@ def test_screenshot_clutter_accepted():
     draw.rectangle([640, 0, 644, 900], fill=5)
     uid = make_id(encode(shot))
     assert client.post(f"/generate/{uid}").status_code == 200
+
+
+def boxes_in_right_place(photo: Image.Image) -> int:
+    """How many of the sheet's boxes hold the same ink as the upright original."""
+    def crops(img):
+        sheet, _ = straighten(img)
+        return crop_glyphs(sheet.point(lambda p: 0 if p < 128 else 255))
+    want, got = crops(filled_sheet()), crops(photo)
+
+    def overlap(a, b):
+        a, b = np.array(a) < 128, np.array(b) < 128
+        return (a & b).sum() / max(1, (a | b).sum())
+    return sum(1 for c in char_grid() if overlap(want[c], got[c]) > 0.4)
+
+
+def test_rotated_sheets_are_straightened():
+    for degrees in (0, 90, 180, 270):
+        photo = filled_sheet().rotate(degrees, expand=True)
+        assert boxes_in_right_place(photo) >= 85, f"rotated {degrees} degrees"
+        uid = make_id(encode(photo))
+        r = client.post(f"/generate/{uid}")
+        assert r.status_code == 200 and r.json()["warnings"] == [], degrees
+
+
+def test_phone_photo_with_rotate_flag():
+    exif = Image.Exif()
+    exif[0x0112] = 6  # "turn me 90 degrees clockwise to display upright", pixels stored sideways
+    uid = make_id(encode(filled_sheet().rotate(90, expand=True).convert("RGB"), "JPEG", exif=exif.tobytes()))
+    with Image.open(f"uploads/{uid}.img") as stored:  # closed before /generate deletes it (Windows won't delete an open file)
+        assert stored.width < stored.height, "the rotate flag must be applied at upload"
+    assert client.post(f"/generate/{uid}").json()["warnings"] == []
+
+
+def test_sheet_without_orientation_bar_still_accepted_with_warning():
+    uid = make_id(encode(filled_sheet(bar=False)))
+    r = client.post(f"/generate/{uid}")
+    assert r.status_code == 200 and "orientation" in r.json()["warnings"][0]
+
+
+def detail(photo: Image.Image) -> str:
+    uid = make_id(encode(photo))
+    r = client.post(f"/generate/{uid}")
+    assert r.status_code == 400, r.text
+    return r.json()["detail"]
+
+
+def test_messages_name_the_corner_at_fault():
+    boxes = corner_marker_boxes(SHEET_WIDTH, SHEET_HEIGHT)
+
+    one = filled_sheet()
+    ImageDraw.Draw(one).rectangle(boxes["bottom_right"], fill=255)
+    assert "bottom-right corner square." in detail(one)
+
+    two = filled_sheet()
+    for name in ("top_left", "bottom_left"):
+        ImageDraw.Draw(two).rectangle(boxes[name], fill=255)
+    assert "top-left and bottom-left corner squares" in detail(two)
+
+    crowded = filled_sheet()
+    ImageDraw.Draw(crowded).rectangle([75, 22, 105, 52], fill=0)  # a dark blob next to the top-left square
+    assert "very near the top-left corner square" in detail(crowded)
+
+    assert "No corner squares found" in detail(Image.effect_noise((1240, 1754), 80))
 
 
 def test_rejections():

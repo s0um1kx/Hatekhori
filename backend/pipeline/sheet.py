@@ -48,6 +48,16 @@ def draw_corner_markers(draw: ImageDraw.ImageDraw, width: int, height: int) -> N
         draw.rectangle(box, fill=0)
 
 
+def orientation_bar_box(width: int, height: int) -> tuple:
+    """A bar across the top margin, between the two top corner squares. The four squares are
+    identical, so this bar is the only thing that tells the top of the sheet from the bottom."""
+    return (100, 36, width - 100, 46)
+
+
+def draw_orientation_bar(draw: ImageDraw.ImageDraw, width: int, height: int) -> None:
+    draw.rectangle(orientation_bar_box(width, height), fill=0)
+
+
 def generate_guideline_sheet() -> Image.Image:
     """Render the printable sheet: one box per glyph, each labeled with
     the character to write inside it, plus corner markers.
@@ -71,5 +81,6 @@ def generate_guideline_sheet() -> Image.Image:
         draw.text((x0, y0 - label_height - 3), char, fill=0, font=font)
 
     draw_corner_markers(draw, SHEET_WIDTH, SHEET_HEIGHT)
+    draw_orientation_bar(draw, SHEET_WIDTH, SHEET_HEIGHT)
 
     return img

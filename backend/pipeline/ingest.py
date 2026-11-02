@@ -4,7 +4,7 @@ import io
 import uuid
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
@@ -43,12 +43,14 @@ def save_upload(file_bytes: bytes) -> str:
     if max(img.size) > MAX_PIXEL_DIMENSION:
         raise UploadTooLarge(f"That image is larger than the {MAX_PIXEL_DIMENSION}px-per-side limit.")
 
+    # Phones often store a portrait photo sideways plus a "rotate me" flag. Viewers obey the
+    # flag; our pipeline wouldn't, and would file every letter in the wrong box. Apply it now.
+    fmt = "PNG" if img.format == "PNG" else "JPEG"
+    img = ImageOps.exif_transpose(img)
+
     # Re-saving writes pixels only: EXIF/GPS never reach the file (AGENTS.md §6).
     out = io.BytesIO()
-    if img.format == "PNG":
-        img.save(out, format="PNG")
-    else:
-        img.save(out, format="JPEG", quality=95)
+    img.save(out, format=fmt, **({"quality": 95} if fmt == "JPEG" else {}))
 
     upload_id = str(uuid.uuid4())
     upload_path(upload_id).write_bytes(out.getvalue())
