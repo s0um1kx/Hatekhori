@@ -1,45 +1,537 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hatekhori</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hatekhori — Your handwriting, set as type</title>
+  <meta name="description" content="Write one sheet by hand. Get an installable OpenType font in your own hand. English, Bengali, and Hindi." />
+
+  <!-- Clean Webfonts: Instrument Serif, Tiro Bangla, Tiro Devanagari Hindi, Kalam, DM Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="capture-flow">
-    <h1>হাতে খড়ি</h1>
 
-    <section class="step" id="step-sheet">
-      <h2>1. Download the guideline sheet</h2>
-      <p>Print it at 100% scale (not "fit to page"), on A4.</p>
-      <a class="button" id="download-sheet" href="/guideline-sheet.png" download>
-        Download sheet
-      </a>
+  <!-- Minimal Navigation -->
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a href="#" class="brand">Hatekhori</a>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#specimen">Specimen</a>
+        <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" id="nav-download-sheet">Download sheet</a>
+        <button type="button" class="nav-link-btn" id="nav-privacy-btn">Privacy &amp; Terms</button>
+      </div>
+      <button type="button" class="btn btn-primary" id="nav-launch-studio">
+        Launch Studio
+      </button>
+    </div>
+  </nav>
+
+  <!-- VIEW 1: MINIMAL LANDING PAGE -->
+  <div id="landing-view" class="view-panel active-view">
+
+    <!-- Hero Section -->
+    <header class="hero">
+      <div class="wrap">
+        <h1 class="hero-title">Your handwriting, set as type.</h1>
+        <p class="hero-lead">
+          Print one sheet. Write with your pen. Snap a photo with your phone and get an installable OpenType font in your own hand. Built for English, Bengali, and Hindi.
+        </p>
+
+        <div class="hero-actions">
+          <button type="button" class="btn btn-primary" id="hero-enter-studio">
+            Launch Font Studio →
+          </button>
+          <div class="hero-download-group">
+            <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="hero-download-sheet">
+              Download Bengali Sheet (বাংলা)
+            </a>
+            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
+              English Sheet (Latin)
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-meta">
+          <span>Zero AI hallucinations</span>
+          <span class="sep">•</span>
+          <span>100% Vector Béziers</span>
+          <span class="sep">•</span>
+          <span>1,000+ Indic Glyphs</span>
+          <span class="sep">•</span>
+          <span>OpenType (.otf)</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Minimal Specimen Section -->
+    <section class="section" id="specimen">
+      <div class="wrap">
+        <div class="specimen-header">
+          <span class="eyebrow">Interactive Specimen</span>
+          <h2>Type with a sample hand.</h2>
+          <p class="sub">Switch scripts or edit the text. Your custom font replaces it once compiled.</p>
+        </div>
+
+        <div class="specimen-box">
+          <div class="specimen-bar">
+            <div class="script-tabs" role="tablist" aria-label="Script Selection">
+              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="bn">Bengali (বাংলা)</button>
+              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="en">English</button>
+              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="hi">Hindi (हिन्दी)</button>
+            </div>
+
+            <div class="specimen-size">
+              <label for="hero-size-slider">Size: <strong id="hero-size-readout">48px</strong></label>
+              <input type="range" id="hero-size-slider" min="28" max="84" value="48" />
+            </div>
+          </div>
+
+          <div class="specimen-canvas" id="hero-canvas-plate">
+            <textarea 
+              id="hero-live-text" 
+              class="specimen-textarea" 
+              rows="3" 
+              spellcheck="false" 
+              aria-label="Interactive Specimen Text"
+              style="font-family: 'Tiro Bangla', serif;"
+            >নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।</textarea>
+          </div>
+        </div>
+
+        <!-- Glyph Matrix & Inspector -->
+        <div class="matrix-layout">
+          <div class="matrix-grid-col">
+            <div class="matrix-grid" id="cells" role="group" aria-label="Character Matrix"></div>
+          </div>
+          <div class="glyph-card">
+            <span class="glyph-card-label">Glyph Inspector</span>
+            <b id="big" class="glyph-card-char">A</b>
+            <span id="cp" class="glyph-card-cp">U+0041</span>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="step" id="step-upload">
-      <h2>2. Upload a photo of your filled sheet</h2>
-      <p>Make sure all four corner squares are visible in the photo.</p>
-      <input type="file" id="file-input" accept="image/jpeg,image/png" />
-      <img id="preview" alt="" hidden />
-      <button class="button" id="generate-button" disabled>Generate Font</button>
+    <!-- Minimal How It Works Section -->
+    <section class="section" id="how">
+      <div class="wrap">
+        <div class="section-heading">
+          <span class="eyebrow">The Process</span>
+          <h2>One sheet in. One font out.</h2>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-col">
+            <span class="step-num">01</span>
+            <h3>Print &amp; write</h3>
+            <p>Download the free A4 sheet. Fill each character cell with your preferred pen in dark ink.</p>
+          </div>
+          <div class="step-col">
+            <span class="step-num">02</span>
+            <h3>Snap a photo</h3>
+            <p>Photograph the paper directly from above with your phone. 4 corner fiducial markers auto-deskew perspective.</p>
+          </div>
+          <div class="step-col">
+            <span class="step-num">03</span>
+            <h3>Install &amp; own</h3>
+            <p>The vector engine traces sub-pixel Béziers and outputs a genuine .OTF font file for Mac, Windows, iOS, and Web.</p>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="step" id="step-progress" hidden>
-      <p id="progress-text">Working...</p>
+    <!-- Minimal CTA Banner -->
+    <section class="section cta-section">
+      <div class="wrap text-center">
+        <h2>Make your font today.</h2>
+        <p class="sub">Free and open source. Runs entirely on your browser and server.</p>
+        <div class="hero-actions justify-center">
+          <button type="button" class="btn btn-primary" id="cta-enter-studio">
+            Launch Font Studio →
+          </button>
+          <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="cta-download-sheet">
+            Download Bengali Sheet
+          </a>
+        </div>
+      </div>
     </section>
 
-    <section class="step" id="step-result" hidden>
-      <h2>Your font is ready</h2>
-      <label class="field-label" for="preview-text">Try it — type anything</label>
-      <textarea id="preview-text" rows="3" spellcheck="false">The quick brown fox jumps over the lazy dog. 1234567890</textarea>
-      <label class="field-label" for="preview-size">Size</label>
-      <input type="range" id="preview-size" min="16" max="96" value="48" />
-      <p id="preview-note" hidden></p>
-      <a class="button" id="download-font" href="#" download>Download font</a>
-    </section>
+    <!-- Minimal Footer -->
+    <footer class="footer">
+      <div class="wrap footer-inner">
+        <span>Hatekhori (হাতে খড়ি)</span>
+        <div class="footer-links">
+          <a href="guideline-sheet-bengali.png" download>Guideline Sheet</a>
+          <a href="/docs/PRD.md">Architecture</a>
+          <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- VIEW 2: THE STUDIO WORKBENCH ("The Main Things") -->
+  <main id="studio-view" class="view-panel studio-panel" hidden>
+    <div class="wrap">
+      
+      <!-- Studio Header Bar -->
+      <div class="studio-topbar">
+        <div class="studio-topbar-left">
+          <button type="button" class="btn btn-outline btn-sm" id="studio-back-btn">
+            ← Back to Overview
+          </button>
+          <span class="studio-breadcrumb">Font Studio</span>
+        </div>
+
+        <div class="studio-topbar-right">
+          <div class="studio-step-indicators">
+            <span class="step-pill active" id="spill-sheet">1. Sheet</span>
+            <span class="step-arrow">→</span>
+            <span class="step-pill" id="spill-upload">2. Upload</span>
+            <span class="step-arrow">→</span>
+            <span class="step-pill" id="spill-compile">3. Compile</span>
+            <span class="step-arrow">→</span>
+            <span class="step-pill" id="spill-export">4. Export</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Two-Column Workbench Layout -->
+      <div class="studio-workbench">
+        
+        <!-- Left Deck: Ingest & Engine Sidebar -->
+        <aside class="workbench-deck">
+          
+          <!-- Card 1: Guideline Sheet -->
+          <div class="deck-card">
+            <div class="card-head">
+              <span class="badge-num">01</span>
+              <div>
+                <h3 id="studio-sheet-title">Get Bengali Guideline Sheet</h3>
+                <span class="card-subtitle" id="studio-sheet-sub">বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)</span>
+              </div>
+            </div>
+
+            <!-- Language Sheet Selector -->
+            <div class="sheet-script-picker" role="tablist" aria-label="Select Guideline Sheet Language">
+              <button type="button" class="sheet-script-pill active" data-script="bn" role="tab" aria-selected="true">
+                বাংলা (Bengali)
+              </button>
+              <button type="button" class="sheet-script-pill" data-script="en" role="tab" aria-selected="false">
+                English (Latin)
+              </button>
+            </div>
+
+            <!-- Visual Sheet Showcase -->
+            <div class="sheet-preview-showcase" id="sheet-preview-showcase" role="button" tabindex="0" aria-label="Click to inspect full guideline sheet">
+              <img id="studio-sheet-img" src="guideline-sheet-bengali.png" alt="Guideline Sheet Preview" class="sheet-thumb-img" />
+              <div class="sheet-thumb-overlay">
+                <span class="sheet-thumb-badge" id="studio-sheet-badge">10×6 Grid • 60 Cells</span>
+                <span class="sheet-thumb-zoom-hint">Preview Sheet ↗</span>
+              </div>
+            </div>
+
+            <div class="sheet-meta-row" id="studio-sheet-meta" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;">
+              <span class="sheet-meta-tag">60 Bengali Cells</span>
+              <span class="sheet-meta-tag">11 স্বর • 39 ব্যঞ্জন • 10 কার</span>
+              <span class="sheet-meta-tag">A4 (100% scale)</span>
+            </div>
+
+            <a class="btn btn-primary btn-full" id="studio-download-sheet" href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png">
+              <span id="studio-sheet-btn-label">Download Bengali Sheet (বাংলা)</span>
+            </a>
+
+            <div class="sheet-criteria">
+              <span>• Print at 100% scale (no "fit to page")</span>
+              <span>• Fill each cell with black or blue pen</span>
+              <span>• Keep 4 black corner squares uncreased</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Photo Dropzone -->
+          <div class="deck-card">
+            <div class="card-head">
+              <span class="badge-num">02</span>
+              <div>
+                <h3>2. Upload Filled Sheet</h3>
+                <span class="card-subtitle">Direct overhead phone photo or scan</span>
+              </div>
+            </div>
+
+            <div class="workbench-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Drop sheet photo here or click to browse">
+              <input type="file" id="file-input" class="visually-hidden" accept="image/jpeg,image/png,image/heic" />
+              
+              <div class="dropzone-idle" id="dropzone-idle">
+                <strong class="dropzone-title">Click to upload sheet photo</strong>
+                <span class="dropzone-sub">or drag &amp; drop file (JPG, PNG)</span>
+              </div>
+
+              <!-- Upload Preview -->
+              <div class="dropzone-preview" id="dropzone-preview" hidden>
+                <img id="preview" alt="Uploaded sheet preview" />
+                <button type="button" class="btn-clear" id="btn-remove-photo" title="Remove photo" aria-label="Remove photo">✕</button>
+              </div>
+            </div>
+
+            <!-- Legal Consent Checkbox (PRD §6a, AGENTS.md §6) -->
+            <div class="consent-block">
+              <label class="consent-label" for="consent-checkbox">
+                <input type="checkbox" id="consent-checkbox" />
+                <span class="consent-text">
+                  I certify this is my own handwriting and I have the right to submit it.
+                </span>
+              </label>
+              <button type="button" class="btn-subtle-link" id="link-read-terms">Read data &amp; privacy terms</button>
+            </div>
+
+            <!-- Compile Action Button -->
+            <button class="btn btn-primary btn-full" id="generate-button" style="margin-top:10px;" disabled>
+              Compile OpenType Font
+            </button>
+          </div>
+
+          <!-- Card 3: Live Vector Engine Progress Monitor -->
+          <div class="deck-card monitor-card" id="step-progress" hidden>
+            <div class="monitor-header">
+              <span class="monitor-spinner" aria-hidden="true"></span>
+              <strong id="progress-text">Tracing handwriting...</strong>
+            </div>
+
+            <div class="monitor-steps">
+              <div class="monitor-step done" id="pstep-1">
+                <span class="step-check">✓</span>
+                <span>Ingest scan &amp; scrub EXIF privacy data</span>
+              </div>
+              <div class="monitor-step active" id="pstep-2">
+                <span class="step-check">●</span>
+                <span>Detect 4 corner registration fiducials</span>
+              </div>
+              <div class="monitor-step" id="pstep-3">
+                <span class="step-check">○</span>
+                <span>Homography 4-point projective deskew</span>
+              </div>
+              <div class="monitor-step" id="pstep-4">
+                <span class="step-check">○</span>
+                <span>Segment character cells (90 glyphs)</span>
+              </div>
+              <div class="monitor-step" id="pstep-5">
+                <span class="step-check">○</span>
+                <span>Trace sub-pixel Bézier contours (Potrace)</span>
+              </div>
+              <div class="monitor-step" id="pstep-6">
+                <span class="step-check">○</span>
+                <span>Synthesize OpenType tables (glyf, cmap, head)</span>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- Right Deck: Typography Laboratory & Live Font Tester -->
+        <section class="workbench-stage">
+          
+          <!-- Standby Empty State -->
+          <div class="stage-standby" id="studio-empty-state">
+            <h3 class="standby-title">Your Font Canvas</h3>
+            <p class="standby-desc">
+              Upload your completed guideline sheet on the left. The engine will vectorize your strokes and mount your live font onto this testing stage.
+            </p>
+            <button type="button" class="btn btn-outline" id="studio-load-demo-btn">
+              Test with Demo Handwriting
+            </button>
+          </div>
+
+          <!-- Active Font Result View (Revealed when font compiles) -->
+          <div class="stage-active-result" id="step-result" hidden>
+            
+            <div class="result-top-bar">
+              <div>
+                <span class="status-badge">✓ OpenType Font Compiled</span>
+                <h3 class="result-title">Your Handwriting Font is Live</h3>
+              </div>
+              <div class="result-actions">
+                <a class="btn btn-primary" id="download-font" href="#" download>
+                  Download .OTF File
+                </a>
+              </div>
+            </div>
+
+            <!-- Studio Toolbar Controls -->
+            <div class="studio-specimen-toolbar">
+              <div class="tool-left">
+                <div class="tool-slider">
+                  <label for="preview-size">Size: <strong id="studio-size-val">52px</strong></label>
+                  <input type="range" id="preview-size" min="18" max="110" value="52" aria-label="Font size" />
+                </div>
+              </div>
+
+              <div class="tool-right">
+                <button type="button" class="btn btn-outline btn-sm" id="btn-copy-css">
+                  Copy @font-face
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-matrix">
+                  Glyph Matrix
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Editable Studio Canvas Plate -->
+            <div class="studio-canvas-plate" id="studio-canvas-box">
+              <textarea 
+                id="preview-text" 
+                class="studio-textarea" 
+                rows="4" 
+                spellcheck="false" 
+                aria-label="Live Font Tester Canvas"
+                style="font-family: 'Tiro Bangla', serif;"
+              >নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।</textarea>
+            </div>
+
+            <p id="preview-note" class="alert-note" hidden></p>
+
+            <!-- Glyphs Matrix Drawer -->
+            <div class="glyph-matrix-drawer" id="glyph-matrix-drawer" hidden>
+              <div class="drawer-head">
+                <strong class="drawer-title" id="matrix-drawer-title">Extracted Character Set (60 Glyphs)</strong>
+                <span class="drawer-sub">Click any glyph to insert into tester</span>
+              </div>
+              <div class="glyph-grid" id="glyph-grid"></div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
   </main>
+
+  <!-- Site Footer with Privacy Policy & Legal Takedown Contact -->
+  <footer class="site-footer">
+    <div class="wrap footer-wrap">
+      <div class="footer-left">
+        <strong class="footer-title">হাতে খড়ি · Hatekhori</strong>
+        <p class="footer-meta">
+          Preserving individual human handwriting in open digital formats.
+          Zero AI model training. Uploads deleted immediately. Fonts kept 30 days.
+        </p>
+      </div>
+      <div class="footer-nav">
+        <button type="button" class="footer-link-btn" id="footer-privacy-btn">Privacy Policy &amp; Terms</button>
+        <a href="mailto:privacy@hatekhori.org?subject=Hatekhori%20Data%20Takedown%20/%20Inquiry" class="footer-link">Abuse / Takedown Contact</a>
+        <a href="https://github.com/hatekhori" target="_blank" rel="noopener noreferrer" class="footer-link">Open Source</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Accessible Privacy Policy & Legal Terms Modal (Complies with PRD §6b & docs/privacy-policy.md) -->
+  <div id="privacy-modal" class="modal-backdrop" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h2 id="privacy-modal-title" class="modal-title">Your Handwriting, Your Terms</h2>
+          <span class="modal-subtitle">Plain-language data retention &amp; legal privacy commitments</span>
+        </div>
+        <button type="button" class="btn-clear modal-close-btn" id="close-privacy-btn" aria-label="Close privacy policy">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="policy-section">
+          <h4>1. The Zero-AI Promise</h4>
+          <p>We <strong>never</strong> use your handwriting to train any AI or machine learning models — ours or anyone else's. Not by default, not with an opt-out. There is no opt-in path either, because it is simply not on offer.</p>
+        </div>
+        <div class="policy-section">
+          <h4>2. Strict Ephemeral Data Lifecycle</h4>
+          <div class="table-scroll">
+            <table class="policy-table">
+              <thead>
+                <tr>
+                  <th>Data Item</th>
+                  <th>Retention Window</th>
+                  <th>Purge Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Uploaded Photo</strong></td>
+                  <td>Used once during compilation</td>
+                  <td>Deleted immediately upon font creation (max 24h on failure)</td>
+                </tr>
+                <tr>
+                  <td><strong>Generated Font</strong></td>
+                  <td>30 days</td>
+                  <td>Purged permanently from server storage</td>
+                </tr>
+                <tr>
+                  <td><strong>Submission Consent</strong></td>
+                  <td>Single session</td>
+                  <td>Deleted together with underlying upload</td>
+                </tr>
+                <tr>
+                  <td><strong>Rejected Upload Hashes</strong></td>
+                  <td>90-day rolling window</td>
+                  <td>SHA-256 hash only (never the image) to spot abuse &amp; DoS attacks</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="policy-section">
+          <h4>3. No Accounts, No Trackers</h4>
+          <p>You never create an account, enter a password, or submit payment credentials. We don't set tracking cookies or sell your activity.</p>
+        </div>
+        <div class="policy-section">
+          <h4>4. Legal Provenance &amp; Forgery Prohibition</h4>
+          <p>By submitting a guideline sheet, you warrant that you are the author of the handwriting or have explicit legal authority to digitize it. Using Hatekhori to forge signatures or infringe copyrighted typefaces is strictly forbidden.</p>
+        </div>
+        <div class="policy-section">
+          <h4>5. Instant Takedown &amp; Manual Deletion</h4>
+          <p>If you want your generated font removed before 30 days, or need to report unauthorized handwriting, email <a href="mailto:privacy@hatekhori.org">privacy@hatekhori.org</a> with your approximate submission time or script. A human administrator will locate and purge it immediately.</p>
+        </div>
+        <div class="policy-section">
+          <h4>6. Self-Hosted Instances</h4>
+          <p>Hatekhori is open source. This policy describes the hosted instance at hatekhori.org. Self-hosted instances operate under their respective operators' terms.</p>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-primary" id="btn-modal-understand">I Understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guideline Sheet Zoom Lightbox Modal -->
+  <dialog id="sheet-lightbox-modal" class="sheet-modal" aria-labelledby="modal-sheet-title">
+    <div class="sheet-modal-backdrop" id="sheet-modal-backdrop"></div>
+    <div class="sheet-modal-box">
+      <div class="sheet-modal-head">
+        <div>
+          <h3 id="modal-sheet-title" class="sheet-modal-title">Bengali Guideline Sheet (বাংলা)</h3>
+          <p id="modal-sheet-desc" class="sheet-modal-desc">A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.</p>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" id="btn-close-sheet-modal" aria-label="Close sheet preview">✕</button>
+      </div>
+      <div class="sheet-modal-body">
+        <img id="modal-sheet-img" src="guideline-sheet-bengali.png" alt="Guideline sheet full preview" class="sheet-modal-img" />
+      </div>
+      <div class="sheet-modal-foot">
+        <div class="sheet-modal-tips">
+          <span>Print at <strong>100% scale</strong> on standard A4 paper. Do not select "fit to page".</span>
+        </div>
+        <a class="btn btn-primary" id="modal-download-sheet" href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png">
+          Download Sheet (PNG)
+        </a>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Pill -->
+  <div id="toast" class="toast-pill" role="status" aria-live="polite" hidden></div>
+
   <script src="script.js"></script>
 </body>
 </html>

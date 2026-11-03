@@ -4,17 +4,20 @@ import io
 import os
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-os.chdir(tempfile.mkdtemp())  # uploads/ and output/ are cwd-relative; keep them out of the repo
+test_tmp = tempfile.mkdtemp()
+os.environ["HATEKHORI_DATA_DIR"] = test_tmp
+os.chdir(test_tmp)  # uploads/ and output/ are anchored to test_tmp; keep them out of the repo
 
 import numpy as np
 from fastapi.testclient import TestClient
 from fontTools.ttLib import TTFont
 from PIL import Image, ImageDraw, ImageFont
 
-from app.main import app
+from app.main import _GENERATE_SEMAPHORE, _get_guideline_sheet_bytes, app
 from pipeline.segment import char_grid, compute_grid_boxes, crop_glyphs
 from pipeline.sheet import (
     SHEET_HEIGHT,
@@ -23,8 +26,13 @@ from pipeline.sheet import (
     draw_corner_markers,
     draw_orientation_bar,
     generate_guideline_sheet,
+    get_bengali_font,
 )
-from pipeline.validate import _solve_perspective_coeffs, straighten
+from pipeline.cleanup import binarize_sheet, sweep
+from pipeline.compile import build_font
+from pipeline.metrics import glyph_ink_bbox
+from pipeline.validate import BadSheetShape, _solve_perspective_coeffs, find_corner_markers, straighten
+from pipeline.vectorize import trace_glyph
 
 client = TestClient(app)
 
@@ -34,7 +42,7 @@ def filled_sheet(bar: bool = True) -> Image.Image:
     bar=False imitates a sheet printed before the orientation bar existed."""
     img = Image.new("L", (SHEET_WIDTH, SHEET_HEIGHT), 255)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.load_default(size=80)
+    font = get_bengali_font(size=60)
     for box, char in zip(compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT), char_grid()):
         x0, y0, x1, y1 = box["box"]
         draw.text(((x0 + x1) / 2, (y0 + y1) / 2), char, font=font, fill=0, anchor="mm")
@@ -110,7 +118,7 @@ def boxes_in_right_place(photo: Image.Image) -> int:
 def test_rotated_sheets_are_straightened():
     for degrees in (0, 90, 180, 270):
         photo = filled_sheet().rotate(degrees, expand=True)
-        assert boxes_in_right_place(photo) >= 85, f"rotated {degrees} degrees"
+        assert boxes_in_right_place(photo) >= 55, f"rotated {degrees} degrees"
         uid = make_id(encode(photo))
         r = client.post(f"/generate/{uid}")
         assert r.status_code == 200 and r.json()["warnings"] == [], degrees
@@ -157,6 +165,23 @@ def test_messages_name_the_corner_at_fault():
     assert "No corner squares found" in detail(Image.effect_noise((1240, 1754), 80))
 
 
+def test_handwriting_in_corner_box_accepted():
+    sheet = filled_sheet()
+    ImageDraw.Draw(sheet).rectangle([90, 120, 130, 160], fill=0)
+    markers = find_corner_markers(sheet)
+    assert len(markers) == 4 and "top_left" in markers
+
+
+def test_collinear_perspective_raises_bad_sheet():
+    source = [(0, 0), (10, 10), (20, 20), (30, 30)]
+    target = [(0, 0), (100, 0), (100, 100), (0, 100)]
+    try:
+        _solve_perspective_coeffs(source, target)
+        assert False, "collinear points must raise BadSheetShape"
+    except BadSheetShape as e:
+        assert "perspective" in str(e).lower()
+
+
 def test_rejections():
     for name, data in {
         "not an image": b"definitely not an image",
@@ -192,6 +217,201 @@ def test_ids_are_not_wildcards():
 
 def test_oversize_dimensions_rejected():
     assert upload(encode(Image.new("L", (6001, 10)))).status_code == 400
+
+
+def test_proportional_metrics():
+    sheet = filled_sheet()
+    crops = crop_glyphs(sheet)
+    entries = {}
+    for char in ("া", "ক", "ঋ"):
+        g = crops[char]
+        entries[char] = {
+            "path": trace_glyph(g),
+            "crop_height": g.height,
+            "crop_width": g.width,
+            "bbox": glyph_ink_bbox(g),
+        }
+    font_path = Path("proportional_test.otf")
+    build_font(entries, units_per_em=1000, family_name="Hatekhori Bangla").save(str(font_path))
+    tf = TTFont(str(font_path))
+    hmtx = tf["hmtx"]
+    cmap = tf["cmap"].getBestCmap()
+    w_matra = hmtx[cmap[ord("া")]][0]
+    w_ka = hmtx[cmap[ord("ক")]][0]
+    w_ri = hmtx[cmap[ord("ঋ")]][0]
+    assert w_matra < w_ka, f"expected matra ({w_matra}) to be narrower than 'ক' ({w_ka})"
+    font_path.unlink(missing_ok=True)
+
+
+def test_opencv_cleanup_and_ttf_export():
+    orig = np.array(filled_sheet(), dtype=float)
+    h, w = orig.shape
+    shadowed = np.clip(orig * (np.linspace(80, 240, h)[:, None] / 240.0), 0, 255).astype(np.uint8)
+    cleaned = binarize_sheet(Image.fromarray(shadowed, mode="L"))
+    crops = crop_glyphs(cleaned)
+    assert sum(1 for g in crops.values() if glyph_ink_bbox(g) is not None) >= 55
+
+    ttf_path = Path("test_out.ttf")
+    entries = {
+        "ক": {
+            "path": trace_glyph(crops["ক"]),
+            "crop_height": crops["ক"].height,
+            "crop_width": crops["ক"].width,
+            "bbox": glyph_ink_bbox(crops["ক"]),
+        }
+    }
+    build_font(entries, is_ttf=True).save(str(ttf_path))
+    tf = TTFont(str(ttf_path))
+    assert "glyf" in tf, "TrueType font must include glyf table"
+    ttf_path.unlink(missing_ok=True)
+
+
+def test_cleanup_quota_and_lru():
+    sweep_dir = Path(tempfile.mkdtemp())
+    f1 = sweep_dir / "oldest.txt"
+    f2 = sweep_dir / "middle.txt"
+    f3 = sweep_dir / "newest.txt"
+
+    f1.write_bytes(b"a" * 100)
+    f2.write_bytes(b"b" * 100)
+    f3.write_bytes(b"c" * 100)
+
+    now = time.time()
+    os.utime(f1, (now - 200, now - 200))
+    os.utime(f2, (now - 100, now - 100))
+    os.utime(f3, (now, now))
+
+    # Age sweep: max_age 150s removes f1 (200s old)
+    sweep(sweep_dir, max_age_s=150)
+    assert not f1.exists(), "oldest file beyond max_age must be deleted"
+    assert f2.exists() and f3.exists(), "newer files must survive age cutoff"
+
+    # Count quota: max_files=1 evicts f2 (oldest survivor), keeping only f3
+    sweep(sweep_dir, max_age_s=1000, max_files=1)
+    assert not f2.exists(), "oldest surviving file must be evicted by max_files cap"
+    assert f3.exists()
+
+    # Byte quota: write 2 files of 80 bytes; with max_bytes=100, oldest is evicted
+    f4 = sweep_dir / "byte_old.txt"
+    f5 = sweep_dir / "byte_new.txt"
+    f4.write_bytes(b"x" * 80)
+    f5.write_bytes(b"y" * 80)
+    os.utime(f4, (now + 10, now + 10))
+    os.utime(f5, (now + 20, now + 20))
+    sweep(sweep_dir, max_age_s=1000, max_bytes=100)
+    assert not f4.exists(), "oldest file must be evicted to satisfy max_bytes cap"
+    assert f5.exists()
+
+
+def test_guideline_sheet_cached():
+    b1_bn = _get_guideline_sheet_bytes("bn")
+    b2_bn = _get_guideline_sheet_bytes("bn")
+    assert b1_bn.startswith(b"\x89PNG\r\n\x1a\n"), "must be valid PNG bytes"
+    assert b1_bn is b2_bn, "bengali sheet bytes must be cached in memory"
+
+    b1_en = _get_guideline_sheet_bytes("en")
+    b2_en = _get_guideline_sheet_bytes("en")
+    assert b1_en.startswith(b"\x89PNG\r\n\x1a\n"), "must be valid PNG bytes"
+    assert b1_en is b2_en, "english sheet bytes must be cached in memory"
+    assert b1_bn != b1_en, "bengali and english sheets must differ"
+
+
+def test_generate_semaphore():
+    assert _GENERATE_SEMAPHORE.acquire(blocking=False)
+    assert _GENERATE_SEMAPHORE.acquire(blocking=False)
+    assert not _GENERATE_SEMAPHORE.acquire(blocking=False)
+    _GENERATE_SEMAPHORE.release()
+    _GENERATE_SEMAPHORE.release()
+
+
+def test_transparent_png_handled():
+    sheet = filled_sheet().convert("RGBA")
+    data = np.array(sheet)
+    data[:10, :, 3] = 0  # top 10px transparent
+    rgba = Image.fromarray(data, mode="RGBA")
+    markers = find_corner_markers(rgba)
+    assert len(markers) == 4, "transparent margins must not block corner detection"
+
+
+def test_windows_permission_error_in_sweep():
+    sweep_dir = Path(tempfile.mkdtemp())
+    locked = sweep_dir / "locked.txt"
+    unlocked = sweep_dir / "unlocked.txt"
+    locked.write_bytes(b"locked")
+    unlocked.write_bytes(b"unlocked")
+    now = time.time()
+    os.utime(locked, (now - 200, now - 200))
+    os.utime(unlocked, (now - 200, now - 200))
+
+    with open(locked, "rb"):
+        sweep(sweep_dir, max_age_s=100)
+    assert not unlocked.exists(), "unlocked file must be unlinked even if another file is locked"
+
+
+def test_truetype_hmtx_lsb_matches_glyf_xmin():
+    crops = crop_glyphs(filled_sheet())
+    entries = {
+        "ক": {
+            "path": trace_glyph(crops["ক"]),
+            "crop_height": crops["ক"].height,
+            "crop_width": crops["ক"].width,
+            "bbox": glyph_ink_bbox(crops["ক"]),
+        }
+    }
+    ttf_path = Path("lsb_test.ttf")
+    build_font(entries, is_ttf=True).save(str(ttf_path))
+    tf = TTFont(str(ttf_path))
+    hmtx = tf["hmtx"]
+    cmap = tf["cmap"].getBestCmap()
+    glyph_name = cmap[ord("ক")]
+    hmtx_lsb = hmtx[glyph_name][1]
+    glyf_xmin = tf["glyf"][glyph_name].xMin
+    assert abs(hmtx_lsb - glyf_xmin) <= 1, f"hmtx LSB ({hmtx_lsb}) must match glyf xMin ({glyf_xmin})"
+    ttf_path.unlink(missing_ok=True)
+
+
+def test_bengali_primary_alphabet_and_matras():
+    chars = char_grid()
+    assert len(chars) == 60, f"expected 60 Bengali characters, got {len(chars)}"
+
+    # 11 স্বরবর্ণ
+    vowels = ["অ", "আ", "ই", "ঈ", "উ", "ঊ", "ঋ", "এ", "ঐ", "ও", "ঔ"]
+    for v in vowels:
+        assert v in chars, f"missing vowel {v}"
+
+    # 39 ব্যঞ্জনবর্ণ
+    consonants = [
+        "ক", "খ", "গ", "ঘ", "ঙ", "চ", "ছ", "জ", "ঝ", "ঞ",
+        "ট", "ঠ", "ড", "ঢ", "ণ", "ত", "থ", "দ", "ধ", "ন",
+        "প", "ফ", "ব", "ভ", "ম", "য", "র", "ল", "শ", "ষ",
+        "স", "হ", "ড়", "ঢ়", "য়", "ৎ", "ং", "ঃ", "ঁ"
+    ]
+    for c in consonants:
+        assert c in chars, f"missing consonant {c}"
+
+    # 10 কারচিহ্ন
+    matras = ["া", "ি", "ী", "ু", "ূ", "ৃ", "ে", "ৈ", "ো", "ৌ"]
+    for m in matras:
+        assert m in chars, f"missing matra {m}"
+
+    # Verify font compiler produces valid cmap for all 60 characters
+    entries = {
+        c: {
+            "path": None,
+            "crop_height": 140,
+            "crop_width": 175,
+            "bbox": (10, 10, 100, 100),
+        }
+        for c in chars
+    }
+    font_path = Path("bn_full_test.otf")
+    build_font(entries, family_name="Hatekhori Bangla").save(str(font_path))
+    tf = TTFont(str(font_path))
+    cmap = tf["cmap"].getBestCmap()
+    for c in chars:
+        assert ord(c) in cmap, f"character {c} (U+{ord(c):04X}) must be in cmap"
+    assert ord(" ") in cmap, "space must be in cmap"
+    font_path.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

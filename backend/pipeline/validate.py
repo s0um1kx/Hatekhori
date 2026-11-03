@@ -3,7 +3,7 @@
 import numpy as np
 from PIL import Image
 
-from pipeline.metrics import glyph_ink_bbox
+from pipeline.metrics import glyph_has_ink, glyph_ink_bbox
 from pipeline.sheet import SHEET_HEIGHT, SHEET_WIDTH, corner_marker_boxes, orientation_bar_box
 
 MIN_FILLED_BOX_FRACTION = 0.15  # at least 15% of boxes need actual ink
@@ -22,7 +22,7 @@ class BadSheetShape(Exception):
 
 def check_sheet_is_filled(glyphs: dict) -> None:
     """Reject a sheet where most boxes are empty. `glyphs` is crop_glyphs() output."""
-    filled = sum(1 for g in glyphs.values() if glyph_ink_bbox(g) is not None)
+    filled = sum(1 for g in glyphs.values() if glyph_has_ink(g))
     if filled / len(glyphs) < MIN_FILLED_BOX_FRACTION:
         raise BadSheetShape(
             "Most of this sheet's boxes look empty — make sure you've "
@@ -73,11 +73,12 @@ def _blobs(mask: np.ndarray):
             yield x0, y0, x1 + 1, y1 + 1, n
 
 
-def _find_marker(region: Image.Image):
+def _find_marker(region: Image.Image, corner: str = "top_left"):
     """The marker in one corner region, as ("ok", (center_x, center_y, size)) in the region's own
-    pixels, ("missing", None) or ("crowded", None). Marker-shaped = a solid, squarish blob of plausible size. There must be
-    exactly ONE: bars, frame lines and handwriting don't qualify, but textured clutter
-    (grass, brick) is full of such blobs, so several candidates means this isn't a clean sheet."""
+    pixels, ("missing", None) or ("crowded", None). Marker-shaped = a solid, squarish blob of plausible size.
+    If multiple blobs exist, we check if one is closest to the expected outer corner. If another blob is
+    touching or immediately adjacent to that marker, it is 'crowded'. If other blobs are far away
+    (e.g. handwriting inside the guideline boxes), the outer corner marker is accepted."""
     scale = THUMBNAIL_SIZE / max(region.size)
     tw, th = max(1, round(region.width * scale)), max(1, round(region.height * scale))
     mask = _erode(np.array(region.resize((tw, th))) < 128)
@@ -90,7 +91,27 @@ def _find_marker(region: Image.Image):
     ]
     if not candidates:
         return "missing", None
-    return ("ok", candidates[0]) if len(candidates) == 1 else ("crowded", None)
+    if len(candidates) == 1:
+        return "ok", candidates[0]
+
+    # Multiple candidates: determine the corner's origin in region coordinates
+    rw, rh = region.size
+    ox = 0 if "left" in corner else rw
+    oy = 0 if "top" in corner else rh
+
+    candidates.sort(key=lambda c: (c[0] - ox) ** 2 + (c[1] - oy) ** 2)
+    best = candidates[0]
+    best_size = best[2]
+
+    if len(candidates) > 4:
+        return "crowded", None
+
+    for other in candidates[1:]:
+        dist = ((best[0] - other[0]) ** 2 + (best[1] - other[1]) ** 2) ** 0.5
+        if dist < 2.5 * best_size:
+            return "crowded", None
+
+    return "ok", best
 
 
 def _words(names: list) -> str:
@@ -98,10 +119,20 @@ def _words(names: list) -> str:
     return words[0] if len(words) == 1 else ", ".join(words[:-1]) + " and " + words[-1]
 
 
+def to_grayscale_sheet(img: Image.Image) -> Image.Image:
+    """Convert image to grayscale, compositing any alpha transparency onto white paper."""
+    if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
+        bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
+        rgba = img.convert("RGBA")
+        bg.paste(rgba, mask=rgba.split()[3])
+        return bg.convert("L")
+    return img.convert("L")
+
+
 def find_corner_markers(img: Image.Image) -> dict:
     """Locate the 4 corner markers: {corner_name: (x, y)} in the photo's own pixels.
     Raises BadSheetShape, naming the corner(s) at fault, if they can't all be found."""
-    gray = img.convert("L")
+    gray = to_grayscale_sheet(img)
     width, height = gray.size
     sw, sh = int(width * CORNER_SEARCH_FRACTION), int(height * CORNER_SEARCH_FRACTION)
     regions = {
@@ -111,7 +142,7 @@ def find_corner_markers(img: Image.Image) -> dict:
         "bottom_right": (width - sw, height - sh, width, height),
     }
 
-    results = {name: _find_marker(gray.crop(box)) for name, box in regions.items()}
+    results = {name: _find_marker(gray.crop(box), name) for name, box in regions.items()}
     ok = {name: value for name, (status, value) in results.items() if status == "ok"}
     missing = [name for name, (status, _) in results.items() if status == "missing"]
     crowded = [name for name, (status, _) in results.items() if status == "crowded"]
@@ -156,7 +187,13 @@ def _solve_perspective_coeffs(source_points: list, target_points: list) -> list:
 
     a = np.array(matrix, dtype=np.float64)
     b = np.array(source_points, dtype=np.float64).reshape(8)
-    return np.linalg.solve(a, b).tolist()
+    try:
+        return np.linalg.solve(a, b).tolist()
+    except np.linalg.LinAlgError:
+        raise BadSheetShape(
+            "Could not align sheet perspective — make sure the sheet is flat, not folded, "
+            "and all four corner squares are clearly visible."
+        )
 
 
 CORNER_ORDER = ["top_left", "top_right", "bottom_right", "bottom_left"]
@@ -191,7 +228,7 @@ def straighten(img: Image.Image):
     """(upright grayscale sheet at SHEET_WIDTH x SHEET_HEIGHT, warnings). Tries all four rotations and
     keeps the one whose orientation bar lands at the top. A sheet with no bar (an older print, or a
     covered bar) is assumed upright, with a warning, since there is nothing to tell it apart by."""
-    gray = img.convert("L")
+    gray = to_grayscale_sheet(img)
     markers = find_corner_markers(gray)
     sheets = [perspective_correct(gray, markers, turns) for turns in range(4)]
     scores = [_bar_contrast(sheet) for sheet in sheets]

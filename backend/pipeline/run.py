@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from pipeline.cleanup import binarize_sheet
 from pipeline.compile import build_font
 from pipeline.metrics import glyph_ink_bbox
 from pipeline.segment import char_grid, crop_glyphs
@@ -11,22 +12,34 @@ from pipeline.validate import check_sheet_is_filled, straighten
 from pipeline.vectorize import trace_glyph
 
 
-def make_font(photo: Path, out: Path) -> dict:
-    """Write the font to `out`. Raises validate.BadSheetShape if the photo isn't a filled Hatekhori sheet."""
+def make_font(photo: Path, out: Path, script: str = "bn") -> dict:
+    """Write the font to `out` (.otf or .ttf). Raises validate.BadSheetShape if the photo isn't a filled Hatekhori sheet."""
     with Image.open(photo) as img:
         sheet, warnings = straighten(img)
-    sheet = sheet.point(lambda p: 0 if p < 128 else 255)  # pure black ink on white paper
+    sheet = binarize_sheet(sheet)
 
-    glyphs = crop_glyphs(sheet)
+    chars = char_grid(script=script)
+    glyphs = crop_glyphs(sheet, chars=chars)
     check_sheet_is_filled(glyphs)
 
     entries, blank = {}, []
-    for char in char_grid():
+    for char in chars:
         glyph = glyphs[char]
-        if glyph_ink_bbox(glyph) is None:
+        bbox = glyph_ink_bbox(glyph)
+        if bbox is None:
             blank.append(char)  # never written: leave it out instead of shipping an empty glyph
             continue
-        entries[char] = {"path": trace_glyph(glyph), "crop_height": glyph.height, "advance_width": glyph.width}
+        entries[char] = {
+            "path": trace_glyph(glyph),
+            "crop_height": glyph.height,
+            "crop_width": glyph.width,
+            "bbox": bbox,
+        }
 
-    build_font(entries, units_per_em=1000, family_name="Hatekhori Kill-Test").save(str(out))
+    family_name = "Hatekhori Bangla" if script == "bn" else "Hatekhori"
+    is_ttf = out.suffix.lower() == ".ttf"
+    build_font(entries, units_per_em=1000, is_ttf=is_ttf, family_name=family_name).save(str(out))
+    # Also compile the twin TrueType (.ttf) format if primary export is .otf
+    if not is_ttf:
+        build_font(entries, units_per_em=1000, is_ttf=True, family_name=family_name).save(str(out.with_suffix(".ttf")))
     return {"glyph_count": len(entries), "skipped_blank": blank, "warnings": warnings}

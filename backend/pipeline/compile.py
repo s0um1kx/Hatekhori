@@ -1,72 +1,70 @@
-"""Compile step: vectors + metrics -> a real .otf font file.
+"""Compile step: vectors + metrics -> a real OpenType (.otf) or TrueType (.ttf) font file.
 
-Part 7a added draw_potrace_path. This part (7b) adds build_font, which
-assembles all glyphs into an actual font object using fontTools. 7c
-wires it into an endpoint.
+Supports both CFF outlines (.otf) and TrueType quadratic curves (.ttf),
+computing proportional advance widths and optical metrics from ink bounding boxes.
 """
 
 from fontTools.fontBuilder import FontBuilder
+from fontTools.pens.cu2quPen import Cu2QuPen
 from fontTools.pens.t2CharStringPen import T2CharStringPen
+from fontTools.pens.ttGlyphPen import TTGlyphPen
 
 
-def draw_potrace_path(pen, trace_path, crop_height: float, scale: float = 1.0) -> None:
+def draw_potrace_path(
+    pen,
+    trace_path,
+    baseline_y: float,
+    min_x: float = 0.0,
+    lsb: float = 0.0,
+    scale: float = 1.0,
+) -> None:
     """Replay a potrace Path's curves onto a fontTools pen.
 
-    Image coordinates have y increasing downward from the top; font
-    coordinates have y increasing upward from the baseline. Per the
-    baseline convention set in metrics.py (baseline = bottom of the
-    glyph's own crop), flipping is just `crop_height - y`.
-
-    `scale` converts from raw source pixels into font design units —
-    without it, every glyph is drawn at whatever pixel size the source
-    photo happened to be, which has no relationship to unitsPerEm.
+    - Horizontal: (point.x - min_x) * scale + lsb (proportional optical placement).
+    - Vertical: (baseline_y - point.y) * scale (standard font baseline alignment).
     """
 
-    def flip(point):
-        return (point.x * scale, (crop_height - point.y) * scale)
+    def transform_pt(point):
+        x = (point.x - min_x) * scale + lsb
+        y = (baseline_y - point.y) * scale
+        return (x, y)
 
     for curve in trace_path:
-        pen.moveTo(flip(curve.start_point))
+        pen.moveTo(transform_pt(curve.start_point))
         for segment in curve.segments:
             if segment.is_corner:
-                pen.lineTo(flip(segment.c))
-                pen.lineTo(flip(segment.end_point))
+                pen.lineTo(transform_pt(segment.c))
+                pen.lineTo(transform_pt(segment.end_point))
             else:
-                pen.curveTo(flip(segment.c1), flip(segment.c2), flip(segment.end_point))
+                pen.curveTo(
+                    transform_pt(segment.c1),
+                    transform_pt(segment.c2),
+                    transform_pt(segment.end_point),
+                )
         pen.closePath()
 
 
-def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str = "Hatekhori Kill-Test"):
-    """Assemble a real .otf font (CFF outlines) from traced glyphs.
+def build_font(
+    glyph_entries: dict,
+    units_per_em: int = 1000,
+    is_ttf: bool = False,
+    family_name: str = "Hatekhori",
+):
+    """Assemble a real font from traced glyphs with proportional optical metrics.
 
-    `glyph_entries` is {char: {"path": potrace Path or None,
-    "crop_height": int, "advance_width": int}} — a char with path=None
-    (no ink found in its box) still gets a real, empty glyph rather
-    than being skipped, so the font remains structurally valid.
-
-    Glyph names are systematic ("g000", "g001", ...) rather than the
-    character itself, since raw characters aren't guaranteed-safe
-    OpenType glyph names — the character-to-glyph mapping lives in the
-    cmap instead.
-
-    Each glyph's raw pixel coordinates are scaled so its crop height
-    maps to BOX_TO_EM_FRACTION of units_per_em — without this, glyphs
-    end up sized however many pixels the source photo happened to have,
-    unrelated to the font's actual unitsPerEm, which would make letters
-    render tiny with huge padding and make two different uploads
-    produce inconsistently-scaled fonts relative to each other.
+    When `is_ttf=True`, outputs quadratic TrueType outlines (.ttf).
+    When `is_ttf=False` (default), outputs cubic CFF outlines (.otf).
     """
-    # How much of each glyph box's height maps onto the em square. Less
-    # than 1.0 on purpose — a real em includes some built-in padding
-    # above/below the letterforms (ascender/descender room), so mapping
-    # the box height to the FULL em would make glyphs look oversized
-    # and cramped against neighboring text.
-    BOX_TO_EM_FRACTION = 0.9
+    BOX_TO_EM_FRACTION = 0.85
+    ascent = 800
+    descent = -200
 
     glyph_order = [".notdef"]
     cmap = {}
-    charstrings = {}
+    cff_charstrings = {}
+    tt_glyphs = {}
     advance_widths = {}
+    lsb_values = {}
 
     for i, (char, data) in enumerate(glyph_entries.items()):
         glyph_name = f"g{i:03d}"
@@ -74,44 +72,72 @@ def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str =
         cmap[ord(char)] = glyph_name
 
         crop_height = data["crop_height"]
+        crop_width = data.get("crop_width", crop_height)
         scale = (units_per_em * BOX_TO_EM_FRACTION) / crop_height if crop_height else 1.0
-        advance_width = data["advance_width"] * scale
+        baseline_y = crop_height * 0.78
 
-        pen = T2CharStringPen(advance_width, None)
-        if data.get("path") is not None:
-            draw_potrace_path(pen, data["path"], crop_height, scale=scale)
-        charstrings[glyph_name] = pen.getCharString()
+        bbox = data.get("bbox")
+        if bbox is not None:
+            min_x, min_y, max_x, max_y = bbox
+            ink_w = max_x - min_x
+            lsb = max(30.0, min(80.0, ink_w * scale * 0.12))
+            advance_width = round(ink_w * scale + 2 * lsb)
+        else:
+            min_x = 0.0
+            lsb = 40.0
+            advance_width = round(crop_width * scale * 0.5)
+
+        lsb_values[glyph_name] = round(lsb)
+
+        if is_ttf:
+            tt_pen = TTGlyphPen(None)
+            if data.get("path") is not None:
+                cu_pen = Cu2QuPen(tt_pen, max_err=1.0)
+                draw_potrace_path(cu_pen, data["path"], baseline_y=baseline_y, min_x=min_x, lsb=lsb, scale=scale)
+            tt_glyphs[glyph_name] = tt_pen.glyph()
+        else:
+            t2_pen = T2CharStringPen(advance_width, None)
+            if data.get("path") is not None:
+                draw_potrace_path(t2_pen, data["path"], baseline_y=baseline_y, min_x=min_x, lsb=lsb, scale=scale)
+            cff_charstrings[glyph_name] = t2_pen.getCharString()
+
         advance_widths[glyph_name] = advance_width
 
     notdef_width = units_per_em // 2
-    notdef_pen = T2CharStringPen(notdef_width, None)
-    charstrings[".notdef"] = notdef_pen.getCharString()
+    lsb_values[".notdef"] = 0
+    if is_ttf:
+        tt_glyphs[".notdef"] = TTGlyphPen(None).glyph()
+    else:
+        cff_charstrings[".notdef"] = T2CharStringPen(notdef_width, None).getCharString()
     advance_widths[".notdef"] = notdef_width
 
-    # Space can't be handwritten — there's no ink to capture for a
-    # blank character — so it's generated here the same way real fonts
-    # do: an empty outline with a fixed advance width, roughly a third
-    # of an em (a common real-world space width proportion).
     space_width = units_per_em // 3
-    space_pen = T2CharStringPen(space_width, None)
+    lsb_values["space"] = 0
     glyph_order.append("space")
     cmap[ord(" ")] = "space"
-    charstrings["space"] = space_pen.getCharString()
+    if is_ttf:
+        tt_glyphs["space"] = TTGlyphPen(None).glyph()
+    else:
+        cff_charstrings["space"] = T2CharStringPen(space_width, None).getCharString()
     advance_widths["space"] = space_width
 
-    fb = FontBuilder(units_per_em, isTTF=False)
+    fb = FontBuilder(units_per_em, isTTF=is_ttf)
     fb.setupGlyphOrder(glyph_order)
     fb.setupCharacterMap(cmap)
-    fb.setupCFF(
-        family_name.replace(" ", ""),
-        {"FullName": family_name},
-        charstrings,
-        {},
-    )
 
-    metrics = {name: (width, 0) for name, width in advance_widths.items()}
+    if is_ttf:
+        fb.setupGlyf(tt_glyphs)
+    else:
+        fb.setupCFF(
+            family_name.replace(" ", ""),
+            {"FullName": family_name},
+            cff_charstrings,
+            {},
+        )
+
+    metrics = {name: (width, lsb_values.get(name, 0)) for name, width in advance_widths.items()}
     fb.setupHorizontalMetrics(metrics)
-    fb.setupHorizontalHeader(ascent=units_per_em, descent=0)
+    fb.setupHorizontalHeader(ascent=ascent, descent=descent)
 
     ps_name = family_name.replace(" ", "")
     fb.setupNameTable(
@@ -125,9 +151,10 @@ def build_font(glyph_entries: dict, units_per_em: int = 1000, family_name: str =
         }
     )
     fb.setupOS2(
-        sTypoAscender=units_per_em,
-        usWinAscent=units_per_em,
-        usWinDescent=0,
+        sTypoAscender=ascent,
+        sTypoDescender=descent,
+        usWinAscent=ascent,
+        usWinDescent=abs(descent),
     )
     fb.setupPost()
 
