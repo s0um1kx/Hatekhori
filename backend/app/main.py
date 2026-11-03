@@ -155,6 +155,9 @@ async def add_security_headers(request: Request, call_next):
         "script-src 'self'; "
         "frame-ancestors 'none';"
     )
+    path = request.url.path
+    if path.endswith((".css", ".js", ".html")) or path == "/":
+        response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
 
@@ -319,4 +322,8 @@ def download_font(upload_id: UUID, inline: bool = False, format: str = "otf") ->
 # frontend/index.html at "/" and everything else in frontend/ alongside
 # it, so the browser and the API share one origin and never need CORS.
 FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+if not FRONTEND_DIR.exists():
+    FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+if not FRONTEND_DIR.exists():
+    FRONTEND_DIR = Path.cwd() / "frontend"
 app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
