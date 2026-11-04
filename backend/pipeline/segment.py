@@ -38,13 +38,37 @@ BENGALI_MATRAS = [
 
 BENGALI_CHARS = BENGALI_VOWELS + BENGALI_CONSONANTS + BENGALI_MATRAS
 
+HINDI_VOWELS = [
+    "अ", "आ", "इ", "ई", "उ", "ऊ", "ऋ", "ए", "ऐ", "ओ", "औ"
+]
+
+HINDI_CONSONANTS = [
+    "क", "ख", "ग", "घ", "ङ",
+    "च", "छ", "ज", "झ", "ञ",
+    "ट", "ठ", "ड", "ढ", "ण",
+    "त", "थ", "द", "ध", "न",
+    "प", "फ", "ब", "भ", "म",
+    "य", "र", "ल", "व", "श", "ष", "स", "ह",
+    "\u095C", "\u095D",  # ड़, ढ़
+    "ं", "ः", "ँ", "्"
+]
+
+HINDI_MATRAS = [
+    "ा", "ि", "ी", "ु", "ू", "ृ", "े", "ै", "ो", "ौ"
+]
+
+HINDI_CHARS = HINDI_VOWELS + HINDI_CONSONANTS + HINDI_MATRAS
+
 
 def char_grid(script: str = "bn") -> list[str]:
-    """Ordered list of glyphs, reading left-to-right, top-to-bottom. Defaults to Bengali (60 glyphs)."""
-    if script == "en":
+    """Ordered list of glyphs, reading left-to-right, top-to-bottom. Supports 'bn', 'hi', and 'en'."""
+    s = script.lower()
+    if s == "en":
         import string
         symbols = list(".,!?'\"()-:;@#$%&*+=/\\_[]{}<>")
         return list(string.ascii_uppercase + string.ascii_lowercase + string.digits) + symbols
+    if s == "hi":
+        return list(HINDI_CHARS)
     return list(BENGALI_CHARS)
 
 

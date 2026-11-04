@@ -40,16 +40,19 @@ document.addEventListener("DOMContentLoaded", () => {
       modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.'
     },
     hi: {
-      font: "'Kalam', cursive",
-      text: 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें।',
-      glyphs: 'अआइईउऊऋएऐओऔकखगঘङचছजঝञटठडঢणतथदধনपফबভমयरलवशषसह१२३४५६७८९०',
-      sheetUrl: 'guideline-sheet-bengali.png',
-      sheetFile: 'hatekhori-bengali-sheet.png',
-      sheetName: 'Guideline Sheet',
-      sheetTitle: 'Get Guideline Sheet',
-      sheetSubtitle: 'Printable A4 grid with 4 registration fiducials',
-      sheetMeta: ['Indic Grid', 'A4 (100% scale)', '4 Corner Fiducials'],
-      matrixTitle: 'Extracted Character Set'
+      font: "'Tiro Devanagari Hindi', 'Kalam', serif",
+      text: 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५',
+      glyphs: 'अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहड़ढ़ंःँ्ािीुूृेैोौ',
+      sheetUrl: 'guideline-sheet-hindi.png',
+      sheetFile: 'hatekhori-hindi-sheet.png',
+      sheetName: 'Hindi Sheet (हिन्दी)',
+      sheetTitle: 'Get Hindi Guideline Sheet',
+      sheetSubtitle: 'देवनागरी वर्णमाला व मात्राएँ (A4 grid with 4 registration fiducials)',
+      sheetBadge: '10×6 Grid • 60 Cells',
+      sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)'],
+      matrixTitle: 'Extracted Character Set (60 Glyphs)',
+      modalTitle: 'Hindi Guideline Sheet (हिन्दी)',
+      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ) with 4 registration fiducials.'
     }
   };
 
@@ -61,6 +64,21 @@ document.addEventListener("DOMContentLoaded", () => {
     'প', 'ফ', 'ব', 'ভ', 'ম', 'য', 'র', 'ল', 'শ', 'ষ',
     'স', 'হ', 'ড়', 'ঢ়', 'য়', 'ৎ', 'ং', 'ঃ', 'ঁ',
     'া', 'ি', 'ী', 'ু', 'ূ', 'ৃ', 'ে', 'ৈ', 'ো', 'ৌ'
+  ];
+
+  // 60 Hindi Primary Characters: 11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ
+  const HINDI_STUDIO_GLYPHS = [
+    'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ', 'ओ', 'औ',
+    'क', 'ख', 'ग', 'घ', 'ङ',
+    'च', 'छ', 'ज', 'झ', 'ञ',
+    'ट', 'ठ', 'ड', 'ढ', 'ण',
+    'त', 'थ', 'द', 'ध', 'न',
+    'प', 'फ', 'ब', 'भ', 'म',
+    'य', 'र', 'ल', 'व',
+    'श', 'ष', 'स', 'ह',
+    'ड़', 'ढ़',
+    'ं', 'ः', 'ँ', '्',
+    'ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'े', 'ै', 'ो', 'ौ'
   ];
 
   const LATIN_STUDIO_GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?\'"()-:;@#$%&*+=/'.split('');
@@ -214,8 +232,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderStudioGlyphMatrix() {
     if (!glyphGrid) return;
     glyphGrid.innerHTML = '';
-    const chars = currentScript === 'en' ? LATIN_STUDIO_GLYPHS : BENGALI_STUDIO_GLYPHS;
-    const fontFallback = currentScript === 'en' ? 'Kalam, cursive' : "'Tiro Bangla', serif";
+    let chars = BENGALI_STUDIO_GLYPHS;
+    let fontFallback = "'Tiro Bangla', serif";
+    if (currentScript === 'en') {
+      chars = LATIN_STUDIO_GLYPHS;
+      fontFallback = 'Kalam, cursive';
+    } else if (currentScript === 'hi') {
+      chars = HINDI_STUDIO_GLYPHS;
+      fontFallback = "'Tiro Devanagari Hindi', 'Kalam', serif";
+    }
 
     for (const ch of chars) {
       const b = document.createElement('button');
@@ -433,7 +458,9 @@ document.addEventListener("DOMContentLoaded", () => {
       await face.load();
       document.fonts.add(face);
       currentLoadedFontFamily = family;
-      const fallbackFont = currentScript === 'en' ? 'Kalam, cursive' : "'Tiro Bangla', serif";
+      const fallbackFont = currentScript === 'en' 
+        ? 'Kalam, cursive' 
+        : (currentScript === 'hi' ? "'Tiro Devanagari Hindi', 'Kalam', serif" : "'Tiro Bangla', serif");
       if (previewText) previewText.style.fontFamily = `"${family}", ${fallbackFont}`;
       applyStudioSize();
     } catch (err) {
@@ -672,6 +699,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (previewText) {
           if (currentScript === 'en') {
             previewText.value = 'The quick brown fox jumps over the lazy dog. 12345';
+          } else if (currentScript === 'hi') {
+            previewText.value = 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५';
           } else {
             previewText.value = 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।';
           }
@@ -750,6 +779,10 @@ document.addEventListener("DOMContentLoaded", () => {
           previewText.style.fontFamily = "'Kalam', cursive";
           previewText.value = 'The quick brown fox jumps over the lazy dog. 12345';
           currentLoadedFontFamily = 'Kalam';
+        } else if (currentScript === 'hi') {
+          previewText.style.fontFamily = "'Tiro Devanagari Hindi', 'Kalam', serif";
+          previewText.value = 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५';
+          currentLoadedFontFamily = 'Tiro Devanagari Hindi';
         } else {
           previewText.style.fontFamily = "'Tiro Bangla', serif";
           previewText.value = 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।';

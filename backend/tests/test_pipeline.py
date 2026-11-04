@@ -309,11 +309,16 @@ def test_guideline_sheet_cached():
     assert b1_bn.startswith(b"\x89PNG\r\n\x1a\n"), "must be valid PNG bytes"
     assert b1_bn is b2_bn, "bengali sheet bytes must be cached in memory"
 
+    b1_hi = _get_guideline_sheet_bytes("hi")
+    b2_hi = _get_guideline_sheet_bytes("hi")
+    assert b1_hi.startswith(b"\x89PNG\r\n\x1a\n"), "must be valid PNG bytes"
+    assert b1_hi is b2_hi, "hindi sheet bytes must be cached in memory"
+
     b1_en = _get_guideline_sheet_bytes("en")
     b2_en = _get_guideline_sheet_bytes("en")
     assert b1_en.startswith(b"\x89PNG\r\n\x1a\n"), "must be valid PNG bytes"
     assert b1_en is b2_en, "english sheet bytes must be cached in memory"
-    assert b1_bn != b1_en, "bengali and english sheets must differ"
+    assert b1_bn != b1_en and b1_bn != b1_hi and b1_hi != b1_en, "all three sheets must differ"
 
 
 def test_generate_semaphore():
@@ -406,6 +411,50 @@ def test_bengali_primary_alphabet_and_matras():
     }
     font_path = Path("bn_full_test.otf")
     build_font(entries, family_name="Hatekhori Bangla").save(str(font_path))
+    tf = TTFont(str(font_path))
+    cmap = tf["cmap"].getBestCmap()
+    for c in chars:
+        assert ord(c) in cmap, f"character {c} (U+{ord(c):04X}) must be in cmap"
+    assert ord(" ") in cmap, "space must be in cmap"
+    font_path.unlink(missing_ok=True)
+
+
+def test_hindi_primary_alphabet_and_matras():
+    chars = char_grid(script="hi")
+    assert len(chars) == 60, f"expected 60 Hindi characters, got {len(chars)}"
+
+    # 11 स्वर
+    vowels = ["अ", "आ", "इ", "ई", "उ", "ऊ", "ऋ", "ए", "ऐ", "ओ", "औ"]
+    for v in vowels:
+        assert v in chars, f"missing vowel {v}"
+
+    # 39 व्यंजन व योगवाह
+    consonants = [
+        "क", "ख", "ग", "घ", "ङ", "च", "छ", "ज", "झ", "ञ",
+        "ट", "ठ", "ड", "ढ", "ण", "त", "थ", "द", "ध", "न",
+        "प", "फ", "ब", "भ", "म", "य", "र", "ल", "व",
+        "श", "ष", "स", "ह", "\u095C", "\u095D", "ं", "ः", "ँ", "्"
+    ]
+    for c in consonants:
+        assert c in chars, f"missing consonant {c}"
+
+    # 10 मात्राएँ
+    matras = ["ा", "ि", "ी", "ु", "ू", "ृ", "े", "ै", "ो", "ौ"]
+    for m in matras:
+        assert m in chars, f"missing matra {m}"
+
+    # Verify font compiler produces valid cmap for all 60 Devanagari characters
+    entries = {
+        c: {
+            "path": None,
+            "crop_height": 140,
+            "crop_width": 175,
+            "bbox": (10, 10, 100, 100),
+        }
+        for c in chars
+    }
+    font_path = Path("hi_full_test.otf")
+    build_font(entries, family_name="Hatekhori Hindi").save(str(font_path))
     tf = TTFont(str(font_path))
     cmap = tf["cmap"].getBestCmap()
     for c in chars:

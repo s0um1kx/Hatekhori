@@ -92,7 +92,8 @@ def get_client_ip(request: Request) -> str:
 
 
 def _get_guideline_sheet_bytes(script: str = "bn") -> bytes:
-    s = "en" if script.lower() == "en" else "bn"
+    raw = script.lower()
+    s = "en" if raw == "en" else ("hi" if raw == "hi" else "bn")
     if s not in _CACHED_SHEETS:
         img = generate_guideline_sheet(script=s)
         buf = io.BytesIO()
@@ -186,7 +187,9 @@ def privacy_policy() -> dict:
 @app.get("/guideline-sheet.png")
 def guideline_sheet(script: str = "bn") -> Response:
     content = _get_guideline_sheet_bytes(script)
-    filename = f"hatekhori-{'english' if script == 'en' else 'bengali'}-sheet.png"
+    s = script.lower()
+    name = "english" if s == "en" else ("hindi" if s == "hi" else "bengali")
+    filename = f"hatekhori-{name}-sheet.png"
     return Response(
         content=content,
         media_type="image/png",
@@ -205,6 +208,18 @@ def guideline_sheet_bengali() -> Response:
         headers={
             "Cache-Control": "public, max-age=86400",
             "Content-Disposition": 'attachment; filename="hatekhori-bengali-sheet.png"',
+        },
+    )
+
+
+@app.get("/guideline-sheet-hindi.png")
+def guideline_sheet_hindi() -> Response:
+    return Response(
+        content=_get_guideline_sheet_bytes("hi"),
+        media_type="image/png",
+        headers={
+            "Cache-Control": "public, max-age=86400",
+            "Content-Disposition": 'attachment; filename="hatekhori-hindi-sheet.png"',
         },
     )
 

@@ -48,15 +48,24 @@ def draw_orientation_bar(draw: ImageDraw.ImageDraw, width: int, height: int) -> 
     draw.rectangle(orientation_bar_box(width, height), fill=0)
 
 
-def get_bengali_font(size: int = 22) -> ImageFont.ImageFont:
-    """Find a system TrueType font capable of rendering Bengali characters."""
+def get_indic_font(size: int = 22, script: str = "bn") -> ImageFont.ImageFont:
+    """Find a system TrueType font capable of rendering Bengali or Devanagari characters."""
     windir = os.environ.get("WINDIR", "C:\\Windows")
     candidates = [
         os.path.join(windir, "Fonts", "Nirmala.ttc"),
         os.path.join(windir, "Fonts", "NirmalaB.ttc"),
-        "/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf",
-        "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
     ]
+    if script == "hi":
+        candidates.extend([
+            "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+            "/usr/share/fonts/truetype/deva/lohit_hi.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
+        ])
+    else:
+        candidates.extend([
+            "/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
+        ])
     for path in candidates:
         if os.path.exists(path):
             try:
@@ -66,12 +75,16 @@ def get_bengali_font(size: int = 22) -> ImageFont.ImageFont:
     return ImageFont.load_default(size=size)
 
 
+get_bengali_font = get_indic_font
+
+
 def generate_guideline_sheet(script: str = "bn") -> Image.Image:
-    """Render the printable guideline sheet for either Bengali (60 glyphs) or English (90 glyphs)."""
+    """Render the printable guideline sheet for Bengali (60 glyphs), Hindi (60 glyphs), or English (90 glyphs)."""
     img = Image.new("L", (SHEET_WIDTH, SHEET_HEIGHT), color=255)
     draw = ImageDraw.Draw(img)
+    s = script.lower()
 
-    if script == "en":
+    if s == "en":
         font = ImageFont.load_default(size=18)
         boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script="en"))
         for entry in boxes:
@@ -81,8 +94,21 @@ def generate_guideline_sheet(script: str = "bn") -> Image.Image:
             label_bbox = draw.textbbox((0, 0), char, font=font)
             label_height = label_bbox[3] - label_bbox[1]
             draw.text((x0 + 4, y0 - label_height - 3), char, fill=0, font=font)
+    elif s == "hi":
+        font = get_indic_font(size=22, script="hi")
+        from pipeline.segment import HINDI_MATRAS
+        modifiers = set(HINDI_MATRAS + ["ं", "ः", "ँ", "्"])
+        boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script="hi"))
+        for entry in boxes:
+            x0, y0, x1, y1 = entry["box"]
+            char = entry["char"]
+            draw.rectangle([x0, y0, x1, y1], outline=0, width=1)
+            label = f"\u25CC{char}" if char in modifiers else char
+            label_bbox = draw.textbbox((0, 0), label, font=font)
+            label_height = label_bbox[3] - label_bbox[1]
+            draw.text((x0 + 8, y0 - label_height - 3), label, fill=0, font=font)
     else:
-        font = get_bengali_font(size=22)
+        font = get_indic_font(size=22, script="bn")
         boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script="bn"))
         for entry in boxes:
             x0, y0, x1, y1 = entry["box"]

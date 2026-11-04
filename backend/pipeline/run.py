@@ -36,7 +36,13 @@ def make_font(photo: Path, out: Path, script: str = "bn") -> dict:
             "bbox": bbox,
         }
 
-    family_name = "Hatekhori Bangla" if script == "bn" else "Hatekhori"
+    s = script.lower()
+    if s == "bn":
+        family_name = "Hatekhori Bangla"
+    elif s == "hi":
+        family_name = "Hatekhori Hindi"
+    else:
+        family_name = "Hatekhori"
     is_ttf = out.suffix.lower() == ".ttf"
     build_font(entries, units_per_em=1000, is_ttf=is_ttf, family_name=family_name).save(str(out))
     # Also compile the twin TrueType (.ttf) format if primary export is .otf
