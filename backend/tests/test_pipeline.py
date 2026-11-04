@@ -81,6 +81,31 @@ def test_full_flow():
     assert os.listdir("output") == [f"{uid}.otf"], "one file per font, nothing else"
 
 
+def test_download_ttf_on_demand():
+    uid = make_id(encode(filled_sheet()))
+    r = client.post(f"/generate/{uid}")
+    assert r.status_code == 200, r.text
+    assert (Path("output") / f"{uid}.otf").exists(), "only .otf should exist initially"
+
+    ttf_res = client.get(f"/download-font/{uid}?format=ttf")
+    assert ttf_res.status_code == 200, ttf_res.text
+    assert ttf_res.headers["content-disposition"].endswith(f'{uid}.ttf"')
+    tf = TTFont(io.BytesIO(ttf_res.content))
+    assert "glyf" in tf, "TrueType font must include glyf table"
+    assert (Path("output") / f"{uid}.ttf").exists(), "converted .ttf should be cached on disk"
+    (Path("output") / f"{uid}.otf").unlink(missing_ok=True)
+    (Path("output") / f"{uid}.ttf").unlink(missing_ok=True)
+
+
+def test_rgba_upload_flattens_to_rgb():
+    rgba_sheet = filled_sheet().convert("RGBA")
+    data = np.array(rgba_sheet)
+    data[0:20, 0:20, 3] = 0  # alpha margin
+    uid = make_id(encode(Image.fromarray(data, mode="RGBA"), fmt="PNG"))
+    assert client.post(f"/generate/{uid}").status_code == 200
+    (Path("output") / f"{uid}.otf").unlink(missing_ok=True)
+
+
 def test_tall_photo_still_accepted():
     quad = [(30, 190), (1050, 175), (1060, 1720), (20, 1705)]  # 9:16 frame, slightly skewed
     corners = [(0, 0), (SHEET_WIDTH, 0), (SHEET_WIDTH, SHEET_HEIGHT), (0, SHEET_HEIGHT)]
@@ -338,6 +363,20 @@ def test_transparent_png_handled():
     assert len(markers) == 4, "transparent margins must not block corner detection"
 
 
+def test_security_headers_and_robots():
+    r = client.get("/robots.txt")
+    assert r.status_code == 200
+    assert "User-agent: *" in r.text
+    assert "Allow: /" in r.text
+    assert r.headers["content-type"].startswith("text/plain")
+
+    # HSTS & modernized security headers
+    assert r.headers.get("strict-transport-security") == "max-age=63072000; includeSubDomains"
+    assert "x-xss-protection" not in r.headers
+    assert r.headers.get("x-content-type-options") == "nosniff"
+    assert r.headers.get("x-frame-options") == "DENY"
+
+
 def test_windows_permission_error_in_sweep():
     sweep_dir = Path(tempfile.mkdtemp())
     locked = sweep_dir / "locked.txt"
@@ -465,6 +504,6 @@ def test_hindi_primary_alphabet_and_matras():
 
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
-        if name.startswith("test_"):
+        if name.startswith("test_") and callable(fn):
             fn()
             print("PASS", name)

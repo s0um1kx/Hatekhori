@@ -1,6 +1,7 @@
 """Image cleanup (OpenCV adaptive thresholding) and file retention (AGENTS.md §7)."""
 
 import os
+import tempfile
 import time
 from pathlib import Path
 
@@ -11,8 +12,15 @@ from PIL import Image
 BASE_DIR = Path(os.getenv("HATEKHORI_DATA_DIR", Path(__file__).resolve().parent.parent.parent))
 UPLOAD_DIR = BASE_DIR / "uploads"
 OUTPUT_DIR = BASE_DIR / "output"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    BASE_DIR = Path(tempfile.gettempdir()) / "hatekhori"
+    UPLOAD_DIR = BASE_DIR / "uploads"
+    OUTPUT_DIR = BASE_DIR / "output"
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Retention limits (PRD.md §6b)
 UPLOAD_MAX_AGE_S = 3600  # Abandoned uploads purged after 1 hour (successful ones deleted immediately)
@@ -45,11 +53,13 @@ def sweep(
     max_age_s: float,
     max_files: int | None = None,
     max_bytes: int | None = None,
+    protect_recent_s: float = 0,
 ) -> None:
     """Purge files older than max_age_s and enforce LRU quota caps (oldest first)."""
     if not directory.exists():
         return
-    cutoff = time.time() - max_age_s
+    now = time.time()
+    cutoff = now - max_age_s
     surviving = []
     total_bytes = 0
 
@@ -68,15 +78,18 @@ def sweep(
                 surviving.append((st.st_mtime, st.st_size, path))
                 total_bytes += st.st_size
 
-    # LRU quota eviction: oldest first if file count or total directory size exceeds caps
+    # LRU quota eviction: prioritize abandoned files (>30m), but protect in-flight files (<10m)
     if (max_files and len(surviving) > max_files) or (max_bytes and total_bytes > max_bytes):
         surviving.sort(key=lambda x: x[0])  # oldest first
         remaining_count = len(surviving)
-        for _, size, path in surviving:
+        for mtime, size, path in surviving:
             if (not max_files or remaining_count <= max_files) and (
                 not max_bytes or total_bytes <= max_bytes
             ):
                 break
+            # Do not evict in-flight uploads younger than protect_recent_s (10 minutes)
+            if protect_recent_s and (now - mtime) < protect_recent_s:
+                continue
             try:
                 path.unlink(missing_ok=True)
                 total_bytes -= size

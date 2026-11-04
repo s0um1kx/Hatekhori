@@ -4,6 +4,10 @@ Supports both CFF outlines (.otf) and TrueType quadratic curves (.ttf),
 computing proportional advance widths and optical metrics from ink bounding boxes.
 """
 
+import os
+from pathlib import Path
+import time
+
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.cu2quPen import Cu2QuPen
 from fontTools.pens.t2CharStringPen import T2CharStringPen
@@ -159,3 +163,77 @@ def build_font(
     fb.setupPost()
 
     return fb
+
+
+def convert_font(src_path: Path, dst_path: Path) -> Path:
+    """Convert an existing compiled font file to the alternate format (.otf <-> .ttf) on demand."""
+    from fontTools.ttLib import TTFont
+
+    src_is_ttf = src_path.suffix.lower() == ".ttf"
+    dst_is_ttf = dst_path.suffix.lower() == ".ttf"
+    if src_is_ttf == dst_is_ttf:
+        return src_path
+
+    src_font = TTFont(src_path)
+    glyph_order = src_font.getGlyphOrder()
+    cmap = src_font.getBestCmap() or {}
+    hmtx = src_font["hmtx"].metrics
+    units_per_em = src_font["head"].unitsPerEm
+    ascent = src_font["hhea"].ascent
+    descent = src_font["hhea"].descent
+    glyph_set = src_font.getGlyphSet()
+
+    fb = FontBuilder(units_per_em, isTTF=dst_is_ttf)
+    fb.setupGlyphOrder(glyph_order)
+    fb.setupCharacterMap(cmap)
+
+    if dst_is_ttf:
+        tt_glyphs = {}
+        for name in glyph_order:
+            tt_pen = TTGlyphPen(None)
+            cu_pen = Cu2QuPen(tt_pen, max_err=1.0)
+            glyph_set[name].draw(cu_pen)
+            tt_glyphs[name] = tt_pen.glyph()
+        fb.setupGlyf(tt_glyphs)
+    else:
+        cff_charstrings = {}
+        for name in glyph_order:
+            width = hmtx.get(name, (units_per_em // 2, 0))[0]
+            t2_pen = T2CharStringPen(width, None)
+            glyph_set[name].draw(t2_pen)
+            cff_charstrings[name] = t2_pen.getCharString()
+        family_name = "Hatekhori"
+        fb.setupCFF(
+            family_name.replace(" ", ""),
+            {"FullName": family_name},
+            cff_charstrings,
+            {},
+        )
+
+    fb.setupHorizontalMetrics(hmtx)
+    fb.setupHorizontalHeader(ascent=ascent, descent=descent)
+    fb.setupNameTable(
+        {
+            "familyName": "Hatekhori",
+            "styleName": "Regular",
+            "uniqueFontIdentifier": "Hatekhori:1.0",
+            "fullName": "Hatekhori",
+            "psName": "Hatekhori",
+            "version": "Version 1.0",
+        }
+    )
+    fb.setupOS2(
+        sTypoAscender=ascent,
+        sTypoDescender=descent,
+        usWinAscent=ascent,
+        usWinDescent=abs(descent),
+    )
+    fb.setupPost()
+    tmp_path = dst_path.with_name(f"{dst_path.name}.{os.getpid()}_{time.time_ns()}.tmp")
+    try:
+        fb.save(str(tmp_path))
+        tmp_path.replace(dst_path)
+    finally:
+        tmp_path.unlink(missing_ok=True)
+    return dst_path
+

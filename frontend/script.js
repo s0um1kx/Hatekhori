@@ -89,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeSelectedFile = null;
   let currentLoadedFontFamily = null;
   let isSimulating = false;
+  let progressTimer = null;
+  let skippedBlankGlyphs = new Set();
   let toastTimer = null;
 
   // --- 3. DOM Elements ---
@@ -255,8 +257,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'glyph-cell';
+      if (skippedBlankGlyphs.has(ch)) {
+        b.classList.add('glyph-missing');
+        b.title = `${ch} (blank on uploaded sheet)`;
+      } else {
+        b.title = ch;
+      }
       b.textContent = ch;
-      b.title = ch;
       b.style.fontFamily = currentLoadedFontFamily ? `"${currentLoadedFontFamily}", ${fontFallback}` : fontFallback;
       b.addEventListener('click', () => {
         if (previewText) {
@@ -440,6 +447,29 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(previewImg.src);
     }
     const url = URL.createObjectURL(file);
+    previewImg.style.display = 'block';
+    const oldHeicNotice = $('#heic-preview-notice');
+    if (oldHeicNotice) oldHeicNotice.remove();
+
+    previewImg.onerror = () => {
+      // Graceful fallback for HEIC/HEIF files which browsers cannot render natively
+      previewImg.style.display = 'none';
+      let notice = $('#heic-preview-notice');
+      if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'heic-preview-notice';
+        notice.className = 'heic-preview-notice';
+        notice.innerHTML = `
+          <div class="heic-badge">
+            <span class="heic-icon">📷</span>
+            <strong>Apple HEIC Photo Loaded</strong>
+            <span>Browser preview unavailable, but engine will convert and compile directly.</span>
+          </div>
+        `;
+        previewImg.parentNode.insertBefore(notice, previewImg);
+      }
+    };
+
     previewImg.src = url;
     if (fileMetaName) fileMetaName.textContent = file.name;
     if (fileMetaSize) fileMetaSize.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
@@ -458,37 +488,72 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(previewImg.src);
     }
     previewImg.src = '';
+    const oldHeicNotice = $('#heic-preview-notice');
+    if (oldHeicNotice) oldHeicNotice.remove();
+    previewImg.style.display = 'block';
     if (dropzonePreview) dropzonePreview.hidden = true;
     if (dropzoneIdle) dropzoneIdle.hidden = false;
     updateStepperPill(spillUpload);
     updateCompileButtonState();
   }
 
-  function simulateProgress(pstepsList, onStepChange) {
+  function startProgressPulse(pstepsList, onStepChange) {
     let current = 0;
     const steps = [
-      { text: "Binarizing and removing table shadows...", duration: 600 },
-      { text: "Detecting 4 corner fiducial markers...", duration: 800 },
+      { text: "Ingesting scan & scrub EXIF privacy data...", duration: 600 },
+      { text: "Detecting 4 corner registration fiducials...", duration: 800 },
       { text: "Correcting perspective keystone...", duration: 700 },
       { text: "Slicing guideline matrix cells...", duration: 900 },
-      { text: "Tracing Bézier contours...", duration: 1100 },
-      { text: "Compiling OpenType (.otf) font tables...", duration: 800 }
+      { text: "Tracing sub-pixel Bézier contours (Potrace)...", duration: 1100 },
+      { text: "Compiling OpenType (.otf) font tables...", duration: 1200 }
     ];
 
     function runStep() {
-      if (!isSimulating || current >= steps.length) return;
-      onStepChange(current, steps[current].text);
-      pstepsList.forEach((el, idx) => {
-        if (!el) return;
-        el.classList.toggle('active', idx === current);
-        el.classList.toggle('done', idx < current);
-      });
-      setTimeout(() => {
-        current++;
-        runStep();
-      }, steps[current].duration);
+      if (!isSimulating) return;
+      if (current < steps.length - 1) {
+        onStepChange(current, steps[current].text);
+        pstepsList.forEach((el, idx) => {
+          if (!el) return;
+          el.classList.toggle('active', idx === current);
+          el.classList.toggle('done', idx < current);
+        });
+        progressTimer = setTimeout(() => {
+          current++;
+          runStep();
+        }, steps[current].duration);
+      } else {
+        // Hold on final processing step with realistic dynamic pulse until server finishes
+        const activeIdx = steps.length - 1;
+        pstepsList.forEach((el, idx) => {
+          if (!el) return;
+          el.classList.toggle('active', idx === activeIdx);
+          el.classList.toggle('done', idx < activeIdx);
+        });
+        const pulseTexts = [
+          "Compiling OpenType (.otf) font tables...",
+          "Tracing strokes & synthesizing glyph contours...",
+          "Calculating optical metrics & advance widths...",
+          "Assembling font binary (still processing)..."
+        ];
+        let pulseIdx = 0;
+        function pulse() {
+          if (!isSimulating) return;
+          onStepChange(activeIdx, pulseTexts[pulseIdx % pulseTexts.length]);
+          pulseIdx++;
+          progressTimer = setTimeout(pulse, 1200);
+        }
+        pulse();
+      }
     }
     runStep();
+  }
+
+  function stopProgressPulse() {
+    isSimulating = false;
+    if (progressTimer) {
+      clearTimeout(progressTimer);
+      progressTimer = null;
+    }
   }
 
   async function loadStudioFont(id) {
@@ -705,7 +770,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateStepperPill(spillCompile);
 
       isSimulating = true;
-      simulateProgress(psteps, (stepIdx, txt) => {
+      startProgressPulse(psteps, (stepIdx, txt) => {
         if (progressText) progressText.textContent = txt;
       });
 
@@ -736,7 +801,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const genData = await genRes.json();
-        isSimulating = false;
+        stopProgressPulse();
+        skippedBlankGlyphs = new Set(genData.skipped_blank || []);
 
         psteps.forEach((el) => {
           if (el) {
@@ -777,7 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await loadStudioFont(id);
         renderStudioGlyphMatrix();
       } catch (err) {
-        isSimulating = false;
+        stopProgressPulse();
         if (stepProgress) stepProgress.hidden = true;
         if (studioEmptyState) studioEmptyState.hidden = false;
         updateStepperPill(spillUpload);
@@ -829,6 +895,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (studioEmptyState) studioEmptyState.hidden = true;
       if (stepResult) stepResult.hidden = false;
       updateStepperPill(spillExport);
+      skippedBlankGlyphs.clear();
       if (previewText) {
         if (currentScript === 'en') {
           previewText.style.fontFamily = "'Kalam', cursive";

@@ -1,6 +1,7 @@
 """Photo of a filled sheet -> font file. The whole pipeline, in memory; the API and the CLI both call this."""
 
 from pathlib import Path
+import time
 
 from PIL import Image
 
@@ -44,8 +45,10 @@ def make_font(photo: Path, out: Path, script: str = "bn") -> dict:
     else:
         family_name = "Hatekhori"
     is_ttf = out.suffix.lower() == ".ttf"
-    build_font(entries, units_per_em=1000, is_ttf=is_ttf, family_name=family_name).save(str(out))
-    # Also compile the twin TrueType (.ttf) format if primary export is .otf
-    if not is_ttf:
-        build_font(entries, units_per_em=1000, is_ttf=True, family_name=family_name).save(str(out.with_suffix(".ttf")))
+    tmp_out = out.with_name(f"{out.name}.{time.time_ns()}.tmp")
+    try:
+        build_font(entries, units_per_em=1000, is_ttf=is_ttf, family_name=family_name).save(str(tmp_out))
+        tmp_out.replace(out)
+    finally:
+        tmp_out.unlink(missing_ok=True)
     return {"glyph_count": len(entries), "skipped_blank": blank, "warnings": warnings}

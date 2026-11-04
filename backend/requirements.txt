@@ -6,3 +6,4 @@ numpy>=2.0.0
 opencv-python>=4.8.0
 potracer
 fonttools>=4.55.0
+pillow-heif>=0.18.0
