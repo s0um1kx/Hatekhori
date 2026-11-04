@@ -1,0 +1,20 @@
+# Hatekhori (হাতে খড়ি)
+
+> Indic-first handwriting-to-font atelier and vector engine that turns physical penmanship into real, installable OpenType (.otf), TrueType (.ttf), and Web (.woff2) fonts.
+
+## Core Capabilities
+- **Indic Script Precision**: First-class support for Bengali (বাংলা) and Hindi (हिन्दी / Devanagari) complex conjuncts (যুক্তবর্ণ / संयुक्ताक्षर), vowel signs (কার / मात्रा), and shirorekha continuity.
+- **English / Latin Support**: Clean pipeline for Latin A–Z, numerals, and punctuation.
+- **Anti-AI Craft**: 100% genuine vector Béziers derived from human penmanship on paper. Zero algorithmic AI hallucinations or diffusion guessing.
+- **Ownership & Freedom**: 100% free, account-free, zero subscription paywalls (unlike Calligraphr's $8/month subscription).
+- **Privacy First**: EXIF metadata stripped on ingest; zero account tracking.
+
+## Key URLs
+- Homepage & Interactive Specimen: https://hatekhori.com/
+- Web Font Studio: https://hatekhori.com/studio
+- Guideline Sheets:
+  - Bengali A4 Sheet: https://hatekhori.com/guideline-sheet-bengali.png
+  - Hindi A4 Sheet: https://hatekhori.com/guideline-sheet-hindi.png
+  - English A4 Sheet: https://hatekhori.com/guideline-sheet-english.png
+- Comparison with Calligraphr: https://hatekhori.com/compare/calligraphr-alternative
+- Privacy Policy: https://hatekhori.com/privacy-policy.md

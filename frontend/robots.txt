@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+
+# AI Crawlers for GEO / Answer Engine Optimization
+User-agent: GPTBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://hatekhori.com/sitemap.xml
