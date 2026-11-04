@@ -178,7 +178,7 @@
 
   </div>
 
-  <!-- VIEW 2: THE STUDIO WORKBENCH ("The Main Things") -->
+  <!-- VIEW 2: THE STUDIO WORKBENCH (Atelier Two-Stage Flow) -->
   <main id="studio-view" class="view-panel studio-panel" hidden>
     <div class="wrap">
       
@@ -188,11 +188,22 @@
           <button type="button" class="btn btn-outline btn-sm" id="studio-back-btn">
             ← Back to Overview
           </button>
-          <span class="studio-breadcrumb">Font Studio</span>
+          
+          <!-- Segmented Stage Switcher -->
+          <div class="studio-stage-tabs" role="tablist" aria-label="Studio Stages">
+            <button type="button" class="studio-stage-tab active" id="tab-stage-sheet" data-stage="sheet" role="tab" aria-selected="true" aria-controls="stage-sheet-panel">
+              <span class="stage-tab-step">1</span>
+              <span>Guideline Sheet</span>
+            </button>
+            <button type="button" class="studio-stage-tab" id="tab-stage-workbench" data-stage="workbench" role="tab" aria-selected="false" aria-controls="stage-workbench-panel">
+              <span class="stage-tab-step">2</span>
+              <span>Upload &amp; Studio</span>
+            </button>
+          </div>
         </div>
 
         <div class="studio-topbar-right">
-          <div class="studio-step-indicators">
+          <div class="studio-step-indicators" aria-label="Pipeline Steps">
             <span class="step-pill active" id="spill-sheet">1. Sheet</span>
             <span class="step-arrow">→</span>
             <span class="step-pill" id="spill-upload">2. Upload</span>
@@ -204,20 +215,30 @@
         </div>
       </div>
 
-      <!-- Studio Two-Column Workbench Layout -->
-      <div class="studio-workbench">
-        
-        <!-- Left Deck: Ingest & Engine Sidebar -->
-        <aside class="workbench-deck">
+      <!-- STAGE 1: GET GUIDELINE SHEET (PREPARATION MODE) -->
+      <section id="stage-sheet-panel" class="studio-stage-panel active" aria-labelledby="studio-sheet-title">
+        <div class="sheet-atelier-layout">
           
-          <!-- Card 1: Guideline Sheet -->
-          <div class="deck-card">
-            <div class="card-head">
-              <span class="badge-num">01</span>
-              <div>
-                <h3 id="studio-sheet-title">Get Bengali Guideline Sheet</h3>
-                <span class="card-subtitle" id="studio-sheet-sub">বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)</span>
+          <!-- Visual Sheet Preview Plate -->
+          <div class="sheet-atelier-preview-box">
+            <div class="sheet-board-card" id="sheet-preview-showcase" role="button" tabindex="0" aria-label="Click to inspect full guideline sheet">
+              <img id="studio-sheet-img" src="guideline-sheet-bengali.png" alt="Guideline Sheet Preview" class="sheet-board-img" />
+              <div class="sheet-board-overlay">
+                <span class="sheet-board-badge" id="studio-sheet-badge">10×6 Grid • 60 Cells</span>
+                <span class="sheet-board-zoom-hint">Preview Full Size ↗</span>
               </div>
+            </div>
+            <div class="sheet-board-caption">
+              <span>Standard A4 Sheet • 4 Precision Corner Fiducials</span>
+            </div>
+          </div>
+
+          <!-- Configuration & Action Column -->
+          <div class="sheet-atelier-meta-box">
+            <div class="atelier-meta-header">
+              <span class="atelier-badge">STAGE 01 : PREPARE YOUR SHEET</span>
+              <h2 id="studio-sheet-title">Get Bengali Guideline Sheet</h2>
+              <p class="atelier-sub" id="studio-sheet-sub">বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)</p>
             </div>
 
             <!-- Language Sheet Selector -->
@@ -233,187 +254,217 @@
               </button>
             </div>
 
-            <!-- Visual Sheet Showcase -->
-            <div class="sheet-preview-showcase" id="sheet-preview-showcase" role="button" tabindex="0" aria-label="Click to inspect full guideline sheet">
-              <img id="studio-sheet-img" src="guideline-sheet-bengali.png" alt="Guideline Sheet Preview" class="sheet-thumb-img" />
-              <div class="sheet-thumb-overlay">
-                <span class="sheet-thumb-badge" id="studio-sheet-badge">10×6 Grid • 60 Cells</span>
-                <span class="sheet-thumb-zoom-hint">Preview Sheet ↗</span>
-              </div>
-            </div>
-
-            <div class="sheet-meta-row" id="studio-sheet-meta" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;">
+            <div class="sheet-meta-row" id="studio-sheet-meta">
               <span class="sheet-meta-tag">60 Bengali Cells</span>
               <span class="sheet-meta-tag">11 স্বর • 39 ব্যঞ্জন • 10 কার</span>
               <span class="sheet-meta-tag">A4 (100% scale)</span>
             </div>
 
-            <a class="btn btn-primary btn-full" id="studio-download-sheet" href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png">
-              <span id="studio-sheet-btn-label">Download Bengali Sheet (বাংলা)</span>
-            </a>
-
-            <div class="sheet-criteria">
-              <span>• Print at 100% scale (no "fit to page")</span>
-              <span>• Fill each cell with black or blue pen</span>
-              <span>• Keep 4 black corner squares uncreased</span>
+            <!-- Guidelines / Instructions Card -->
+            <div class="sheet-criteria-card">
+              <span class="criteria-card-title">Three Golden Rules for Best Quality:</span>
+              <ul class="criteria-list">
+                <li><strong>100% Scale:</strong> Print on A4 paper with printer scaling at 100% (disable "Fit to Page" or "Shrink to Fit").</li>
+                <li><strong>Dark Pen:</strong> Fill each character cell using a black or dark blue ink pen or fine marker.</li>
+                <li><strong>Corner Markers:</strong> Ensure all 4 black square corner fiducials stay uncreased and visible.</li>
+              </ul>
             </div>
+
+            <div class="atelier-action-row">
+              <a class="btn btn-primary btn-lg" id="studio-download-sheet" href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png">
+                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span id="studio-sheet-btn-label">Download Bengali Sheet (বাংলা)</span>
+              </a>
+              <button type="button" class="btn btn-outline btn-lg" id="btn-proceed-to-upload">
+                Already filled? Proceed to Upload →
+              </button>
+            </div>
+
           </div>
 
-          <!-- Card 2: Photo Dropzone -->
-          <div class="deck-card">
-            <div class="card-head">
-              <span class="badge-num">02</span>
-              <div>
-                <h3>2. Upload Filled Sheet</h3>
-                <span class="card-subtitle">Direct overhead phone photo or scan</span>
-              </div>
-            </div>
+        </div>
+      </section>
 
-            <div class="workbench-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Drop sheet photo here or click to browse">
-              <input type="file" id="file-input" class="visually-hidden" accept="image/jpeg,image/png,image/heic" />
-              
-              <div class="dropzone-idle" id="dropzone-idle">
-                <strong class="dropzone-title">Click to upload sheet photo</strong>
-                <span class="dropzone-sub">or drag &amp; drop file (JPG, PNG)</span>
-              </div>
-
-              <!-- Upload Preview -->
-              <div class="dropzone-preview" id="dropzone-preview" hidden>
-                <img id="preview" alt="Uploaded sheet preview" />
-                <button type="button" class="btn-clear" id="btn-remove-photo" title="Remove photo" aria-label="Remove photo">✕</button>
-              </div>
-            </div>
-
-            <!-- Legal Consent Checkbox (PRD §6a, AGENTS.md §6) -->
-            <div class="consent-block">
-              <label class="consent-label" for="consent-checkbox">
-                <input type="checkbox" id="consent-checkbox" />
-                <span class="consent-text">
-                  I certify this is my own handwriting and I have the right to submit it.
-                </span>
-              </label>
-              <button type="button" class="btn-subtle-link" id="link-read-terms">Read data &amp; privacy terms</button>
-            </div>
-
-            <!-- Compile Action Button -->
-            <button class="btn btn-primary btn-full" id="generate-button" style="margin-top:10px;" disabled>
-              Compile OpenType Font
-            </button>
-          </div>
-
-          <!-- Card 3: Live Vector Engine Progress Monitor -->
-          <div class="deck-card monitor-card" id="step-progress" hidden>
-            <div class="monitor-header">
-              <span class="monitor-spinner" aria-hidden="true"></span>
-              <strong id="progress-text">Tracing handwriting...</strong>
-            </div>
-
-            <div class="monitor-steps">
-              <div class="monitor-step done" id="pstep-1">
-                <span class="step-check">✓</span>
-                <span>Ingest scan &amp; scrub EXIF privacy data</span>
-              </div>
-              <div class="monitor-step active" id="pstep-2">
-                <span class="step-check">●</span>
-                <span>Detect 4 corner registration fiducials</span>
-              </div>
-              <div class="monitor-step" id="pstep-3">
-                <span class="step-check">○</span>
-                <span>Homography 4-point projective deskew</span>
-              </div>
-              <div class="monitor-step" id="pstep-4">
-                <span class="step-check">○</span>
-                <span>Segment character cells (90 glyphs)</span>
-              </div>
-              <div class="monitor-step" id="pstep-5">
-                <span class="step-check">○</span>
-                <span>Trace sub-pixel Bézier contours (Potrace)</span>
-              </div>
-              <div class="monitor-step" id="pstep-6">
-                <span class="step-check">○</span>
-                <span>Synthesize OpenType tables (glyf, cmap, head)</span>
-              </div>
-            </div>
-          </div>
-
-        </aside>
-
-        <!-- Right Deck: Typography Laboratory & Live Font Tester -->
-        <section class="workbench-stage">
+      <!-- STAGE 2: WORKBENCH (UPLOAD & ENGINE CREATION MODE) -->
+      <section id="stage-workbench-panel" class="studio-stage-panel" hidden aria-label="Font Creation Workbench">
+        <div class="studio-workbench">
           
-          <!-- Standby Empty State -->
-          <div class="stage-standby" id="studio-empty-state">
-            <h3 class="standby-title">Your Font Canvas</h3>
-            <p class="standby-desc">
-              Upload your completed guideline sheet on the left. The engine will vectorize your strokes and mount your live font onto this testing stage.
-            </p>
-            <button type="button" class="btn btn-outline" id="studio-load-demo-btn">
-              Test with Demo Handwriting
-            </button>
-          </div>
-
-          <!-- Active Font Result View (Revealed when font compiles) -->
-          <div class="stage-active-result" id="step-result" hidden>
+          <!-- Left Deck: Upload & Progress Deck -->
+          <aside class="workbench-deck">
             
-            <div class="result-top-bar">
-              <div>
-                <span class="status-badge">✓ OpenType Font Compiled</span>
-                <h3 class="result-title">Your Handwriting Font is Live</h3>
-              </div>
-              <div class="result-actions">
-                <a class="btn btn-primary" id="download-font" href="#" download>
-                  Download .OTF File
-                </a>
-              </div>
-            </div>
-
-            <!-- Studio Toolbar Controls -->
-            <div class="studio-specimen-toolbar">
-              <div class="tool-left">
-                <div class="tool-slider">
-                  <label for="preview-size">Size: <strong id="studio-size-val">52px</strong></label>
-                  <input type="range" id="preview-size" min="18" max="110" value="52" aria-label="Font size" />
+            <!-- Upload Card -->
+            <div class="deck-card upload-workbench-card">
+              <div class="card-head">
+                <span class="badge-num">02</span>
+                <div>
+                  <h3>Upload Filled Sheet</h3>
+                  <span class="card-subtitle">Direct overhead phone photo or scan</span>
                 </div>
               </div>
 
-              <div class="tool-right">
-                <button type="button" class="btn btn-outline btn-sm" id="btn-copy-css">
-                  Copy @font-face
-                </button>
-                <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-matrix">
-                  Glyph Matrix
+              <div class="workbench-dropzone" id="dropzone" tabindex="0" role="button" aria-label="Drop sheet photo here or click to browse">
+                <input type="file" id="file-input" class="visually-hidden" accept="image/jpeg,image/png,image/heic" />
+                
+                <div class="dropzone-idle" id="dropzone-idle">
+                  <strong class="dropzone-title">Click to upload sheet photo</strong>
+                  <span class="dropzone-sub">or drag &amp; drop file (JPG, PNG)</span>
+                </div>
+
+                <!-- Upload Preview -->
+                <div class="dropzone-preview" id="dropzone-preview" hidden>
+                  <img id="preview" alt="Uploaded sheet preview" />
+                  <div class="dropzone-meta">
+                    <span id="file-meta-name" class="dropzone-filename">sheet.jpg</span>
+                    <span id="file-meta-size" class="dropzone-filesize">2.4 MB</span>
+                  </div>
+                  <div class="dropzone-preview-actions">
+                    <button type="button" class="btn btn-outline btn-xs" id="btn-change-photo">Change</button>
+                    <button type="button" class="btn-clear" id="btn-remove-photo" title="Remove photo" aria-label="Remove photo">✕</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Legal Consent Checkbox (PRD §6a, AGENTS.md §6) -->
+              <div class="consent-block">
+                <label class="consent-label" for="consent-checkbox">
+                  <input type="checkbox" id="consent-checkbox" name="consent-checkbox" />
+                  <span class="consent-text">
+                    I certify this is my own handwriting and I have the right to submit it.
+                  </span>
+                </label>
+                <button type="button" class="btn-subtle-link" id="link-read-terms">Read data &amp; privacy terms</button>
+              </div>
+
+              <!-- Compile Action Button -->
+              <button class="btn btn-primary btn-full" id="btn-compile" disabled>
+                Compile OpenType Font
+              </button>
+              <p id="compile-consent-warning" class="consent-hint" hidden>
+                Confirm handwriting ownership above to compile.
+              </p>
+
+              <!-- Link back to Stage 1 -->
+              <div class="workbench-sub-link-wrap">
+                <button type="button" class="btn-subtle-link" id="btn-back-to-sheet">
+                  ← Need a guideline sheet first?
                 </button>
               </div>
             </div>
 
-            <!-- Live Editable Studio Canvas Plate -->
-            <div class="studio-canvas-plate" id="studio-canvas-box">
-              <textarea 
-                id="preview-text" 
-                class="studio-textarea" 
-                rows="4" 
-                spellcheck="false" 
-                aria-label="Live Font Tester Canvas"
-                style="font-family: 'Tiro Bangla', serif;"
-              >নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।</textarea>
-            </div>
-
-            <p id="preview-note" class="alert-note" hidden></p>
-
-            <!-- Glyphs Matrix Drawer -->
-            <div class="glyph-matrix-drawer" id="glyph-matrix-drawer" hidden>
-              <div class="drawer-head">
-                <strong class="drawer-title" id="matrix-drawer-title">Extracted Character Set (60 Glyphs)</strong>
-                <span class="drawer-sub">Click any glyph to insert into tester</span>
+            <!-- Card 3: Live Vector Engine Progress Monitor -->
+            <div class="deck-card monitor-card" id="step-progress" hidden>
+              <div class="monitor-header">
+                <span class="monitor-spinner" aria-hidden="true"></span>
+                <strong id="progress-text">Tracing handwriting...</strong>
               </div>
-              <div class="glyph-grid" id="glyph-grid"></div>
+
+              <div class="monitor-steps">
+                <div class="monitor-step done" id="pstep-1">
+                  <span class="step-check">✓</span>
+                  <span>Ingest scan &amp; scrub EXIF privacy data</span>
+                </div>
+                <div class="monitor-step active" id="pstep-2">
+                  <span class="step-check">●</span>
+                  <span>Detect 4 corner registration fiducials</span>
+                </div>
+                <div class="monitor-step" id="pstep-3">
+                  <span class="step-check">○</span>
+                  <span>Homography 4-point projective deskew</span>
+                </div>
+                <div class="monitor-step" id="pstep-4">
+                  <span class="step-check">○</span>
+                  <span>Segment character cells</span>
+                </div>
+                <div class="monitor-step" id="pstep-5">
+                  <span class="step-check">○</span>
+                  <span>Trace sub-pixel Bézier contours (Potrace)</span>
+                </div>
+                <div class="monitor-step" id="pstep-6">
+                  <span class="step-check">○</span>
+                  <span>Synthesize OpenType tables (glyf, cmap, head)</span>
+                </div>
+              </div>
             </div>
 
-          </div>
+          </aside>
 
-        </section>
+          <!-- Right Deck: Typography Laboratory & Live Font Tester -->
+          <section class="workbench-stage">
+            
+            <!-- Standby Empty State -->
+            <div class="stage-standby" id="studio-empty-state">
+              <h3 class="standby-title">Your Font Canvas</h3>
+              <p class="standby-desc">
+                Upload your completed guideline sheet on the left. The engine will vectorize your strokes and mount your live font onto this testing stage.
+              </p>
+              <button type="button" class="btn btn-outline" id="studio-load-demo-btn">
+                Test with Demo Handwriting
+              </button>
+            </div>
 
-      </div>
+            <!-- Active Font Result View (Revealed when font compiles) -->
+            <div class="stage-active-result" id="step-result" hidden>
+              
+              <div class="result-top-bar">
+                <div>
+                  <span class="status-badge">✓ OpenType Font Compiled</span>
+                  <h3 class="result-title">Your Handwriting Font is Live</h3>
+                </div>
+                <div class="result-actions">
+                  <a class="btn btn-primary" id="download-font" href="#" download>
+                    Download .OTF File
+                  </a>
+                </div>
+              </div>
+
+              <!-- Studio Toolbar Controls -->
+              <div class="studio-specimen-toolbar">
+                <div class="tool-left">
+                  <div class="tool-slider">
+                    <label for="preview-size">Size: <strong id="studio-size-val">52px</strong></label>
+                    <input type="range" id="preview-size" min="18" max="110" value="52" aria-label="Font size" />
+                  </div>
+                </div>
+
+                <div class="tool-right">
+                  <button type="button" class="btn btn-outline btn-sm" id="btn-copy-css">
+                    Copy @font-face
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-matrix">
+                    Glyph Matrix
+                  </button>
+                </div>
+              </div>
+
+              <!-- Live Editable Studio Canvas Plate -->
+              <div class="studio-canvas-plate" id="studio-canvas-box">
+                <textarea 
+                  id="preview-text" 
+                  class="studio-textarea" 
+                  rows="4" 
+                  spellcheck="false" 
+                  aria-label="Live Font Tester Canvas"
+                  style="font-family: 'Tiro Bangla', serif;"
+                >নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।</textarea>
+              </div>
+
+              <p id="preview-note" class="alert-note" hidden></p>
+
+              <!-- Glyphs Matrix Drawer -->
+              <div class="glyph-matrix-drawer" id="glyph-matrix-drawer" hidden>
+                <div class="drawer-head">
+                  <strong class="drawer-title" id="matrix-drawer-title">Extracted Character Set (60 Glyphs)</strong>
+                  <span class="drawer-sub">Click any glyph to insert into tester</span>
+                </div>
+                <div class="glyph-grid" id="glyph-grid"></div>
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+      </section>
 
     </div>
   </main>

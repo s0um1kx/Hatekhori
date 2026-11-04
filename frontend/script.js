@@ -131,9 +131,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const spillUpload = $('#spill-upload');
   const spillCompile = $('#spill-compile');
   const spillExport = $('#spill-export');
-  const legalCheckbox = $('#legal-consent');
-  const btnCompile = $('#btn-compile');
+  const legalCheckbox = $('#consent-checkbox') || $('#legal-consent');
+  const btnCompile = $('#btn-compile') || $('#generate-button');
   const compileConsentWarning = $('#compile-consent-warning');
+  const linkReadTerms = $('#link-read-terms');
+
+  // Stage Switching Elements (Atelier Two-Stage Flow)
+  const tabStageSheet = $('#tab-stage-sheet');
+  const tabStageWorkbench = $('#tab-stage-workbench');
+  const stageSheetPanel = $('#stage-sheet-panel');
+  const stageWorkbenchPanel = $('#stage-workbench-panel');
+  const btnProceedToUpload = $('#btn-proceed-to-upload');
+  const btnBackToSheet = $('#btn-back-to-sheet');
 
   // Studio Progress & Results
   const stepProgress = $('#step-progress');
@@ -332,6 +341,32 @@ document.addEventListener("DOMContentLoaded", () => {
     renderStudioGlyphMatrix();
   }
 
+  function setStudioStage(stage) {
+    const isSheet = stage === 'sheet';
+    if (stageSheetPanel) {
+      stageSheetPanel.classList.toggle('active', isSheet);
+      stageSheetPanel.hidden = !isSheet;
+    }
+    if (stageWorkbenchPanel) {
+      stageWorkbenchPanel.classList.toggle('active', !isSheet);
+      stageWorkbenchPanel.hidden = isSheet;
+    }
+    if (tabStageSheet) {
+      tabStageSheet.classList.toggle('active', isSheet);
+      tabStageSheet.setAttribute('aria-selected', isSheet ? 'true' : 'false');
+    }
+    if (tabStageWorkbench) {
+      tabStageWorkbench.classList.toggle('active', !isSheet);
+      tabStageWorkbench.setAttribute('aria-selected', !isSheet ? 'true' : 'false');
+    }
+    if (isSheet) {
+      updateStepperPill(spillSheet);
+    } else {
+      const hasPhoto = Boolean(activeSelectedFile || (fileInput && fileInput.files && fileInput.files.length > 0));
+      updateStepperPill(hasPhoto ? spillCompile : spillUpload);
+    }
+  }
+
   function switchView(viewName, pushHistory = true) {
     if (viewName === 'studio') {
       if (landingView) {
@@ -343,7 +378,11 @@ document.addEventListener("DOMContentLoaded", () => {
         studioView.hidden = false;
       }
       if (navLaunchStudio) {
-        navLaunchStudio.innerHTML = `<span>Atelier Studio</span>`;
+        navLaunchStudio.hidden = true;
+      }
+      // If no photo has been selected and font isn't compiled, default to stage 1 (sheet)
+      if (!activeSelectedFile && (!stepResult || stepResult.hidden)) {
+        setStudioStage('sheet');
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (pushHistory && window.location.hash !== '#studio') {
@@ -359,6 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
         landingView.hidden = false;
       }
       if (navLaunchStudio) {
+        navLaunchStudio.hidden = false;
         navLaunchStudio.innerHTML = `
           <span>Launch Studio</span>
           <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -401,11 +441,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const url = URL.createObjectURL(file);
     previewImg.src = url;
-    fileMetaName.textContent = file.name;
-    fileMetaSize.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+    if (fileMetaName) fileMetaName.textContent = file.name;
+    if (fileMetaSize) fileMetaSize.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
 
-    dropzoneIdle.hidden = true;
-    dropzonePreview.hidden = false;
+    if (dropzoneIdle) dropzoneIdle.hidden = true;
+    if (dropzonePreview) dropzonePreview.hidden = false;
+    setStudioStage('workbench');
     updateStepperPill(spillCompile);
     updateCompileButtonState();
   }
@@ -417,8 +458,8 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(previewImg.src);
     }
     previewImg.src = '';
-    dropzonePreview.hidden = true;
-    dropzoneIdle.hidden = false;
+    if (dropzonePreview) dropzonePreview.hidden = true;
+    if (dropzoneIdle) dropzoneIdle.hidden = false;
     updateStepperPill(spillUpload);
     updateCompileButtonState();
   }
@@ -556,10 +597,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // View navigation
+  const brandLink = $('.brand');
+  if (brandLink) {
+    brandLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchView('landing');
+    });
+  }
   if (navLaunchStudio) navLaunchStudio.addEventListener('click', () => switchView('studio'));
   if (heroEnterStudio) heroEnterStudio.addEventListener('click', () => switchView('studio'));
   if (ctaEnterStudio) ctaEnterStudio.addEventListener('click', () => switchView('studio'));
   if (studioBackBtn) studioBackBtn.addEventListener('click', () => switchView('landing'));
+
+  // Stage tabs & navigation controls
+  if (tabStageSheet) tabStageSheet.addEventListener('click', () => setStudioStage('sheet'));
+  if (tabStageWorkbench) tabStageWorkbench.addEventListener('click', () => setStudioStage('workbench'));
+  if (btnProceedToUpload) btnProceedToUpload.addEventListener('click', () => setStudioStage('workbench'));
+  if (btnBackToSheet) btnBackToSheet.addEventListener('click', () => setStudioStage('sheet'));
+  if (linkReadTerms) linkReadTerms.addEventListener('click', openPrivacyModal);
 
   window.addEventListener('popstate', () => {
     switchView(window.location.hash === '#studio' ? 'studio' : 'landing', false);
@@ -796,6 +851,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- 6. Initial Page Boot ---
   setScript('bn');
+  setStudioStage('sheet');
   updateCompileButtonState();
   if (window.location.hash === '#studio') {
     switchView('studio', false);
