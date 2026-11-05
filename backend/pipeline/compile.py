@@ -175,6 +175,8 @@ def convert_font(src_path: Path, dst_path: Path) -> Path:
         return src_path
 
     src_font = TTFont(src_path)
+    family_name = (src_font["name"].getDebugName(1) if "name" in src_font else None) or "Hatekhori"
+    ps_name = family_name.replace(" ", "")
     glyph_order = src_font.getGlyphOrder()
     cmap = src_font.getBestCmap() or {}
     hmtx = src_font["hmtx"].metrics
@@ -202,9 +204,8 @@ def convert_font(src_path: Path, dst_path: Path) -> Path:
             t2_pen = T2CharStringPen(width, None)
             glyph_set[name].draw(t2_pen)
             cff_charstrings[name] = t2_pen.getCharString()
-        family_name = "Hatekhori"
         fb.setupCFF(
-            family_name.replace(" ", ""),
+            ps_name,
             {"FullName": family_name},
             cff_charstrings,
             {},
@@ -214,11 +215,11 @@ def convert_font(src_path: Path, dst_path: Path) -> Path:
     fb.setupHorizontalHeader(ascent=ascent, descent=descent)
     fb.setupNameTable(
         {
-            "familyName": "Hatekhori",
+            "familyName": family_name,
             "styleName": "Regular",
-            "uniqueFontIdentifier": "Hatekhori:1.0",
-            "fullName": "Hatekhori",
-            "psName": "Hatekhori",
+            "uniqueFontIdentifier": f"{ps_name}:1.0",
+            "fullName": family_name,
+            "psName": ps_name,
             "version": "Version 1.0",
         }
     )

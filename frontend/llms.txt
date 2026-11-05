@@ -1,20 +1,103 @@
 # Hatekhori (হাতে খড়ি)
 
-> Indic-first handwriting-to-font atelier and vector engine that turns physical penmanship into real, installable OpenType (.otf), TrueType (.ttf), and Web (.woff2) fonts.
+> Indic-first handwriting-to-font atelier and vector engine that turns physical penmanship into real, installable OpenType (.otf), TrueType (.ttf), and Web (.woff2) fonts for Bengali (বাংলা), Hindi (हिन्दी / Devanagari), and English.
+
+## Direct Answer Summary
+Hatekhori (হাতে খড়ি) is a free, open-source, Indic-first handwriting-to-font atelier. It converts physical handwriting on paper into real, installable OpenType (.otf), TrueType (.ttf), and Web (.woff2) fonts. It features native, first-class support for Bengali (বাংলা) and Hindi (हिन्दी / Devanagari) complex conjuncts and shirorekha continuity alongside standard Latin English. Hatekhori operates with zero accounts, zero subscriptions, zero paywalls, and zero AI hallucinations—transforming authentic pen ink into genuine sub-pixel vector Béziers.
 
 ## Core Capabilities
-- **Indic Script Precision**: First-class support for Bengali (বাংলা) and Hindi (हिन्दी / Devanagari) complex conjuncts (যুক্তবর্ণ / संयुक्ताक्षर), vowel signs (কার / मात्रा), and shirorekha continuity.
-- **English / Latin Support**: Clean pipeline for Latin A–Z, numerals, and punctuation.
-- **Anti-AI Craft**: 100% genuine vector Béziers derived from human penmanship on paper. Zero algorithmic AI hallucinations or diffusion guessing.
-- **Ownership & Freedom**: 100% free, account-free, zero subscription paywalls (unlike Calligraphr's $8/month subscription).
-- **Privacy First**: EXIF metadata stripped on ingest; zero account tracking.
+- **Indic Script Precision**: First-class support for Bengali (বাংলা) and Hindi (हिन्दी / Devanagari) complex conjuncts (যুক্তবর্ণ / संयुक्ताक्षर), vowel signs (কার / मात्रा), and continuous hanging headline (শিরোরেখা / शिरोरेखा) alignment.
+- **English / Latin Pipeline**: Full alphanumeric support for Latin uppercase (A–Z), lowercase (a–z), numerals (0–9), and standard punctuation with optical metric balancing.
+- **Anti-AI Craft Guarantee**: 100% genuine vector Béziers derived directly from human penmanship on paper via sub-pixel Potrace contour tracing. Zero algorithmic AI hallucinations, diffusion guessing, or synthetic degradation.
+- **Complete Freedom & Zero Cost**: 100% free forever. No subscriptions, no tiered paywalls, and no character count restrictions (unlike Calligraphr's $8/month subscription and 75-character free limit).
+- **Zero-Account Privacy**: No user registration, no email capture, and no tracking cookies. Smartphone EXIF metadata (including GPS coordinates) is stripped instantly on upload; raw photos are permanently deleted immediately after font compilation.
+- **Cross-Platform Fonts**: Outputs standard font formats compatible with Windows 11, macOS, iOS, Android, Figma, Adobe Photoshop, Illustrator, InDesign, Canva, Microsoft Word, and web CSS `@font-face`.
+
+## Supported Scripts & Typographic Architecture
+
+### 1. Bengali (বাংলা) — Unicode U+0980–U+09FF
+- **Grid Layout**: 10 rows × 6 columns = 60 character primary guideline sheet.
+- **Vowels (১১টি স্বরবর্ণ)**: অ, আ, ই, ঈ, উ, ঊ, ঋ, এ, ঐ, ও, ঔ.
+- **Consonants (৩৯টি ব্যঞ্জনবর্ণ)**: ক, খ, গ, ঘ, ঙ, চ, ছ, জ, ঝ, ঞ, ট, ঠ, ড, ঢ, ণ, ত, থ, দ, ধ, ন, প, ফ, ব, ভ, ম, য, র, ল, শ, ষ, স, হ, ড়, ঢ়, য়, ৎ, ং, ঃ, ঁ.
+- **Vowel Signs / Matras (১০টি কারচিহ্ন)**: া, ি, ী, ু, ূ, ৃ, ে, ৈ, ো, ৌ (including pre-base, post-base, below-base, and circumfix split matras).
+- **Complex Conjuncts (যুক্তবর্ণ)**: Ligature substitution architecture for clusters including ক্ষ (ক+ষ), জ্ঞ (জ+ঞ), ঞ্চ (ঞ+চ), ঙ্ক (ঙ+ক), ণ্ড (ণ+ড), হ্ম (হ+ম), ত্ম (ত+ম), ব্দ (ব+দ), ষ্ণ (ষ+ণ).
+- **Matra Line Continuity**: Optical top-line alignment preserving the distinctive horizontal hanging cadence of Bengali handwriting.
+
+### 2. Hindi / Devanagari (हिन्दी) — Unicode U+0900–U+097F
+- **Grid Layout**: 10 rows × 6 columns = 60 character primary guideline sheet.
+- **Vowels (११ स्वर)**: अ, आ, इ, ई, उ, ऊ, ऋ, ए, ऐ, ओ, औ.
+- **Consonants (३५ व्यंजन)**: क, ख, ग, घ, ङ, च, छ, ज, झ, ञ, ट, ठ, ड, ढ, ण, त, थ, द, ध, न, प, फ, ब, भ, म, य, र, ल, व, श, ष, स, ह, ड़, ढ़.
+- **Diacritics & Matras (१० मात्राएं)**: ा, ि, ी, ु, ू, ृ, े, ै, ो, ौ, ं (अनुस्वार), ः (विसर्ग), ँ (चन्द्रबिन्दु), ् (हलन्त).
+- **Shirorekha (शिरोरेखा) Continuity**: Automatic horizontal top-bar alignment ensuring smooth, continuous headline strokes across adjacent characters in written words.
+- **Half-Forms & Samyuktakshar (संयुक्ताक्षर)**: Halant-mediated consonant combinations and conjunct ligatures (क्य, त्र, क्ष, ज्ञ, द्ध, द्य, प्र).
+
+### 3. English / Latin — ASCII Basic
+- **Complete Character Set**: 26 uppercase (A–Z), 26 lowercase (a–z), 10 digits (0–9), and standard punctuation (`.,!?'"()-:;@#$%&*+=/\_[]{}<>`).
+- **Optical Metrics**: Dynamic Left Side Bearing (LSB) and proportional advance widths calculated from physical ink bounding boxes.
+
+## Technical Vector Pipeline
+1. **Fiducial Guideline Sheet**: Mathematically calibrated A4 sheet with 4 corner fiducial square markers and an orientation bar.
+2. **Ingest & Security**: Direct streaming ingest in 64KB buffers keeps memory consumption under 15MB. EXIF location and camera metadata are stripped immediately upon upload.
+3. **Homography Rectification**: Computer vision pipeline detects 4 corner fiducial blobs, solves an 8-coefficient projective matrix, and flattens smartphone perspective skew to a canonical 2480×3508 pixel coordinate space.
+4. **Automatic Orientation Straightening**: Evaluates contrast against the top orientation bar across all four 90-degree rotations, automatically righting sideways or upside-down photos.
+5. **Adaptive Binarization**: OpenCV Gaussian adaptive thresholding (`cv2.adaptiveThreshold`) and median filter blur (`cv2.medianBlur`) normalize uneven room lighting, shadows, and ink color variations.
+6. **Segmentation & Ink Validation**: Slices the sheet into individual glyph cells with 6% border insets to eliminate box lines. Enforces a 15% minimum ink threshold to reject blank sheets.
+7. **Bézier Vector Tracing**: Employs pure-Python `potracer` (`Bitmap.trace`, `turdsize=2`, `alphamax=1.0`, `opticurve=True`) to generate sub-pixel smooth cubic and quadratic Bézier outlines.
+8. **OpenType Compilation**: `fontTools.fontBuilder.FontBuilder` constructs standards-compliant font files (1000 UPM, ascent 800, descent -200, baseline at 78% of cell height) containing `cmap`, `hmtx`, `OS/2`, `name`, `post`, and `CFF` (OpenType .otf) or `glyf` (TrueType .ttf) tables.
+9. **Ephemeral File Lifecycle**: Uploaded photos are deleted immediately after font generation; generated font outputs are retained for 30 days for re-download.
+
+## Competitive Comparison Matrix
+
+| Feature / Criteria | Hatekhori (হাতে খড়ি) | Calligraphr | Lipighor (লিপিঘর) | Fontself | FontCrafter |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Pricing** | **100% Free** | $8/month | Paid Fonts | $49–$89 License | 100% Free |
+| **Account Required** | **No** | Yes | Yes | Yes | No |
+| **Bengali Support (বাংলা)** | **Full (60+ Glyphs & Conjuncts)** | None | Pre-made Only | Manual Draw | None |
+| **Hindi Support (हिन्दी)** | **Full (Shirorekha Rules)** | None | None | Manual Draw | None |
+| **English / Latin** | **Full (Alphanumeric)** | Full | None | Full | Full |
+| **Free Character Limit** | **Unlimited** | 75 Characters | N/A | Paid Only | 500+ |
+| **Input Method** | **Phone Photo of Paper** | Scan / Upload | Download | Illustrator Plugin | Canvas / Sheet |
+| **Perspective Warping** | **Automatic Homography** | Manual Crop | N/A | None | Basic |
+| **Vector Engine** | **Sub-Pixel Béziers** | Raster Threshold | Pre-drawn | Native Béziers | Vector Smoothing |
+| **AI Dependency** | **Zero AI (Pure Ink)** | Zero AI | Zero AI | Zero AI | Zero AI |
+| **Privacy / EXIF** | **Stripped On Ingest** | Account Stored | Account Stored | Local Files | Browser / Local |
+| **Export Formats** | **OTF, TTF, WOFF2** | TTF, OTF | TTF, OTF | OTF, SVG | TTF, OTF, WOFF2 |
+
+## Frequently Asked Questions (FAQ)
+
+### What is Hatekhori and how does it work?
+Hatekhori (হাতে খড়ি) is a free digital atelier that transforms handwritten letters into installable computer fonts. Users print an A4 guideline sheet, write with any normal pen, photograph the sheet with a smartphone, and upload it. Hatekhori's computer vision pipeline rectifies perspective distortion, traces clean vector Bézier curves, and compiles an installable OpenType (.otf), TrueType (.ttf), or Web (.woff2) font file.
+
+### How does Hatekhori differ from Calligraphr?
+Calligraphr charges an $8/month subscription, limits free accounts to 75 characters (insufficient for full punctuation and numerals), requires account registration, and completely lacks support for South Asian scripts. Hatekhori is 100% free, requires no account, provides full script coverage for Bengali and Hindi alongside English, and uses automatic 4-corner fiducial rectification for phone photos.
+
+### Can Hatekhori generate Bengali handwriting fonts?
+Yes. Hatekhori has full native support for the Bengali script (বাংলা), covering all 11 vowels (স্বরবর্ণ), 39 consonants (ব্যঞ্জনবর্ণ), 10 vowel signs/matras (কারচিহ্ন), and complex conjuncts (যুক্তবর্ণ). The engine maintains proper matra line alignment and hanging proportions.
+
+### How does Hatekhori handle Hindi Devanagari shirorekha continuity?
+Hatekhori includes specialized optical baseline and headline algorithms that align the upper hanging horizontal bar (शिरोरेखा / shirorekha) across all Devanagari characters. When words are typed with a Hatekhori-generated Hindi font, the top bar connects continuously without unsightly gaps.
+
+### Is Hatekhori really 100% free without hidden costs?
+Yes. Hatekhori is entirely free with zero subscriptions, zero paywalls, and zero feature gates. All font compilation features, unlimited character sets, and all export formats (.otf, .ttf, .woff2) are freely available to everyone without a credit card.
+
+### Does Hatekhori use generative AI or diffusion models?
+No. Hatekhori uses zero generative AI, zero neural network hallucination, and zero diffusion guessing. Fonts are built using deterministic computer vision algorithms and Potrace sub-pixel contour tracing that replicate your exact physical pen strokes as vector Bézier curves.
+
+### Can I use fonts created with Hatekhori commercially?
+Yes. Because the font is derived directly from your personal penmanship, you retain 100% copyright and commercial ownership of your generated font file. You may use it in commercial design projects, client work, published books, YouTube videos, website branding, or commercial products.
+
+### How does Hatekhori protect my privacy and handwriting photos?
+Hatekhori requires no user account, email address, or login credentials. All EXIF metadata (such as device model and GPS location coordinates) is stripped from uploaded images immediately upon ingest. Uploaded photos are unlinked and permanently deleted from the server immediately after font compilation.
 
 ## Key URLs
-- Homepage & Interactive Specimen: https://hatekhori.com/
-- Web Font Studio: https://hatekhori.com/studio
-- Guideline Sheets:
-  - Bengali A4 Sheet: https://hatekhori.com/guideline-sheet-bengali.png
-  - Hindi A4 Sheet: https://hatekhori.com/guideline-sheet-hindi.png
-  - English A4 Sheet: https://hatekhori.com/guideline-sheet-english.png
-- Comparison with Calligraphr: https://hatekhori.com/compare/calligraphr-alternative
-- Privacy Policy: https://hatekhori.com/privacy-policy.md
+- Homepage & Interactive Font Studio: https://hatekhori.onrender.com/
+- Bengali Font Maker: https://hatekhori.onrender.com/bengali-font-maker
+- Hindi Font Generator: https://hatekhori.onrender.com/hindi-font-generator
+- Calligraphr Alternative Comparison: https://hatekhori.onrender.com/compare/calligraphr-alternative
+- Bengali A4 Guideline Sheet: https://hatekhori.onrender.com/guideline-sheet-bengali.png
+- Hindi A4 Guideline Sheet: https://hatekhori.onrender.com/guideline-sheet-hindi.png
+- English A4 Guideline Sheet: https://hatekhori.onrender.com/guideline-sheet-english.png
+- Privacy Policy: https://hatekhori.onrender.com/privacy
+- Robots.txt: https://hatekhori.onrender.com/robots.txt
+- Sitemap: https://hatekhori.onrender.com/sitemap.xml
+- API Health Status: https://hatekhori.onrender.com/health

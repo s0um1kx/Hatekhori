@@ -1,19 +1,126 @@
+# Hatekhori (হাতে খড়ি) — robots.txt
+# Canonical Domain: https://hatekhori.onrender.com/
+# Sitemap: https://hatekhori.onrender.com/sitemap.xml
+# Documentation for AI Agents: https://hatekhori.onrender.com/llms.txt
+
+# ==============================================================================
+# 1. Default Rules for All Web Crawlers
+# ==============================================================================
 User-agent: *
 Allow: /
 Disallow: /uploads/
 Disallow: /output/
+Disallow: /download-font/
 
-# AI Crawlers for GEO / Answer Engine Optimization
+# ==============================================================================
+# 2. Major Search Engine Crawlers
+# ==============================================================================
+User-agent: Googlebot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Slurp
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Baiduspider
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: YandexBot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+# ==============================================================================
+# 3. AI Search, Answer Engine & GEO Crawlers (Grounding & Retrieval)
+# ==============================================================================
 User-agent: GPTBot
 Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
 
-Sitemap: https://hatekhori.com/sitemap.xml
+User-agent: Applebot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: CCBot
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+User-agent: Cohere-ai
+Allow: /
+Disallow: /uploads/
+Disallow: /output/
+Disallow: /download-font/
+
+# ==============================================================================
+# 4. Sitemap Declaration
+# ==============================================================================
+Sitemap: https://hatekhori.onrender.com/sitemap.xml

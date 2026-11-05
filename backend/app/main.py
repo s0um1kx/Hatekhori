@@ -186,7 +186,7 @@ async def add_security_headers(request: Request, call_next):
         "frame-ancestors 'none';"
     )
     path = request.url.path
-    if path.endswith((".css", ".js", ".html")) or path == "/":
+    if path.endswith((".css", ".js", ".html")) or path in ["/", "/compare/calligraphr-alternative", "/bengali-font-maker", "/hindi-font-generator"]:
         response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
@@ -194,21 +194,10 @@ async def add_security_headers(request: Request, call_next):
 @app.get("/robots.txt", response_class=PlainTextResponse)
 def robots() -> str:
     """SEO crawler permissions: allow public crawling and AI search grounding."""
-    return (
-        "User-agent: *\n"
-        "Allow: /\n"
-        "Disallow: /uploads/\n"
-        "Disallow: /output/\n\n"
-        "User-agent: GPTBot\n"
-        "Allow: /\n\n"
-        "User-agent: PerplexityBot\n"
-        "Allow: /\n\n"
-        "User-agent: ClaudeBot\n"
-        "Allow: /\n\n"
-        "User-agent: Google-Extended\n"
-        "Allow: /\n\n"
-        "Sitemap: https://hatekhori.onrender.com/sitemap.xml\n"
-    )
+    robots_path = FRONTEND_DIR / "robots.txt"
+    if robots_path.exists():
+        return robots_path.read_text(encoding="utf-8")
+    return "User-agent: *\nAllow: /\nDisallow: /uploads/\nDisallow: /output/\nSitemap: https://hatekhori.onrender.com/sitemap.xml\n"
 
 
 @app.get("/google283830a3fd2e4cf3.html", response_class=PlainTextResponse)
@@ -229,6 +218,22 @@ def sitemap() -> Response:
 @app.get("/compare/calligraphr-alternative", response_class=FileResponse)
 def compare_calligraphr() -> FileResponse:
     target = FRONTEND_DIR / "compare" / "calligraphr-alternative.html"
+    if target.exists():
+        return FileResponse(target, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Page not found")
+
+
+@app.get("/bengali-font-maker", response_class=FileResponse)
+def bengali_font_maker() -> FileResponse:
+    target = FRONTEND_DIR / "bengali-font-maker.html"
+    if target.exists():
+        return FileResponse(target, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Page not found")
+
+
+@app.get("/hindi-font-generator", response_class=FileResponse)
+def hindi_font_generator() -> FileResponse:
+    target = FRONTEND_DIR / "hindi-font-generator.html"
     if target.exists():
         return FileResponse(target, media_type="text/html")
     raise HTTPException(status_code=404, detail="Page not found")

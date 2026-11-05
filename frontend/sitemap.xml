@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core Conversion & Interactive Studio -->
   <url>
     <loc>https://hatekhori.onrender.com/</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
+  <!-- Competitor Comparison & Switcher Funnel -->
   <url>
     <loc>https://hatekhori.onrender.com/compare/calligraphr-alternative</loc>
     <lastmod>2026-11-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
+
+  <!-- Indic Script Cluster Landing Pages -->
+  <url>
+    <loc>https://hatekhori.onrender.com/bengali-font-maker</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://hatekhori.onrender.com/hindi-font-generator</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- High-Value Printable Guideline Sheet Assets -->
   <url>
     <loc>https://hatekhori.onrender.com/guideline-sheet-bengali.png</loc>
     <lastmod>2026-11-05</lastmod>
