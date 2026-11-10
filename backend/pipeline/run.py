@@ -47,7 +47,7 @@ def make_font(photo: Path, out: Path, script: str = "bn") -> dict:
     elif s == "hi":
         family_name = "Hatekhori Hindi"
     else:
-        family_name = "Hatekhori"
+        family_name = "Hatekhori Latin"
     is_ttf = out.suffix.lower() == ".ttf"
     tmp_out = out.with_name(f"{out.name}.{time.time_ns()}.tmp")
     try:
