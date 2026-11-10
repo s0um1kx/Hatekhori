@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Card 1 Showcase & Modal Elements
   const sheetScriptPills = $$('.sheet-script-picker .sheet-script-pill');
+  const workbenchScriptPills = $$('.workbench-script-picker .workbench-script-pill');
   const sheetPreviewShowcase = $('#sheet-preview-showcase');
   const studioSheetImg = $('#studio-sheet-img');
   const studioSheetBadge = $('#studio-sheet-badge');
@@ -288,6 +289,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Sync Card 1 language selector pills
     sheetScriptPills.forEach((pill) => {
+      const active = pill.dataset.script === key;
+      pill.classList.toggle('active', active);
+      pill.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+
+    // Sync Card 2 workbench language selector pills
+    workbenchScriptPills.forEach((pill) => {
       const active = pill.dataset.script === key;
       pill.classList.toggle('active', active);
       pill.setAttribute('aria-selected', active ? 'true' : 'false');
@@ -595,6 +603,11 @@ document.addEventListener("DOMContentLoaded", () => {
     pill.addEventListener('click', () => setScript(pill.dataset.script));
   });
 
+  // Card 2 Workbench Language selection pills
+  workbenchScriptPills.forEach((pill) => {
+    pill.addEventListener('click', () => setScript(pill.dataset.script));
+  });
+
   // Guideline Sheet Lightbox Modal Controls
   function openSheetModal() {
     if (!sheetLightboxModal) return;
@@ -802,6 +815,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const genData = await genRes.json();
         stopProgressPulse();
+        if (genData.script && genData.script !== currentScript) {
+          setScript(genData.script);
+        }
         skippedBlankGlyphs = new Set(genData.skipped_blank || []);
 
         psteps.forEach((el) => {

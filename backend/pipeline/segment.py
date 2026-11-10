@@ -72,6 +72,40 @@ def char_grid(script: str = "bn") -> list[str]:
     return list(BENGALI_CHARS)
 
 
+def detect_sheet_script(sheet_img: Image.Image, requested_script: str = "bn") -> tuple[str, list[str]]:
+    """Detect whether sheet grid is 9 columns (English 90 cells) or 6 columns (Bengali/Hindi 60 cells)."""
+    import numpy as np
+
+    arr = np.array(sheet_img.convert("L")) < 128
+    w, h = sheet_img.size
+    b6 = compute_grid_boxes(w, h, chars=char_grid("bn"))[:6]
+    b9 = compute_grid_boxes(w, h, chars=char_grid("en"))[:9]
+
+    def score_grid(boxes):
+        scores = []
+        for b in boxes:
+            x0, y0, x1, y1 = [int(v) for v in b["box"]]
+            l = np.mean(arr[y0:y1, max(0, x0 - 3):min(w, x0 + 4)])
+            r = np.mean(arr[y0:y1, max(0, x1 - 3):min(w, x1 + 4)])
+            scores.append((l + r) / 2)
+        return float(np.mean(scores))
+
+    score6 = score_grid(b6)
+    score9 = score_grid(b9)
+    req = requested_script.lower()
+    warnings = []
+    actual_script = req
+
+    if score9 > score6 * 1.3 and req in ("bn", "hi"):
+        actual_script = "en"
+        warnings.append("Detected an English (90-cell) guideline sheet. Automatically processed as English.")
+    elif score6 > score9 * 1.3 and req == "en":
+        actual_script = "bn"
+        warnings.append("Detected a 60-cell guideline sheet. Automatically processed as Bengali/Hindi.")
+
+    return actual_script, warnings
+
+
 def compute_grid_boxes(img_width: int, img_height: int, chars: list[str] | None = None) -> list[dict]:
     """Return [{char, box: (x0, y0, x1, y1)}, ...] in pixel coordinates.
 

@@ -502,6 +502,29 @@ def test_hindi_primary_alphabet_and_matras():
     font_path.unlink(missing_ok=True)
 
 
+def test_detect_sheet_script_mismatch():
+    from pipeline.segment import detect_sheet_script
+    bn_sheet = binarize_sheet(generate_guideline_sheet("bn"))
+    en_sheet = binarize_sheet(generate_guideline_sheet("en"))
+
+    # When user selects English for a Bengali sheet, it auto-corrects to bn
+    detected, warnings = detect_sheet_script(bn_sheet, requested_script="en")
+    assert detected == "bn"
+    assert len(warnings) == 1
+
+    # When user selects Bengali for an English sheet, it auto-corrects to en
+    detected, warnings = detect_sheet_script(en_sheet, requested_script="bn")
+    assert detected == "en"
+    assert len(warnings) == 1
+
+    # Correct selections have 0 warnings
+    detected_bn, w_bn = detect_sheet_script(bn_sheet, requested_script="bn")
+    assert detected_bn == "bn" and len(w_bn) == 0
+
+    detected_en, w_en = detect_sheet_script(en_sheet, requested_script="en")
+    assert detected_en == "en" and len(w_en) == 0
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

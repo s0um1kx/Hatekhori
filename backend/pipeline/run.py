@@ -8,7 +8,7 @@ from PIL import Image
 from pipeline.cleanup import binarize_sheet
 from pipeline.compile import build_font
 from pipeline.metrics import glyph_ink_bbox
-from pipeline.segment import char_grid, crop_glyphs
+from pipeline.segment import char_grid, crop_glyphs, detect_sheet_script
 from pipeline.validate import check_sheet_is_filled, straighten
 from pipeline.vectorize import trace_glyph
 
@@ -18,6 +18,10 @@ def make_font(photo: Path, out: Path, script: str = "bn") -> dict:
     with Image.open(photo) as img:
         sheet, warnings = straighten(img)
     sheet = binarize_sheet(sheet)
+
+    # Auto-detect 9-col (English) vs 6-col (Bengali/Hindi) to prevent misaligned slicing
+    script, detect_warnings = detect_sheet_script(sheet, requested_script=script)
+    warnings.extend(detect_warnings)
 
     chars = char_grid(script=script)
     glyphs = crop_glyphs(sheet, chars=chars)
@@ -51,4 +55,4 @@ def make_font(photo: Path, out: Path, script: str = "bn") -> dict:
         tmp_out.replace(out)
     finally:
         tmp_out.unlink(missing_ok=True)
-    return {"glyph_count": len(entries), "skipped_blank": blank, "warnings": warnings}
+    return {"glyph_count": len(entries), "skipped_blank": blank, "warnings": warnings, "script": script}

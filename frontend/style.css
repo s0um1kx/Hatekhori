@@ -963,6 +963,60 @@ a:hover {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
+/* Card 2: Workbench Language Picker */
+.workbench-script-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.workbench-script-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.workbench-script-picker {
+  display: flex;
+  background: var(--subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.workbench-script-pill {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background 150ms cubic-bezier(0.23, 1, 0.32, 1), color 150ms ease-out;
+}
+
+.workbench-script-pill:hover {
+  color: var(--fg);
+}
+
+.workbench-script-pill.active {
+  background: var(--fg);
+  color: var(--bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
 /* Card 1: Visual Sheet Preview Showcase */
 .sheet-preview-showcase {
   position: relative;
