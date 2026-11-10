@@ -13,7 +13,7 @@ import anyio
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Request
-from fastapi.responses import FileResponse, PlainTextResponse, Response
+from fastapi.responses import FileResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from pipeline.cleanup import (
@@ -375,6 +375,12 @@ def download_font(upload_id: UUID, inline: bool = False, format: str = "otf") ->
 
     media_type = f"font/{ext}"
     return FileResponse(font_path, media_type=media_type, headers=headers)
+
+
+@app.get("/font/{upload_id}")
+def view_font(upload_id: UUID) -> RedirectResponse:
+    """Friendly shareable URL that redirects to the studio viewer."""
+    return RedirectResponse(url=f"/#font={upload_id}")
 
 
 # Mounted LAST and deliberately at "/" — Starlette matches the explicit

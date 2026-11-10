@@ -1367,6 +1367,13 @@ a:hover {
   flex-wrap: wrap;
 }
 
+.result-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .status-badge {
   font-family: var(--font-mono);
   font-size: 11px;

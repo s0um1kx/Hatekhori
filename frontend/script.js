@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const studioEmptyState = $('#studio-empty-state');
   const stepResult = $('#step-result');
   const downloadFontLink = $('#download-font');
+  const btnShareFont = $('#btn-share-font');
   const previewText = $('#preview-text');
   const previewSize = $('#preview-size');
   const studioSizeVal = $('#studio-size-val');
@@ -694,9 +695,46 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnBackToSheet) btnBackToSheet.addEventListener('click', () => setStudioStage('sheet'));
   if (linkReadTerms) linkReadTerms.addEventListener('click', openPrivacyModal);
 
-  window.addEventListener('popstate', () => {
-    switchView(window.location.hash === '#studio' ? 'studio' : 'landing', false);
-  });
+  async function loadSharedFont(id) {
+    if (!id) return;
+    activeUploadId = id;
+    switchView('studio', false);
+    setStudioStage('workbench');
+    if (studioEmptyState) studioEmptyState.hidden = true;
+    if (stepResult) stepResult.hidden = false;
+    updateStepperPill(spillExport);
+    if (downloadFontLink) downloadFontLink.href = `/download-font/${id}`;
+    if (previewText) {
+      if (currentScript === 'en') {
+        previewText.value = 'The quick brown fox jumps over the lazy dog. 12345';
+      } else if (currentScript === 'hi') {
+        previewText.value = 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५';
+      } else {
+        previewText.value = 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।';
+      }
+    }
+    await loadStudioFont(id);
+    renderStudioGlyphMatrix();
+    showToast('Loaded shared handwriting font in live tester.');
+  }
+
+  function handleRoute() {
+    const hash = window.location.hash || '';
+    if (hash.startsWith('#font=')) {
+      const fontId = hash.slice(6).trim();
+      if (fontId) {
+        loadSharedFont(fontId);
+        return;
+      }
+    }
+    if (hash === '#studio') {
+      switchView('studio', false);
+    } else {
+      switchView('landing', false);
+    }
+  }
+
+  window.addEventListener('popstate', handleRoute);
 
   document.addEventListener('keydown', (e) => {
     if (!e || !e.target) return;
@@ -858,6 +896,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         await loadStudioFont(id);
         renderStudioGlyphMatrix();
+        if (window.history && window.history.replaceState) {
+          history.replaceState({ view: 'studio', font: id }, '', `#font=${id}`);
+        }
       } catch (err) {
         stopProgressPulse();
         if (stepProgress) stepProgress.hidden = true;
@@ -873,24 +914,47 @@ document.addEventListener("DOMContentLoaded", () => {
   // Specimen preview font size
   if (previewSize) previewSize.addEventListener('input', applyStudioSize);
 
-  // CSS snippet copy button
+  // CSS snippet copy button (absolute origin URL for external code & coding agents)
   if (btnCopyCss) {
     btnCopyCss.addEventListener('click', () => {
-      const family = currentLoadedFontFamily || 'Hatekhori-Personal';
-      const url = activeUploadId ? `/download-font/${activeUploadId}` : 'hatekhori-font.otf';
-      const fallback = currentScript === 'en' ? 'Kalam, cursive' : "'Tiro Bangla', serif";
-      const snippet = `@font-face {\n  font-family: "${family}";\n  src: url("${url}") format("opentype");\n}\n\nbody {\n  font-family: "${family}", ${fallback};\n}`;
+      const family = currentLoadedFontFamily || (activeUploadId ? `Hatekhori-${activeUploadId}` : 'Hatekhori-Personal');
+      const fontUrl = activeUploadId
+        ? `${window.location.origin}/download-font/${activeUploadId}`
+        : `${window.location.origin}/download-font/demo`;
+      const fallback = currentScript === 'en'
+        ? 'Kalam, cursive'
+        : (currentScript === 'hi' ? "'Tiro Devanagari Hindi', 'Kalam', serif" : "'Tiro Bangla', serif");
+      const snippet = `/* Hatekhori Handwriting Web Font */\n@font-face {\n  font-family: "${family}";\n  src: url("${fontUrl}") format("opentype");\n  font-display: swap;\n}\n\nbody, .handwriting {\n  font-family: "${family}", ${fallback};\n}`;
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(snippet).then(() => {
           showToast('@font-face CSS snippet copied!');
         }).catch(() => {
-          showToast('Snippet ready in console.');
-          console.log(snippet);
+          prompt('Copy @font-face CSS snippet:', snippet);
         });
       } else {
-        showToast('Snippet ready in console.');
-        console.log(snippet);
+        prompt('Copy @font-face CSS snippet:', snippet);
+      }
+    });
+  }
+
+  // Share link copy button
+  if (btnShareFont) {
+    btnShareFont.addEventListener('click', async () => {
+      if (!activeUploadId) {
+        showToast('Compile a font first to generate a share link.');
+        return;
+      }
+      const shareUrl = `${window.location.origin}${window.location.pathname}#font=${activeUploadId}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          showToast('Shareable font link copied to clipboard!');
+        } catch {
+          prompt('Copy share link:', shareUrl);
+        }
+      } else {
+        prompt('Copy share link:', shareUrl);
       }
     });
   }
@@ -936,7 +1000,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setScript('bn');
   setStudioStage('sheet');
   updateCompileButtonState();
-  if (window.location.hash === '#studio') {
-    switchView('studio', false);
-  }
+  handleRoute();
 });
