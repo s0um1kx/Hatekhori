@@ -41,12 +41,6 @@ from pipeline.validate import BadSheetShape
 
 SWEEP_INTERVAL_SECONDS = 3600  # once an hour
 
-FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
-if not FRONTEND_DIR.exists():
-    FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
-if not FRONTEND_DIR.exists():
-    FRONTEND_DIR = Path.cwd() / "frontend"
-
 
 class AsyncBoundedSemaphore(asyncio.Semaphore):
     """Async semaphore that supports async with/wait_for and sync acquire(blocking=False) for tests."""
@@ -186,65 +180,15 @@ async def add_security_headers(request: Request, call_next):
         "frame-ancestors 'none';"
     )
     path = request.url.path
-    if path.endswith((".css", ".js", ".html")) or path in ["/", "/compare/calligraphr-alternative", "/bengali-font-maker", "/hindi-font-generator"]:
+    if path.endswith((".css", ".js", ".html")) or path == "/":
         response.headers["Cache-Control"] = "no-cache, must-revalidate"
     return response
 
 
 @app.get("/robots.txt", response_class=PlainTextResponse)
 def robots() -> str:
-    """SEO crawler permissions: allow public crawling and AI search grounding."""
-    robots_path = FRONTEND_DIR / "robots.txt"
-    if robots_path.exists():
-        return robots_path.read_text(encoding="utf-8")
-    return "User-agent: *\nAllow: /\nDisallow: /uploads/\nDisallow: /output/\nSitemap: https://hatekhori.onrender.com/sitemap.xml\n"
-
-
-@app.get("/google283830a3fd2e4cf3.html", response_class=PlainTextResponse)
-def google_verification() -> str:
-    """Google Search Console verification token."""
-    return "google-site-verification: google283830a3fd2e4cf3.html\n"
-
-
-@app.get("/sitemap.xml", response_class=Response)
-def sitemap() -> Response:
-    """XML Sitemap for Google Search Console and crawlers."""
-    sitemap_path = FRONTEND_DIR / "sitemap.xml"
-    if sitemap_path.exists():
-        return Response(content=sitemap_path.read_text(encoding="utf-8"), media_type="application/xml")
-    return Response(content="", media_type="application/xml")
-
-
-@app.get("/compare/calligraphr-alternative", response_class=FileResponse)
-def compare_calligraphr() -> FileResponse:
-    target = FRONTEND_DIR / "compare" / "calligraphr-alternative.html"
-    if target.exists():
-        return FileResponse(target, media_type="text/html")
-    raise HTTPException(status_code=404, detail="Page not found")
-
-
-@app.get("/bengali-font-maker", response_class=FileResponse)
-def bengali_font_maker() -> FileResponse:
-    target = FRONTEND_DIR / "bengali-font-maker.html"
-    if target.exists():
-        return FileResponse(target, media_type="text/html")
-    raise HTTPException(status_code=404, detail="Page not found")
-
-
-@app.get("/hindi-font-generator", response_class=FileResponse)
-def hindi_font_generator() -> FileResponse:
-    target = FRONTEND_DIR / "hindi-font-generator.html"
-    if target.exists():
-        return FileResponse(target, media_type="text/html")
-    raise HTTPException(status_code=404, detail="Page not found")
-
-
-@app.get("/llms.txt", response_class=PlainTextResponse)
-def llms_txt() -> str:
-    llms_path = FRONTEND_DIR / "llms.txt"
-    if llms_path.exists():
-        return llms_path.read_text(encoding="utf-8")
-    return "Hatekhori: Indic-first handwriting-to-font atelier."
+    """SEO crawler permissions: allow public crawling across the site."""
+    return "User-agent: *\nAllow: /\n"
 
 
 @app.get("/health")
@@ -437,4 +381,9 @@ def download_font(upload_id: UUID, inline: bool = False, format: str = "otf") ->
 # API routes above first; this only catches whatever they don't. Serves
 # frontend/index.html at "/" and everything else in frontend/ alongside
 # it, so the browser and the API share one origin and never need CORS.
+FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+if not FRONTEND_DIR.exists():
+    FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+if not FRONTEND_DIR.exists():
+    FRONTEND_DIR = Path.cwd() / "frontend"
 app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
