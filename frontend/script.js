@@ -10,9 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- 1. Constants & Configurations ---
   const SCRIPTS = {
     bn: {
-      font: "'Tiro Bangla', serif",
+      font: "'Hatekhori Bangla', 'Tiro Bangla', serif",
+      fontLabel: 'Hatekhori Bangla (hatekhori-bengali.otf)',
       text: 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।',
-      glyphs: 'অআইঈউঊঋএঐওঔকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়ৎংঃঁ',
+      glyphs: 'অআইঈউঊঋএঐওঔকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়ৎংঃঁািীুূৃেৈোৌ',
       sheetUrl: 'guideline-sheet-bengali.png',
       sheetFile: 'hatekhori-bengali-sheet.png',
       sheetName: 'Bengali Sheet (বাংলা)',
@@ -25,9 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
       modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.'
     },
     en: {
-      font: "'Kalam', cursive",
-      text: 'Write it once. Use it everywhere. 12345',
-      glyphs: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?&-@#',
+      font: "'Hatekhori', 'Kalam', cursive",
+      fontLabel: 'Hatekhori Regular (hatekhori.otf)',
+      text: 'The quick brown fox jumps over the lazy dog. 12345',
+      glyphs: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?\'"()-:;@#$%&*+=/\\_[]{}<>',
       sheetUrl: 'guideline-sheet-english.png',
       sheetFile: 'hatekhori-english-sheet.png',
       sheetName: 'English Sheet (Latin)',
@@ -40,7 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
       modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.'
     },
     hi: {
-      font: "'Tiro Devanagari Hindi', 'Kalam', serif",
+      font: "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif",
+      fontLabel: 'Hatekhori Hindi (hatekhori-hindi.otf)',
       text: 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५',
       glyphs: 'अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहड़ढ़ंःँ्ािीुूृेैोौ',
       sheetUrl: 'guideline-sheet-hindi.png',
@@ -246,13 +249,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!glyphGrid) return;
     glyphGrid.innerHTML = '';
     let chars = BENGALI_STUDIO_GLYPHS;
-    let fontFallback = "'Tiro Bangla', serif";
+    let fontFallback = "'Hatekhori Bangla', 'Tiro Bangla', serif";
     if (currentScript === 'en') {
       chars = LATIN_STUDIO_GLYPHS;
-      fontFallback = 'Kalam, cursive';
+      fontFallback = "'Hatekhori', 'Kalam', cursive";
     } else if (currentScript === 'hi') {
       chars = HINDI_STUDIO_GLYPHS;
-      fontFallback = "'Tiro Devanagari Hindi', 'Kalam', serif";
+      fontFallback = "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif";
     }
 
     for (const ch of chars) {
@@ -305,6 +308,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (heroLiveText) {
       heroLiveText.value = s.text;
       heroLiveText.style.fontFamily = s.font;
+    }
+
+    const specimenFontBadge = $('#specimen-font-badge');
+    if (specimenFontBadge && s.fontLabel) {
+      specimenFontBadge.innerHTML = `Active Typeface: <strong>${s.fontLabel}</strong>`;
     }
 
     // Dynamic Sheet Links & Meta Sync across navigation, studio, CTA, and lightbox modal
@@ -574,8 +582,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.fonts.add(face);
       currentLoadedFontFamily = family;
       const fallbackFont = currentScript === 'en' 
-        ? 'Kalam, cursive' 
-        : (currentScript === 'hi' ? "'Tiro Devanagari Hindi', 'Kalam', serif" : "'Tiro Bangla', serif");
+        ? "'Hatekhori', 'Kalam', cursive" 
+        : (currentScript === 'hi' ? "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif" : "'Hatekhori Bangla', 'Tiro Bangla', serif");
       if (previewText) previewText.style.fontFamily = `"${family}", ${fallbackFont}`;
       applyStudioSize();
     } catch (err) {
@@ -978,17 +986,17 @@ document.addEventListener("DOMContentLoaded", () => {
       skippedBlankGlyphs.clear();
       if (previewText) {
         if (currentScript === 'en') {
-          previewText.style.fontFamily = "'Kalam', cursive";
+          previewText.style.fontFamily = "'Hatekhori', 'Kalam', cursive";
           previewText.value = 'The quick brown fox jumps over the lazy dog. 12345';
-          currentLoadedFontFamily = 'Kalam';
+          currentLoadedFontFamily = 'Hatekhori';
         } else if (currentScript === 'hi') {
-          previewText.style.fontFamily = "'Tiro Devanagari Hindi', 'Kalam', serif";
+          previewText.style.fontFamily = "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif";
           previewText.value = 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५';
-          currentLoadedFontFamily = 'Tiro Devanagari Hindi';
+          currentLoadedFontFamily = 'Hatekhori Hindi';
         } else {
-          previewText.style.fontFamily = "'Tiro Bangla', serif";
+          previewText.style.fontFamily = "'Hatekhori Bangla', 'Tiro Bangla', serif";
           previewText.value = 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।';
-          currentLoadedFontFamily = 'Tiro Bangla';
+          currentLoadedFontFamily = 'Hatekhori Bangla';
         }
       }
       renderStudioGlyphMatrix();
@@ -997,7 +1005,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- 6. Initial Page Boot ---
-  setScript('bn');
+  setScript('en');
   setStudioStage('sheet');
   updateCompileButtonState();
   handleRoute();

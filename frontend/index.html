@@ -83,9 +83,13 @@
         <div class="specimen-box">
           <div class="specimen-bar">
             <div class="script-tabs" role="tablist" aria-label="Script Selection">
-              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="bn">Bengali (বাংলা)</button>
-              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="en">English</button>
+              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="en">English (Latin)</button>
+              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="bn">Bengali (বাংলা)</button>
               <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="hi">Hindi (हिन्दी)</button>
+            </div>
+
+            <div class="specimen-font-badge" id="specimen-font-badge">
+              Active Typeface: <strong>Hatekhori Regular (hatekhori.otf)</strong>
             </div>
 
             <div class="specimen-size">
@@ -101,8 +105,8 @@
               rows="3" 
               spellcheck="false" 
               aria-label="Interactive Specimen Text"
-              style="font-family: 'Tiro Bangla', serif;"
-            >নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।</textarea>
+              style="font-family: 'Hatekhori', 'Kalam', cursive;"
+            >The quick brown fox jumps over the lazy dog. 12345</textarea>
           </div>
         </div>
 
@@ -116,6 +120,116 @@
             <b id="big" class="glyph-card-char">A</b>
             <span id="cp" class="glyph-card-cp">U+0041</span>
           </div>
+        </div>
+
+        <!-- Full Typographic Specimen Deck (Hatekhori Type Showcase) -->
+        <div class="type-specimen-deck">
+          
+          <!-- Card 1: Complete Character Sets -->
+          <div class="specimen-card">
+            <div class="specimen-card-head">
+              <span class="specimen-card-title">Character Set &amp; Glyph Roster</span>
+              <span class="specimen-card-tag">92 Glyphs • All Supported Characters</span>
+            </div>
+            <div class="specimen-alphabet-block">
+              <div>
+                <span class="meta-label">Uppercase (A–Z)</span>
+                <div class="specimen-alphabet-row">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+              </div>
+              <div>
+                <span class="meta-label">Lowercase (a–z)</span>
+                <div class="specimen-alphabet-row">a b c d e f g h i j k l m n o p q r s t u v w x y z</div>
+              </div>
+              <div>
+                <span class="meta-label">Figures &amp; Numbers (0–9)</span>
+                <div class="specimen-alphabet-row">0 1 2 3 4 5 6 7 8 9</div>
+              </div>
+              <div>
+                <span class="meta-label">Punctuation &amp; Symbols (28 Characters)</span>
+                <div class="specimen-alphabet-row">. , ! ? ' " ( ) - : ; @ # $ % &amp; * + = / \ _ [ ] { } &lt; &gt;</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Optical Size Waterfall -->
+          <div class="specimen-card">
+            <div class="specimen-card-head">
+              <span class="specimen-card-title">Optical Scale &amp; Proportions</span>
+              <span class="specimen-card-tag">Size Waterfall</span>
+            </div>
+            <div class="specimen-waterfall">
+              <div class="waterfall-row">
+                <span class="waterfall-size">48px</span>
+                <p class="waterfall-text waterfall-48">The quick brown fox jumps over the lazy dog.</p>
+              </div>
+              <div class="waterfall-row">
+                <span class="waterfall-size">32px</span>
+                <p class="waterfall-text waterfall-32">Pack my box with five dozen liquor jugs.</p>
+              </div>
+              <div class="waterfall-row">
+                <span class="waterfall-size">24px</span>
+                <p class="waterfall-text waterfall-24">Sphinx of black quartz, judge my vow. 0123456789</p>
+              </div>
+              <div class="waterfall-row">
+                <span class="waterfall-size">18px</span>
+                <p class="waterfall-text waterfall-18">How vexingly quick daft zebras jump! Handwritten rhythm preserved in OpenType.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Continuous Prose Readability -->
+          <div class="specimen-card">
+            <div class="specimen-card-head">
+              <span class="specimen-card-title">Editorial Prose &amp; Continuous Rhythm</span>
+              <span class="specimen-card-tag">Body Readability</span>
+            </div>
+            <p class="specimen-prose">
+              Handwriting is as distinct as a signature or a human voice. Hatekhori translates the physical strokes of pen on paper into crisp digital vector Béziers, keeping proportional advance widths and authentic rhythm intact without artificial rounding or AI hallucination.
+            </p>
+          </div>
+
+          <!-- Card 4: Technical Font Metadata -->
+          <div class="specimen-card">
+            <div class="specimen-card-head">
+              <span class="specimen-card-title">Typeface Specifications &amp; OpenType Tables</span>
+              <span class="specimen-card-tag">Engine Metadata</span>
+            </div>
+            <div class="specimen-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">Family Name</span>
+                <span class="meta-val">Hatekhori</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Subfamily / Weight</span>
+                <span class="meta-val">Regular (400)</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Binary Format</span>
+                <span class="meta-val">OpenType (.otf) CFF</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Units Per Em</span>
+                <span class="meta-val">1000 UPM</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Total Glyphs</span>
+                <span class="meta-val">92 Glyphs</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Mapped Code Points</span>
+                <span class="meta-val">91 Characters</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Multilingual Suite</span>
+                <span class="meta-val">English • Bengali • Hindi</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">License</span>
+                <span class="meta-val">Personal &amp; Commercial</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
