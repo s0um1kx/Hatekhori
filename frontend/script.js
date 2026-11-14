@@ -103,9 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const navLaunchStudio = $('#nav-launch-studio');
   const heroEnterStudio = $('#hero-enter-studio');
   const ctaEnterStudio = $('#cta-enter-studio');
-  const tickerLaunchStudio = $('#ticker-launch-studio');
-  const footerEnterStudio = $('#footer-enter-studio');
-  const headerClock = $('#header-clock');
   const studioBackBtn = $('#studio-back-btn');
   const toastEl = $('#toast');
   const privacyModal = $('#privacy-modal');
@@ -113,22 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const footerPrivacyBtn = $('#footer-privacy-btn');
   const closePrivacyBtn = $('#close-privacy-btn');
   const btnModalUnderstand = $('#btn-modal-understand');
-
-  // Live IST Clock
-  function updateLiveClock() {
-    if (!headerClock) return;
-    const now = new Date();
-    try {
-      const options = { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      const timeStr = new Intl.DateTimeFormat('en-GB', options).format(now);
-      headerClock.textContent = `${timeStr} [IST]`;
-    } catch {
-      const pad = (n) => String(n).padStart(2, '0');
-      headerClock.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} [LOCAL]`;
-    }
-  }
-  setInterval(updateLiveClock, 1000);
-  updateLiveClock();
 
   // Feedback & Bug Reporting Elements
   const feedbackModal = $('#feedback-modal');
@@ -152,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroLiveText = $('#hero-live-text');
   const heroSizeSlider = $('#hero-size-slider');
   const heroSizeReadout = $('#hero-size-readout');
-  const scriptTabButtons = $$('.card-script-tabs .tab-btn, .script-tabs .tab-btn');
+  const scriptTabButtons = $$('.script-tabs .tab-btn');
   const cellsContainer = $('#cells');
   const bigGlyph = $('#big');
   const cpReadout = $('#cp');
@@ -845,18 +826,16 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // View navigation
-  const brandLinks = $$('.brand, .brand-frame-link, #brand-home');
-  brandLinks.forEach((link) => {
-    link.addEventListener('click', (e) => {
+  const brandLink = $('.brand');
+  if (brandLink) {
+    brandLink.addEventListener('click', (e) => {
       e.preventDefault();
       switchView('landing');
     });
-  });
+  }
   if (navLaunchStudio) navLaunchStudio.addEventListener('click', () => switchView('studio'));
   if (heroEnterStudio) heroEnterStudio.addEventListener('click', () => switchView('studio'));
   if (ctaEnterStudio) ctaEnterStudio.addEventListener('click', () => switchView('studio'));
-  if (tickerLaunchStudio) tickerLaunchStudio.addEventListener('click', () => switchView('studio'));
-  if (footerEnterStudio) footerEnterStudio.addEventListener('click', () => switchView('studio'));
   if (studioBackBtn) studioBackBtn.addEventListener('click', () => switchView('landing'));
 
   // Stage tabs & navigation controls
