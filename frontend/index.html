@@ -6,19 +6,24 @@
   <title>Hatekhori — Your handwriting, set as type</title>
   <meta name="description" content="Write one sheet by hand. Get an installable OpenType font in your own hand. English, Bengali, and Hindi." />
 
-  <!-- Clean Webfonts: Instrument Serif, Tiro Bangla, Tiro Devanagari Hindi, Kalam, DM Mono -->
+  <!-- The Offline Network Design System Fonts: IBM Plex Mono & Plus Jakarta Sans, plus Indic scripts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=2.4" />
+  <link rel="stylesheet" href="style.css?v=3.0" />
 </head>
 <body>
 
   <!-- Minimal Navigation -->
   <nav class="nav">
     <div class="wrap nav-inner">
-      <a href="#" class="brand">Hatekhori</a>
+      <a href="#" class="brand">
+        <span class="brand-badge-dot" aria-hidden="true"></span>
+        <span class="brand-name">Hatekhori</span>
+        <span class="brand-sub">হাতে খড়ি</span>
+        <span class="brand-ver">v2.4</span>
+      </a>
       <div class="nav-links">
         <a href="#how">How it works</a>
         <a href="#specimen">Specimen</a>
@@ -27,7 +32,8 @@
         <button type="button" class="nav-link-btn" id="nav-privacy-btn">Privacy &amp; Terms</button>
       </div>
       <button type="button" class="btn btn-primary" id="nav-launch-studio">
-        Launch Studio
+        <span>Launch Studio</span>
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
   </nav>
@@ -38,36 +44,42 @@
     <!-- Hero Section -->
     <header class="hero">
       <div class="wrap">
-        <h1 class="hero-title">Your handwriting, set as type.</h1>
+        <div class="hero-eyebrow-pill">
+          <span class="pulse-beacon" aria-hidden="true"></span>
+          <span>UNFILTERED VECTOR ENGINE • ZERO AI HALLUCINATION</span>
+        </div>
+        <h1 class="hero-title">Your handwriting, <span class="hero-accent">set as type.</span></h1>
         <p class="hero-lead">
           Print one sheet. Write with your pen. Snap a photo with your phone and get an installable OpenType font in your own hand. Built for English, Bengali, and Hindi.
         </p>
 
         <div class="hero-actions">
-          <button type="button" class="btn btn-primary" id="hero-enter-studio">
-            Launch Font Studio →
+          <button type="button" class="btn btn-primary btn-lg" id="hero-enter-studio">
+            <span>Launch Font Studio</span>
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
           <div class="hero-download-group">
             <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
-              English Sheet (Latin)
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>English Sheet (Latin)</span>
             </a>
             <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="hero-download-sheet">
-              Bengali Sheet (বাংলা)
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Bengali Sheet (বাংলা)</span>
             </a>
             <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="btn btn-outline" id="hero-download-hindi">
-              Hindi Sheet (हिन्दी)
+              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Hindi Sheet (हिन्दी)</span>
             </a>
           </div>
         </div>
 
         <div class="hero-meta">
-          <span>Zero AI hallucinations</span>
-          <span class="sep">•</span>
-          <span>100% Vector Béziers</span>
-          <span class="sep">•</span>
-          <span>1,000+ Indic Glyphs</span>
-          <span class="sep">•</span>
-          <span>OpenType (.otf)</span>
+          <span class="meta-tag"><span class="meta-dot"></span>Zero AI Hallucinations</span>
+          <span class="meta-tag"><span class="meta-dot"></span>100% Vector Béziers</span>
+          <span class="meta-tag"><span class="meta-dot"></span>1,000+ Indic Glyphs</span>
+          <span class="meta-tag"><span class="meta-dot"></span>OpenType (.otf)</span>
+          <span class="meta-tag"><span class="meta-dot"></span>Potrace Tracing</span>
         </div>
       </div>
     </header>
