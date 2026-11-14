@@ -48,26 +48,25 @@ def draw_orientation_bar(draw: ImageDraw.ImageDraw, width: int, height: int) -> 
     draw.rectangle(orientation_bar_box(width, height), fill=0)
 
 
-def get_indic_font(size: int = 22, script: str = "bn") -> ImageFont.ImageFont:
-    """Find a system TrueType font capable of rendering Bengali or Devanagari characters."""
+def get_indic_font(size: int = 20, script: str = "bn") -> ImageFont.ImageFont:
+    """Find a TrueType font capable of rendering Bengali, Hindi, or Latin characters."""
+    font_candidates = [
+        os.path.join(os.path.dirname(__file__), "fonts", "nirmala.ttf"),
+        os.path.join(os.path.dirname(__file__), "nirmala.ttf"),
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "hatekhori-bengali.otf") if script == "bn" else None,
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "hatekhori-hindi.otf") if script == "hi" else None,
+    ]
     windir = os.environ.get("WINDIR", "C:\\Windows")
-    candidates = [
+    font_candidates.extend([
         os.path.join(windir, "Fonts", "Nirmala.ttc"),
         os.path.join(windir, "Fonts", "NirmalaB.ttc"),
-    ]
-    if script == "hi":
-        candidates.extend([
-            "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
-            "/usr/share/fonts/truetype/deva/lohit_hi.ttf",
-            "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
-        ])
-    else:
-        candidates.extend([
-            "/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf",
-            "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
-        ])
-    for path in candidates:
-        if os.path.exists(path):
+        "/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+        "/usr/share/fonts/truetype/deva/lohit_hi.ttf",
+        "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
+    ])
+    for path in font_candidates:
+        if path and os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size=size)
             except Exception:
@@ -84,40 +83,32 @@ def generate_guideline_sheet(script: str = "bn") -> Image.Image:
     draw = ImageDraw.Draw(img)
     s = script.lower()
 
-    if s == "en":
-        font = ImageFont.load_default(size=18)
-        boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script="en"))
-        for entry in boxes:
-            x0, y0, x1, y1 = entry["box"]
-            char = entry["char"]
-            draw.rectangle([x0, y0, x1, y1], outline=0, width=1)
-            label_bbox = draw.textbbox((0, 0), char, font=font)
-            label_height = label_bbox[3] - label_bbox[1]
-            draw.text((x0 + 4, y0 - label_height - 3), char, fill=0, font=font)
+    font = get_indic_font(size=20, script=s)
+    boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script=s))
+
+    from pipeline.segment import BENGALI_MATRAS, HINDI_MATRAS
+    if s == "bn":
+        modifiers = set(BENGALI_MATRAS)
     elif s == "hi":
-        font = get_indic_font(size=22, script="hi")
-        from pipeline.segment import HINDI_MATRAS
         modifiers = set(HINDI_MATRAS + ["ं", "ः", "ँ", "्"])
-        boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script="hi"))
-        for entry in boxes:
-            x0, y0, x1, y1 = entry["box"]
-            char = entry["char"]
-            draw.rectangle([x0, y0, x1, y1], outline=0, width=1)
-            label = f"\u25CC{char}" if char in modifiers else char
-            label_bbox = draw.textbbox((0, 0), label, font=font)
-            label_height = label_bbox[3] - label_bbox[1]
-            draw.text((x0 + 8, y0 - label_height - 3), label, fill=0, font=font)
     else:
-        font = get_indic_font(size=22, script="bn")
-        boxes = compute_grid_boxes(SHEET_WIDTH, SHEET_HEIGHT, chars=char_grid(script="bn"))
-        for entry in boxes:
-            x0, y0, x1, y1 = entry["box"]
-            char = entry["char"]
-            draw.rectangle([x0, y0, x1, y1], outline=0, width=1)
-            label = f"\u25CC{char}" if char in BENGALI_MATRAS else char
-            label_bbox = draw.textbbox((0, 0), label, font=font)
-            label_height = label_bbox[3] - label_bbox[1]
-            draw.text((x0 + 8, y0 - label_height - 3), label, fill=0, font=font)
+        modifiers = set()
+
+    for entry in boxes:
+        x0, y0, x1, y1 = entry["box"]
+        char = entry["char"]
+        # Draw clean crisp cell rectangle
+        draw.rectangle([x0, y0, x1, y1], outline=0, width=1)
+
+        # Format label with dotted circle for combining vowel signs/matras
+        label = f"\u25CC{char}" if char in modifiers else char
+        bb = draw.textbbox((0, 0), label, font=font)
+
+        # Position label cleanly 4px above cell top line with 4px left margin
+        # (bb[3] gives the bottom-most extent of ink, ensuring zero overlap with cell boundary)
+        text_y = int((y0 - 4) - bb[3])
+        text_x = int((x0 + 4) - bb[0])
+        draw.text((text_x, text_y), label, fill=0, font=font)
 
     draw_corner_markers(draw, SHEET_WIDTH, SHEET_HEIGHT)
     draw_orientation_bar(draw, SHEET_WIDTH, SHEET_HEIGHT)
