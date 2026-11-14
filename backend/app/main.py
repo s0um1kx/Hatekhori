@@ -9,6 +9,8 @@ from pathlib import Path
 from uuid import UUID
 
 import anyio
+import json
+from pydantic import BaseModel, Field
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -17,6 +19,7 @@ from fastapi.responses import FileResponse, PlainTextResponse, RedirectResponse,
 from fastapi.staticfiles import StaticFiles
 
 from pipeline.cleanup import (
+    BASE_DIR,
     OUTPUT_DIR,
     OUTPUT_MAX_AGE_S,
     OUTPUT_MAX_BYTES,
@@ -98,6 +101,15 @@ class SimpleRateLimiter:
 
 _INGEST_LIMITER = SimpleRateLimiter(max_requests=15, window_seconds=60)
 _GENERATE_LIMITER = SimpleRateLimiter(max_requests=6, window_seconds=60)
+_FEEDBACK_LIMITER = SimpleRateLimiter(max_requests=5, window_seconds=60)
+
+DATA_DIR = BASE_DIR / "data"
+try:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
+FEEDBACK_FILE = DATA_DIR / "feedback.jsonl"
+_FEEDBACK_LOCK = threading.Lock()
 
 
 def get_client_ip(request: Request) -> str:
@@ -130,6 +142,7 @@ def _run_sweep() -> None:
     sweep(OUTPUT_DIR, OUTPUT_MAX_AGE_S, OUTPUT_MAX_FILES, OUTPUT_MAX_BYTES)
     _INGEST_LIMITER.sweep()
     _GENERATE_LIMITER.sweep()
+    _FEEDBACK_LIMITER.sweep()
 
 
 async def _periodic_sweep() -> None:
@@ -209,12 +222,12 @@ def privacy_policy() -> dict:
             "rejected_upload_hashes": "SHA-256 hash only (never raw photos) kept up to 90 days for abuse detection.",
         },
         "legal_warranty": "Submitting users certify they own or have permission to convert their handwriting. Signature forgery is strictly prohibited.",
-        "abuse_and_takedown_contact": "privacy@hatekhori.org",
+        "abuse_and_takedown_contact": "soumik.workmail@gmail.com",
     }
 
 
 @app.get("/guideline-sheet.png")
-def guideline_sheet(script: str = "bn") -> Response:
+def guideline_sheet(script: str = "en") -> Response:
     content = _get_guideline_sheet_bytes(script)
     s = script.lower()
     name = "english" if s == "en" else ("hindi" if s == "hi" else "bengali")
@@ -381,6 +394,47 @@ def download_font(upload_id: UUID, inline: bool = False, format: str = "otf") ->
 def view_font(upload_id: UUID) -> RedirectResponse:
     """Friendly shareable URL that redirects to the studio viewer."""
     return RedirectResponse(url=f"/#font={upload_id}")
+
+
+class FeedbackPayload(BaseModel):
+    category: str = Field(..., max_length=50)
+    message: str = Field(..., min_length=3, max_length=2000)
+    contact: str | None = Field(None, max_length=150)
+    script: str | None = Field(None, max_length=10)
+    upload_id: str | None = Field(None, max_length=50)
+    error_context: str | None = Field(None, max_length=1000)
+
+
+@app.post("/api/feedback")
+async def submit_feedback(payload: FeedbackPayload, request: Request) -> dict:
+    client_ip = get_client_ip(request)
+    if not _FEEDBACK_LIMITER.is_allowed(client_ip):
+        raise HTTPException(
+            status_code=429,
+            detail="Too many feedback submissions. Please wait a minute before sending another.",
+        )
+
+    ip_hash = f"ip_{abs(hash(client_ip)) % 1000000:06d}"
+    record = {
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "client_id": ip_hash,
+        "category": payload.category.strip(),
+        "message": payload.message.strip(),
+        "contact": payload.contact.strip() if payload.contact else None,
+        "script": payload.script.strip() if payload.script else None,
+        "upload_id": payload.upload_id.strip() if payload.upload_id else None,
+        "error_context": payload.error_context.strip() if payload.error_context else None,
+    }
+
+    try:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
+        with _FEEDBACK_LOCK:
+            with open(FEEDBACK_FILE, "a", encoding="utf-8") as f:
+                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to record feedback: {e}")
+
+    return {"status": "ok", "message": "Feedback submitted successfully. Thank you!"}
 
 
 # Mounted LAST and deliberately at "/" — Starlette matches the explicit

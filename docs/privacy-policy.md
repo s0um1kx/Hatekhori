@@ -35,8 +35,8 @@ Because there's no account to log into, deletion works a little differently here
 
 ## If you're running your own copy of Hatekhori
 
-Hatekhori is open source. Everything above describes how *our* hosted version at [hatekhori's domain] handles your data. If you're using someone else's self-hosted instance, or running your own, this policy doesn't apply there — that operator sets their own terms, and you should check with them directly.
+Hatekhori is open source on GitHub at [https://github.com/s0um1kx/Hatekhori](https://github.com/s0um1kx/Hatekhori). Everything above describes how *our* hosted version handles your data. If you're using someone else's self-hosted instance, or running your own, this policy doesn't apply there — that operator sets their own terms, and you should check with them directly.
 
 ## Questions
 
-If anything here is unclear, or you want your data removed, reach out at **[privacy contact email]** — a real inbox, checked by a real person, not a form that disappears into nowhere.
+If anything here is unclear, or you want your data removed, reach out at **soumik.workmail@gmail.com** — a real inbox, checked by a real person, not a form that disappears into nowhere.

@@ -17,13 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetUrl: 'guideline-sheet-bengali.png',
       sheetFile: 'hatekhori-bengali-sheet.png',
       sheetName: 'Bengali Sheet (বাংলা)',
-      sheetTitle: 'Get Bengali Guideline Sheet',
-      sheetSubtitle: 'বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)',
+      sheetTitle: 'Get Bengali Guideline Sheet (In Progress)',
+      sheetSubtitle: 'বাংলা বর্ণমালা ও কারচিহ্ন (Under active development — conjunct pipeline WIP)',
       sheetBadge: '10×6 Grid • 60 Cells',
-      sheetMeta: ['60 Bengali Cells', '11 স্বর • 39 ব্যঞ্জন • 10 কার', 'A4 (100% scale)'],
+      sheetMeta: ['60 Bengali Cells', '11 স্বর • 39 ব্যঞ্জন • 10 কার', 'A4 (100% scale)', 'In Progress'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
-      modalTitle: 'Bengali Guideline Sheet (বাংলা)',
-      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.'
+      modalTitle: 'Bengali Guideline Sheet (বাংলা) — In Progress',
+      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন). Bengali handwriting & conjuncts under active development.',
+      isWip: true
     },
     en: {
       font: "'Hatekhori', 'Kalam', cursive",
@@ -36,10 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetTitle: 'Get English Guideline Sheet',
       sheetSubtitle: 'A–Z, a–z, 0–9 & symbols (A4 grid with 4 registration fiducials)',
       sheetBadge: '10×9 Grid • 90 Cells',
-      sheetMeta: ['90 Latin Cells', 'A–Z, a–z, 0–9, Punctuation', 'A4 (100% scale)'],
+      sheetMeta: ['90 Latin Cells', 'A–Z, a–z, 0–9, Punctuation', 'A4 (100% scale)', 'Ready'],
       matrixTitle: 'Extracted Character Set (90 Glyphs)',
       modalTitle: 'English Guideline Sheet (Latin)',
-      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.'
+      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.',
+      isWip: false
     },
     hi: {
       font: "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif",
@@ -49,13 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetUrl: 'guideline-sheet-hindi.png',
       sheetFile: 'hatekhori-hindi-sheet.png',
       sheetName: 'Hindi Sheet (हिन्दी)',
-      sheetTitle: 'Get Hindi Guideline Sheet',
-      sheetSubtitle: 'देवनागरी वर्णमाला व मात्राएँ (A4 grid with 4 registration fiducials)',
+      sheetTitle: 'Get Hindi Guideline Sheet (In Progress)',
+      sheetSubtitle: 'देवनागरी वर्णमाला व मात्राएँ (Under active development — conjunct pipeline WIP)',
       sheetBadge: '10×6 Grid • 60 Cells',
-      sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)'],
+      sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)', 'In Progress'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
-      modalTitle: 'Hindi Guideline Sheet (हिन्दी)',
-      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ) with 4 registration fiducials.'
+      modalTitle: 'Hindi Guideline Sheet (हिन्दी) — In Progress',
+      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ). Hindi handwriting & conjuncts under active development.',
+      isWip: true
     }
   };
 
@@ -87,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const LATIN_STUDIO_GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?\'"()-:;@#$%&*+=/'.split('');
 
   // --- 2. State ---
-  let currentScript = 'bn';
+  let currentScript = 'en';
   let activeUploadId = null;
   let activeSelectedFile = null;
   let currentLoadedFontFamily = null;
@@ -110,6 +113,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const footerPrivacyBtn = $('#footer-privacy-btn');
   const closePrivacyBtn = $('#close-privacy-btn');
   const btnModalUnderstand = $('#btn-modal-understand');
+
+  // Feedback & Bug Reporting Elements
+  const feedbackModal = $('#feedback-modal');
+  const navFeedbackBtn = $('#nav-feedback-btn');
+  const footerFeedbackBtn = $('#footer-feedback-btn');
+  const closeFeedbackBtn = $('#close-feedback-btn');
+  const btnCancelFeedback = $('#btn-cancel-feedback');
+  const feedbackForm = $('#feedback-form');
+  const feedbackCategory = $('#feedback-category');
+  const feedbackMessage = $('#feedback-message');
+  const feedbackContact = $('#feedback-contact');
+  const feedbackCharCount = $('#feedback-char-count');
+  const feedbackContextGroup = $('#feedback-context-group');
+  const feedbackDiagScript = $('#feedback-diag-script');
+  const feedbackDiagUpload = $('#feedback-diag-upload');
+  const feedbackDiagError = $('#feedback-diag-error');
+  const btnSubmitFeedback = $('#btn-submit-feedback');
+  let lastPipelineError = null;
 
   // Specimen Section
   const heroLiveText = $('#hero-live-text');
@@ -316,18 +337,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Dynamic Sheet Links & Meta Sync across navigation, studio, CTA, and lightbox modal
-    const sheetLinks = [
-      $('#studio-download-sheet'),
-      $('#nav-download-sheet'),
-      $('#hero-download-sheet'),
-      $('#cta-download-sheet'),
-      modalDownloadSheet
-    ];
-    sheetLinks.forEach((link) => {
-      if (!link) return;
-      link.href = s.sheetUrl;
-      link.setAttribute('download', s.sheetFile);
-    });
+    const studioDownloadSheet = $('#studio-download-sheet');
+    if (studioDownloadSheet) {
+      studioDownloadSheet.href = s.sheetUrl;
+      studioDownloadSheet.setAttribute('download', s.sheetFile);
+    }
+
+    const navDownloadSheet = $('#nav-download-sheet');
+    if (navDownloadSheet) {
+      navDownloadSheet.href = s.sheetUrl;
+      navDownloadSheet.setAttribute('download', s.sheetFile);
+      navDownloadSheet.textContent = s.isWip ? 'Download sheet (WIP)' : 'Download sheet';
+    }
+
+    const ctaDownloadSheet = $('#cta-download-sheet');
+    if (ctaDownloadSheet) {
+      ctaDownloadSheet.href = s.sheetUrl;
+      ctaDownloadSheet.setAttribute('download', s.sheetFile);
+      ctaDownloadSheet.textContent = s.isWip ? `Download ${s.sheetName} (In Progress)` : `Download ${s.sheetName}`;
+    }
+
+    const scriptWipNotice = $('#script-wip-notice');
+    if (scriptWipNotice) {
+      scriptWipNotice.hidden = !s.isWip;
+    }
 
     // Update Studio Card 1 visual preview showcase
     if (studioSheetImg && s.sheetUrl) {
@@ -345,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modalDownloadSheet && s.sheetUrl) {
       modalDownloadSheet.href = s.sheetUrl;
       modalDownloadSheet.setAttribute('download', s.sheetFile);
-      modalDownloadSheet.textContent = `Download ${s.sheetName} (A4)`;
+      modalDownloadSheet.textContent = s.isWip ? `Download ${s.sheetName} (In Progress)` : `Download ${s.sheetName} (A4)`;
     }
 
     const studioSheetTitle = $('#studio-sheet-title');
@@ -353,7 +386,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const studioSheetSub = $('#studio-sheet-sub');
     if (studioSheetSub && s.sheetSubtitle) studioSheetSub.textContent = s.sheetSubtitle;
     const studioSheetBtnLabel = $('#studio-sheet-btn-label');
-    if (studioSheetBtnLabel && s.sheetName) studioSheetBtnLabel.textContent = `Download ${s.sheetName}`;
+    if (studioSheetBtnLabel && s.sheetName) {
+      studioSheetBtnLabel.textContent = s.isWip ? `Download ${s.sheetName} (In Progress)` : `Download ${s.sheetName}`;
+    }
     const studioSheetMeta = $('#studio-sheet-meta');
     if (studioSheetMeta && s.sheetMeta) {
       studioSheetMeta.innerHTML = s.sheetMeta.map((m) => `<span class="sheet-meta-tag">${m}</span>`).join('');
@@ -671,6 +706,121 @@ document.addEventListener("DOMContentLoaded", () => {
   if (privacyModal) {
     privacyModal.addEventListener('click', (e) => {
       if (e.target === privacyModal) closePrivacyModal();
+    });
+  }
+
+  // Feedback Modal Controls & Submission
+  function openFeedbackModal(presetCategory = null, errorMsg = null) {
+    if (!feedbackModal) return;
+    if (presetCategory && feedbackCategory) {
+      feedbackCategory.value = presetCategory;
+    }
+    if (errorMsg) {
+      lastPipelineError = errorMsg;
+    }
+
+    if (feedbackContextGroup) {
+      feedbackContextGroup.hidden = false;
+      if (feedbackDiagScript) {
+        feedbackDiagScript.textContent = `Script: ${SCRIPTS[currentScript]?.name || currentScript}`;
+      }
+      if (feedbackDiagUpload) {
+        if (activeUploadId) {
+          feedbackDiagUpload.textContent = `Upload ID: ${activeUploadId}`;
+          feedbackDiagUpload.hidden = false;
+        } else {
+          feedbackDiagUpload.hidden = true;
+        }
+      }
+      if (feedbackDiagError) {
+        if (lastPipelineError) {
+          feedbackDiagError.textContent = `Error: ${lastPipelineError}`;
+          feedbackDiagError.hidden = false;
+        } else {
+          feedbackDiagError.hidden = true;
+        }
+      }
+    }
+
+    feedbackModal.hidden = false;
+    feedbackModal.classList.add('visible');
+    feedbackModal.setAttribute('aria-hidden', 'false');
+    if (feedbackMessage) {
+      setTimeout(() => feedbackMessage.focus(), 50);
+    }
+  }
+
+  function closeFeedbackModal() {
+    if (!feedbackModal) return;
+    feedbackModal.classList.remove('visible');
+    feedbackModal.hidden = true;
+    feedbackModal.setAttribute('aria-hidden', 'true');
+  }
+
+  if (navFeedbackBtn) navFeedbackBtn.addEventListener('click', () => openFeedbackModal());
+  if (footerFeedbackBtn) footerFeedbackBtn.addEventListener('click', () => openFeedbackModal());
+  if (closeFeedbackBtn) closeFeedbackBtn.addEventListener('click', closeFeedbackModal);
+  if (btnCancelFeedback) btnCancelFeedback.addEventListener('click', closeFeedbackModal);
+  if (feedbackModal) {
+    feedbackModal.addEventListener('click', (e) => {
+      if (e.target === feedbackModal) closeFeedbackModal();
+    });
+  }
+
+  if (feedbackMessage && feedbackCharCount) {
+    feedbackMessage.addEventListener('input', () => {
+      const len = feedbackMessage.value.length;
+      feedbackCharCount.textContent = `${len} / 2000`;
+    });
+  }
+
+  if (feedbackForm) {
+    feedbackForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = feedbackMessage ? feedbackMessage.value.trim() : '';
+      if (!message || message.length < 3) {
+        showToast('Please enter at least a few words describing your feedback.');
+        return;
+      }
+
+      const payload = {
+        category: feedbackCategory ? feedbackCategory.value : 'general',
+        message: message,
+        contact: feedbackContact ? feedbackContact.value.trim() || null : null,
+        script: currentScript || 'en',
+        upload_id: activeUploadId || null,
+        error_context: lastPipelineError || null,
+      };
+
+      if (btnSubmitFeedback) {
+        btnSubmitFeedback.disabled = true;
+        btnSubmitFeedback.textContent = 'Submitting...';
+      }
+
+      try {
+        const res = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.detail || `Server error (HTTP ${res.status})`);
+        }
+
+        showToast('Thank you! Your feedback has been recorded.');
+        feedbackForm.reset();
+        if (feedbackCharCount) feedbackCharCount.textContent = '0 / 2000';
+        closeFeedbackModal();
+      } catch (err) {
+        alert(`Could not submit feedback:\n\n${err.message}`);
+      } finally {
+        if (btnSubmitFeedback) {
+          btnSubmitFeedback.disabled = false;
+          btnSubmitFeedback.textContent = 'Submit Feedback';
+        }
+      }
     });
   }
 

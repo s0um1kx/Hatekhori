@@ -8,7 +8,7 @@ This document outlines the security architecture, threat model, privacy safeguar
 
 We take the security and privacy of Hatekhori and its users seriously. If you identify a security vulnerability, we ask that you practice responsible disclosure.
 
-- **Security & Privacy Contact:** `privacy@hatekhori.org` (or `security@hatekhori.org`)
+- **Security & Privacy Contact:** `soumik.workmail@gmail.com`
 - **Initial Response Time:** Within 48 hours of receipt.
 - **Remediation SLA:** Critical vulnerabilities are patched within 7 business days.
 - **Policy:** Please do not publicly disclose vulnerabilities before a fix has been committed and verified. We do not pursue legal action against security researchers acting in good faith.
@@ -86,7 +86,7 @@ Hatekhori operates without user accounts or persistent identity. Because of this
 
 1. **User Certification:** Users must check the legal consent checkbox prior to font compilation, certifying that the handwriting is their own or that they hold express legal authority to digitize it.
 2. **Prohibited Use:** Using Hatekhori to digitize forged signatures, execute financial fraud, or copy proprietary font software is strictly prohibited.
-3. **Expedited Takedown:** Anyone who believes their handwriting or signature has been converted without consent may contact `privacy@hatekhori.org` for immediate removal.
+3. **Expedited Takedown:** Anyone who believes their handwriting or signature has been converted without consent may contact `soumik.workmail@gmail.com` for immediate removal.
 
 ---
 

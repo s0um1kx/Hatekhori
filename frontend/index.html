@@ -22,7 +22,8 @@
       <div class="nav-links">
         <a href="#how">How it works</a>
         <a href="#specimen">Specimen</a>
-        <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" id="nav-download-sheet">Download sheet</a>
+        <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" id="nav-download-sheet">Download sheet</a>
+        <button type="button" class="nav-link-btn" id="nav-feedback-btn">Feedback</button>
         <button type="button" class="nav-link-btn" id="nav-privacy-btn">Privacy &amp; Terms</button>
       </div>
       <button type="button" class="btn btn-primary" id="nav-launch-studio">
@@ -47,14 +48,14 @@
             Launch Font Studio →
           </button>
           <div class="hero-download-group">
+            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
+              English Sheet (Latin) <span class="badge-status-ready">Ready</span>
+            </a>
             <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="hero-download-sheet">
-              Bengali Sheet (বাংলা)
+              Bengali Sheet (বাংলা) <span class="badge-status-wip">In Progress</span>
             </a>
             <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="btn btn-outline" id="hero-download-hindi">
-              Hindi Sheet (हिन्दी)
-            </a>
-            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
-              English Sheet (Latin)
+              Hindi Sheet (हिन्दी) <span class="badge-status-wip">In Progress</span>
             </a>
           </div>
         </div>
@@ -271,9 +272,12 @@
           <button type="button" class="btn btn-primary" id="cta-enter-studio">
             Launch Font Studio →
           </button>
-          <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="cta-download-sheet">
-            Download Bengali Sheet
+          <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="cta-download-sheet">
+            Download English Sheet (Latin)
           </a>
+        </div>
+        <div class="cta-status-note">
+          <span class="status-dot-ready"></span> English handwriting pipeline is active &amp; ready. Bengali and Hindi script engines are currently in progress.
         </div>
       </div>
     </section>
@@ -283,9 +287,9 @@
       <div class="wrap footer-inner">
         <span>Hatekhori (হাতে খড়ি)</span>
         <div class="footer-links">
-          <a href="guideline-sheet-bengali.png" download>Guideline Sheet</a>
-          <a href="/docs/PRD.md">Architecture</a>
-          <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png">Guideline Sheet</a>
+          <a href="https://github.com/s0um1kx/Hatekhori/blob/main/docs/PRD.md" target="_blank" rel="noopener noreferrer">Architecture</a>
+          <a href="https://github.com/s0um1kx/Hatekhori" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
     </footer>
@@ -336,9 +340,9 @@
           <!-- Visual Sheet Preview Plate -->
           <div class="sheet-atelier-preview-box">
             <div class="sheet-board-card" id="sheet-preview-showcase" role="button" tabindex="0" aria-label="Click to inspect full guideline sheet">
-              <img id="studio-sheet-img" src="guideline-sheet-bengali.png" alt="Guideline Sheet Preview" class="sheet-board-img" />
+              <img id="studio-sheet-img" src="guideline-sheet-english.png" alt="English Guideline Sheet Preview" class="sheet-board-img" />
               <div class="sheet-board-overlay">
-                <span class="sheet-board-badge" id="studio-sheet-badge">10×6 Grid • 60 Cells</span>
+                <span class="sheet-board-badge" id="studio-sheet-badge">10×9 Grid • 90 Cells</span>
                 <span class="sheet-board-zoom-hint">Preview Full Size ↗</span>
               </div>
             </div>
@@ -351,26 +355,31 @@
           <div class="sheet-atelier-meta-box">
             <div class="atelier-meta-header">
               <span class="atelier-badge">STAGE 01 : PREPARE YOUR SHEET</span>
-              <h2 id="studio-sheet-title">Get Bengali Guideline Sheet</h2>
-              <p class="atelier-sub" id="studio-sheet-sub">বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)</p>
+              <h2 id="studio-sheet-title">Get English Guideline Sheet</h2>
+              <p class="atelier-sub" id="studio-sheet-sub">A–Z, a–z, 0–9 &amp; symbols (A4 grid with 4 registration fiducials)</p>
             </div>
 
             <!-- Language Sheet Selector -->
             <div class="sheet-script-picker" role="tablist" aria-label="Select Guideline Sheet Language">
-              <button type="button" class="sheet-script-pill active" data-script="bn" role="tab" aria-selected="true">
-                বাংলা (Bengali)
+              <button type="button" class="sheet-script-pill active" data-script="en" role="tab" aria-selected="true">
+                English (Latin) <span class="pill-badge pill-badge-ready">Ready</span>
+              </button>
+              <button type="button" class="sheet-script-pill" data-script="bn" role="tab" aria-selected="false">
+                বাংলা (Bengali) <span class="pill-badge pill-badge-wip">In Progress</span>
               </button>
               <button type="button" class="sheet-script-pill" data-script="hi" role="tab" aria-selected="false">
-                हिन्दी (Hindi)
-              </button>
-              <button type="button" class="sheet-script-pill" data-script="en" role="tab" aria-selected="false">
-                English (Latin)
+                हिन्दी (Hindi) <span class="pill-badge pill-badge-wip">In Progress</span>
               </button>
             </div>
 
+            <div id="script-wip-notice" class="script-wip-notice" hidden>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span><strong>Under active development:</strong> Complex Indic conjunct ligature assembly is currently in progress. English (Latin) handwriting extraction is fully operational.</span>
+            </div>
+
             <div class="sheet-meta-row" id="studio-sheet-meta">
-              <span class="sheet-meta-tag">60 Bengali Cells</span>
-              <span class="sheet-meta-tag">11 স্বর • 39 ব্যঞ্জন • 10 কার</span>
+              <span class="sheet-meta-tag">90 Latin Cells</span>
+              <span class="sheet-meta-tag">A–Z, a–z, 0–9, Punctuation</span>
               <span class="sheet-meta-tag">A4 (100% scale)</span>
             </div>
 
@@ -385,9 +394,9 @@
             </div>
 
             <div class="atelier-action-row">
-              <a class="btn btn-primary btn-lg" id="studio-download-sheet" href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png">
+              <a class="btn btn-primary btn-lg" id="studio-download-sheet" href="guideline-sheet-english.png" download="hatekhori-english-sheet.png">
                 <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span id="studio-sheet-btn-label">Download Bengali Sheet (বাংলা)</span>
+                <span id="studio-sheet-btn-label">Download English Sheet (Latin)</span>
               </a>
               <button type="button" class="btn btn-outline btn-lg" id="btn-proceed-to-upload">
                 Already filled? Proceed to Upload →
@@ -420,9 +429,9 @@
               <div class="workbench-script-row">
                 <span class="workbench-script-label">Sheet Language:</span>
                 <div class="workbench-script-picker" role="tablist" aria-label="Select Sheet Language">
-                  <button type="button" class="workbench-script-pill active" data-script="bn" role="tab" aria-selected="true">বাংলা (60)</button>
-                  <button type="button" class="workbench-script-pill" data-script="en" role="tab" aria-selected="false">English (90)</button>
-                  <button type="button" class="workbench-script-pill" data-script="hi" role="tab" aria-selected="false">हिन्दी (60)</button>
+                  <button type="button" class="workbench-script-pill active" data-script="en" role="tab" aria-selected="true">English (90) <span class="pill-badge pill-badge-ready">Ready</span></button>
+                  <button type="button" class="workbench-script-pill" data-script="bn" role="tab" aria-selected="false">বাংলা (In Progress)</button>
+                  <button type="button" class="workbench-script-pill" data-script="hi" role="tab" aria-selected="false">हिन्दी (In Progress)</button>
                 </div>
               </div>
 
@@ -608,12 +617,68 @@
         </p>
       </div>
       <div class="footer-nav">
+        <button type="button" class="footer-link-btn" id="footer-feedback-btn">Feedback &amp; Bugs</button>
         <button type="button" class="footer-link-btn" id="footer-privacy-btn">Privacy Policy &amp; Terms</button>
-        <a href="mailto:privacy@hatekhori.org?subject=Hatekhori%20Data%20Takedown%20/%20Inquiry" class="footer-link">Abuse / Takedown Contact</a>
-        <a href="https://github.com/hatekhori" target="_blank" rel="noopener noreferrer" class="footer-link">Open Source</a>
+        <a href="mailto:soumik.workmail@gmail.com?subject=Hatekhori%20Data%20Takedown%20/%20Inquiry" class="footer-link">Abuse / Takedown Contact</a>
+        <a href="https://github.com/s0um1kx/Hatekhori" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
       </div>
     </div>
   </footer>
+
+  <!-- User Feedback & Bug Report Modal -->
+  <div id="feedback-modal" class="modal-backdrop" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <h2 id="feedback-modal-title" class="modal-title">Feedback &amp; Bug Report</h2>
+          <span class="modal-subtitle">Help improve Hatekhori's handwriting extraction &amp; font synthesis</span>
+        </div>
+        <button type="button" class="btn-clear modal-close-btn" id="close-feedback-btn" aria-label="Close feedback modal">✕</button>
+      </div>
+      <form id="feedback-form" class="modal-body feedback-form">
+        <div class="form-group">
+          <label for="feedback-category" class="form-label">Category</label>
+          <select id="feedback-category" class="form-select" required>
+            <option value="bug">Bug / Processing Error (sheet didn't scan or compile)</option>
+            <option value="quality">Glyph Quality (letters distorted, clipped, or jagged)</option>
+            <option value="feature">Feature Request (new script, export format, etc.)</option>
+            <option value="general" selected>General Feedback &amp; Suggestions</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="feedback-message" class="form-label">
+            <span>Message / Details <span class="req">*</span></span>
+          </label>
+          <textarea id="feedback-message" class="form-textarea" rows="4" required minlength="3" maxlength="2000" placeholder="Describe the bug or share your feedback..."></textarea>
+          <span class="form-hint" id="feedback-char-count">0 / 2000</span>
+        </div>
+
+        <div class="form-group">
+          <label for="feedback-contact" class="form-label">
+            <span>Contact Info <span class="opt">(optional)</span></span>
+          </label>
+          <input type="text" id="feedback-contact" class="form-input" maxlength="150" placeholder="Email, Discord, or GitHub username for follow-up" />
+        </div>
+
+        <div class="form-group" id="feedback-context-group" hidden>
+          <label class="form-label">
+            <span>Attached Diagnostics <span class="opt">(auto-detected)</span></span>
+          </label>
+          <div class="feedback-diag-box">
+            <span id="feedback-diag-script">Script: English</span>
+            <span id="feedback-diag-upload" hidden>Upload ID: none</span>
+            <div id="feedback-diag-error" class="feedback-diag-error" hidden></div>
+          </div>
+        </div>
+
+        <div class="feedback-foot">
+          <button type="button" class="btn btn-outline" id="btn-cancel-feedback">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-feedback">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Accessible Privacy Policy & Legal Terms Modal (Complies with PRD §6b & docs/privacy-policy.md) -->
   <div id="privacy-modal" class="modal-backdrop" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="privacy-modal-title">
@@ -676,11 +741,11 @@
         </div>
         <div class="policy-section">
           <h4>5. Instant Takedown &amp; Manual Deletion</h4>
-          <p>If you want your generated font removed before 30 days, or need to report unauthorized handwriting, email <a href="mailto:privacy@hatekhori.org">privacy@hatekhori.org</a> with your approximate submission time or script. A human administrator will locate and purge it immediately.</p>
+          <p>If you want your generated font removed before 30 days, or need to report unauthorized handwriting, email <a href="mailto:soumik.workmail@gmail.com">soumik.workmail@gmail.com</a> with your approximate submission time or script. A human administrator will locate and purge it immediately.</p>
         </div>
         <div class="policy-section">
           <h4>6. Self-Hosted Instances</h4>
-          <p>Hatekhori is open source. This policy describes the hosted instance at hatekhori.org. Self-hosted instances operate under their respective operators' terms.</p>
+          <p>Hatekhori is open source on <a href="https://github.com/s0um1kx/Hatekhori" target="_blank" rel="noopener noreferrer">GitHub</a>. This policy describes the hosted instance at hatekhori.org. Self-hosted instances operate under their respective operators' terms.</p>
         </div>
       </div>
       <div class="modal-foot">
@@ -695,19 +760,19 @@
     <div class="sheet-modal-box">
       <div class="sheet-modal-head">
         <div>
-          <h3 id="modal-sheet-title" class="sheet-modal-title">Bengali Guideline Sheet (বাংলা)</h3>
-          <p id="modal-sheet-desc" class="sheet-modal-desc">A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.</p>
+          <h3 id="modal-sheet-title" class="sheet-modal-title">English Guideline Sheet (Latin)</h3>
+          <p id="modal-sheet-desc" class="sheet-modal-desc">A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.</p>
         </div>
         <button type="button" class="btn btn-outline btn-sm" id="btn-close-sheet-modal" aria-label="Close sheet preview">✕</button>
       </div>
       <div class="sheet-modal-body">
-        <img id="modal-sheet-img" src="guideline-sheet-bengali.png" alt="Guideline sheet full preview" class="sheet-modal-img" />
+        <img id="modal-sheet-img" src="guideline-sheet-english.png" alt="Guideline sheet full preview" class="sheet-modal-img" />
       </div>
       <div class="sheet-modal-foot">
         <div class="sheet-modal-tips">
           <span>Print at <strong>100% scale</strong> on standard A4 paper. Do not select "fit to page".</span>
         </div>
-        <a class="btn btn-primary" id="modal-download-sheet" href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png">
+        <a class="btn btn-primary" id="modal-download-sheet" href="guideline-sheet-english.png" download="hatekhori-english-sheet.png">
           Download Sheet (PNG)
         </a>
       </div>

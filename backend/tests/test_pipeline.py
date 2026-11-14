@@ -525,6 +525,47 @@ def test_detect_sheet_script_mismatch():
     assert detected_en == "en" and len(w_en) == 0
 
 
+def test_feedback_endpoint():
+    import json
+    from app.main import FEEDBACK_FILE, _FEEDBACK_LIMITER
+
+    # Reset limiter for testclient
+    _FEEDBACK_LIMITER.requests.clear()
+
+    # 1. Valid feedback submission
+    payload = {
+        "category": "bug",
+        "message": "Encountered a problem during Bengali sheet processing",
+        "contact": "tester@example.com",
+        "script": "bn",
+        "upload_id": "test-upload-123",
+        "error_context": "BadSheetShape: fiducial missing",
+    }
+    resp = client.post("/api/feedback", json=payload)
+    assert resp.status_code == 200, resp.text
+    data = resp.json()
+    assert data["status"] == "ok"
+
+    # Verify written to disk
+    assert FEEDBACK_FILE.exists()
+    with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+        lines = [line.strip() for line in f if line.strip()]
+    assert len(lines) >= 1
+    last_record = json.loads(lines[-1])
+    assert last_record["category"] == "bug"
+    assert "Bengali" in last_record["message"]
+    assert last_record["contact"] == "tester@example.com"
+    assert last_record["script"] == "bn"
+
+    # 2. Validation error: message too short
+    bad_resp = client.post("/api/feedback", json={"category": "bug", "message": "no"})
+    assert bad_resp.status_code == 422
+
+    # 3. Validation error: missing required fields
+    bad_resp2 = client.post("/api/feedback", json={"message": "no category provided"})
+    assert bad_resp2.status_code == 422
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
