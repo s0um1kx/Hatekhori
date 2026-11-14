@@ -17,14 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetUrl: 'guideline-sheet-bengali.png',
       sheetFile: 'hatekhori-bengali-sheet.png',
       sheetName: 'Bengali Sheet (বাংলা)',
-      sheetTitle: 'Get Bengali Guideline Sheet (In Progress)',
-      sheetSubtitle: 'বাংলা বর্ণমালা ও কারচিহ্ন (Under active development — conjunct pipeline WIP)',
+      sheetTitle: 'Get Bengali Guideline Sheet',
+      sheetSubtitle: 'বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)',
       sheetBadge: '10×6 Grid • 60 Cells',
-      sheetMeta: ['60 Bengali Cells', '11 স্বর • 39 ব্যঞ্জন • 10 কার', 'A4 (100% scale)', 'In Progress'],
+      sheetMeta: ['60 Bengali Cells', '11 স্বর • 39 ব্যঞ্জন • 10 কার', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
-      modalTitle: 'Bengali Guideline Sheet (বাংলা) — In Progress',
-      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন). Bengali handwriting & conjuncts under active development.',
-      isWip: true
+      modalTitle: 'Bengali Guideline Sheet (বাংলা)',
+      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.'
     },
     en: {
       font: "'Hatekhori', 'Kalam', cursive",
@@ -37,11 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetTitle: 'Get English Guideline Sheet',
       sheetSubtitle: 'A–Z, a–z, 0–9 & symbols (A4 grid with 4 registration fiducials)',
       sheetBadge: '10×9 Grid • 90 Cells',
-      sheetMeta: ['90 Latin Cells', 'A–Z, a–z, 0–9, Punctuation', 'A4 (100% scale)', 'Ready'],
+      sheetMeta: ['90 Latin Cells', 'A–Z, a–z, 0–9, Punctuation', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (90 Glyphs)',
       modalTitle: 'English Guideline Sheet (Latin)',
-      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.',
-      isWip: false
+      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.'
     },
     hi: {
       font: "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif",
@@ -51,14 +49,13 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetUrl: 'guideline-sheet-hindi.png',
       sheetFile: 'hatekhori-hindi-sheet.png',
       sheetName: 'Hindi Sheet (हिन्दी)',
-      sheetTitle: 'Get Hindi Guideline Sheet (In Progress)',
-      sheetSubtitle: 'देवनागरी वर्णमाला व मात्राएँ (Under active development — conjunct pipeline WIP)',
+      sheetTitle: 'Get Hindi Guideline Sheet',
+      sheetSubtitle: 'देवनागरी वर्णमाला व मात्राएँ (A4 grid with 4 registration fiducials)',
       sheetBadge: '10×6 Grid • 60 Cells',
-      sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)', 'In Progress'],
+      sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
-      modalTitle: 'Hindi Guideline Sheet (हिन्दी) — In Progress',
-      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ). Hindi handwriting & conjuncts under active development.',
-      isWip: true
+      modalTitle: 'Hindi Guideline Sheet (हिन्दी)',
+      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ) with 4 registration fiducials.'
     }
   };
 
@@ -347,19 +344,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (navDownloadSheet) {
       navDownloadSheet.href = s.sheetUrl;
       navDownloadSheet.setAttribute('download', s.sheetFile);
-      navDownloadSheet.textContent = s.isWip ? 'Download sheet (WIP)' : 'Download sheet';
+      navDownloadSheet.textContent = 'Download sheet';
     }
 
     const ctaDownloadSheet = $('#cta-download-sheet');
     if (ctaDownloadSheet) {
       ctaDownloadSheet.href = s.sheetUrl;
       ctaDownloadSheet.setAttribute('download', s.sheetFile);
-      ctaDownloadSheet.textContent = s.isWip ? `Download ${s.sheetName} (In Progress)` : `Download ${s.sheetName}`;
-    }
-
-    const scriptWipNotice = $('#script-wip-notice');
-    if (scriptWipNotice) {
-      scriptWipNotice.hidden = !s.isWip;
+      ctaDownloadSheet.textContent = `Download ${s.sheetName}`;
     }
 
     // Update Studio Card 1 visual preview showcase
@@ -378,7 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (modalDownloadSheet && s.sheetUrl) {
       modalDownloadSheet.href = s.sheetUrl;
       modalDownloadSheet.setAttribute('download', s.sheetFile);
-      modalDownloadSheet.textContent = s.isWip ? `Download ${s.sheetName} (In Progress)` : `Download ${s.sheetName} (A4)`;
+      modalDownloadSheet.textContent = `Download ${s.sheetName} (A4)`;
     }
 
     const studioSheetTitle = $('#studio-sheet-title');
@@ -387,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (studioSheetSub && s.sheetSubtitle) studioSheetSub.textContent = s.sheetSubtitle;
     const studioSheetBtnLabel = $('#studio-sheet-btn-label');
     if (studioSheetBtnLabel && s.sheetName) {
-      studioSheetBtnLabel.textContent = s.isWip ? `Download ${s.sheetName} (In Progress)` : `Download ${s.sheetName}`;
+      studioSheetBtnLabel.textContent = `Download ${s.sheetName}`;
     }
     const studioSheetMeta = $('#studio-sheet-meta');
     if (studioSheetMeta && s.sheetMeta) {
