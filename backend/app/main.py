@@ -406,7 +406,7 @@ class FeedbackPayload(BaseModel):
 
 
 @app.post("/api/feedback")
-async def submit_feedback(payload: FeedbackPayload, request: Request) -> dict:
+def submit_feedback(payload: FeedbackPayload, request: Request) -> dict:
     client_ip = get_client_ip(request)
     if not _FEEDBACK_LIMITER.is_allowed(client_ip):
         raise HTTPException(

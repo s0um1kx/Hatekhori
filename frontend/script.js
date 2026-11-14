@@ -1062,7 +1062,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (stepProgress) stepProgress.hidden = true;
         if (studioEmptyState) studioEmptyState.hidden = false;
         updateStepperPill(spillUpload);
-        alert(`Notice:\n\n${err.message || 'Processing failed.'}`);
+        lastPipelineError = err.message || 'Processing failed.';
+        const shouldReport = confirm(`Processing notice:\n\n${lastPipelineError}\n\nWould you like to report this issue to help fix it?`);
+        if (shouldReport) {
+          openFeedbackModal('bug', lastPipelineError);
+        }
       } finally {
         updateCompileButtonState();
       }
