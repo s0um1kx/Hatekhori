@@ -836,6 +836,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (navLaunchStudio) navLaunchStudio.addEventListener('click', () => switchView('studio'));
   if (heroEnterStudio) heroEnterStudio.addEventListener('click', () => switchView('studio'));
   if (ctaEnterStudio) ctaEnterStudio.addEventListener('click', () => switchView('studio'));
+  const footerLaunchStudio = $('#footer-launch-studio');
+  if (footerLaunchStudio) footerLaunchStudio.addEventListener('click', () => switchView('studio'));
   if (studioBackBtn) studioBackBtn.addEventListener('click', () => switchView('landing'));
 
   // Stage tabs & navigation controls
