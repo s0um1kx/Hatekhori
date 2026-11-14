@@ -6,121 +6,257 @@
   <title>Hatekhori — Your handwriting, set as type</title>
   <meta name="description" content="Write one sheet by hand. Get an installable OpenType font in your own hand. English, Bengali, and Hindi." />
 
-  <!-- The Offline Network Design System Fonts: IBM Plex Mono & Plus Jakarta Sans, plus Indic scripts -->
+  <!-- The Offline Network Design System Fonts: IBM Plex Mono & Space Grotesk, plus Indic scripts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=3.0" />
+  <link rel="stylesheet" href="style.css?v=3.5" />
 </head>
 <body>
 
-  <!-- Minimal Navigation -->
-  <nav class="nav">
+  <!-- Premium TON Architectural Navigation -->
+  <nav class="nav ton-nav" id="site-nav">
     <div class="wrap nav-inner">
-      <a href="#" class="brand">
-        <span class="brand-badge-dot" aria-hidden="true"></span>
-        <span class="brand-name">Hatekhori</span>
-        <span class="brand-sub">হাতে খড়ি</span>
-        <span class="brand-ver">v2.4</span>
+      <a href="#" class="brand-frame-link" id="brand-home" aria-label="Hatekhori Home">
+        <span class="brand-frame">
+          <span class="brand-frame-initials">HK</span>
+          <span class="brand-frame-dot" aria-hidden="true"></span>
+        </span>
+        <span class="brand-name">HATEKHORI</span>
       </a>
+
       <div class="nav-links">
-        <a href="#how">How it works</a>
-        <a href="#specimen">Specimen</a>
-        <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" id="nav-download-sheet">Download sheet</a>
-        <button type="button" class="nav-link-btn" id="nav-feedback-btn">Feedback</button>
-        <button type="button" class="nav-link-btn" id="nav-privacy-btn">Privacy &amp; Terms</button>
+        <a href="#how" class="nav-link-item">HOW IT WORKS <span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <a href="#specimen" class="nav-link-item">SPECIMEN <span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <a href="#manifesto" class="nav-link-item">MANIFESTO <span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" id="nav-download-sheet" class="nav-link-item">SHEETS <span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <button type="button" class="nav-link-btn" id="nav-feedback-btn">FEEDBACK <span class="nav-arrow" aria-hidden="true">↗</span></button>
+        <button type="button" class="nav-link-btn" id="nav-privacy-btn">TERMS <span class="nav-arrow" aria-hidden="true">↗</span></button>
       </div>
-      <button type="button" class="btn btn-primary" id="nav-launch-studio">
-        <span>Launch Studio</span>
-        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
+
+      <div class="nav-right">
+        <span id="header-clock" class="header-clock" aria-label="Indian Standard Time">--:--:-- [IST]</span>
+        <button type="button" class="btn btn-fire-pill" id="nav-launch-studio">
+          <span>LAUNCH STUDIO</span>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </button>
+      </div>
     </div>
   </nav>
 
-  <!-- VIEW 1: MINIMAL LANDING PAGE -->
+  <!-- VIEW 1: PREMIUM ARCHITECTURAL LANDING PAGE -->
   <div id="landing-view" class="view-panel active-view">
 
-    <!-- Hero Section -->
-    <header class="hero">
-      <div class="wrap">
+    <!-- Hero Section (Dark Ambient Ember Cinematic Stage) -->
+    <header class="ton-hero">
+      <div class="hero-ambient-glow" aria-hidden="true"></div>
+
+      <div class="wrap hero-wrap">
         <div class="hero-eyebrow-pill">
           <span class="pulse-beacon" aria-hidden="true"></span>
-          <span>UNFILTERED VECTOR ENGINE • ZERO AI HALLUCINATION</span>
+          <span>ON A HOT STREAK • STREAM 01 • YOUR HANDWRITING AS LIVING TYPE</span>
         </div>
-        <h1 class="hero-title">Your handwriting, <span class="hero-accent">set as type.</span></h1>
-        <p class="hero-lead">
-          Print one sheet. Write with your pen. Snap a photo with your phone and get an installable OpenType font in your own hand. Built for English, Bengali, and Hindi.
+
+        <h1 class="hero-display-title">Turn ink into code.<br><span class="hero-display-accent">Your handwriting, set as type.</span></h1>
+        
+        <p class="hero-display-lead">
+          Write one sheet by hand. Snap a photo with your phone and get an authentic, installable OpenType (.otf) font with zero AI hallucinations, mathematical Béziers, and 1,000+ Indic glyphs.
         </p>
 
-        <div class="hero-actions">
-          <button type="button" class="btn btn-primary btn-lg" id="hero-enter-studio">
-            <span>Launch Font Studio</span>
-            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
-          <div class="hero-download-group">
-            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
-              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>English Sheet (Latin)</span>
-            </a>
-            <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="hero-download-sheet">
-              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Bengali Sheet (বাংলা)</span>
-            </a>
-            <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="btn btn-outline" id="hero-download-hindi">
-              <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Hindi Sheet (हिन्दी)</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="hero-meta">
-          <span class="meta-tag"><span class="meta-dot"></span>Zero AI Hallucinations</span>
-          <span class="meta-tag"><span class="meta-dot"></span>100% Vector Béziers</span>
-          <span class="meta-tag"><span class="meta-dot"></span>1,000+ Indic Glyphs</span>
-          <span class="meta-tag"><span class="meta-dot"></span>OpenType (.otf)</span>
-          <span class="meta-tag"><span class="meta-dot"></span>Potrace Tracing</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Minimal Specimen Section -->
-    <section class="section" id="specimen">
-      <div class="wrap">
-        <div class="specimen-header">
-          <span class="eyebrow">Interactive Specimen</span>
-          <h2>Type with a sample hand.</h2>
-          <p class="sub">Switch scripts or edit the text. Your custom font replaces it once compiled.</p>
-        </div>
-
-        <div class="specimen-box">
-          <div class="specimen-bar">
-            <div class="script-tabs" role="tablist" aria-label="Script Selection">
-              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="en">English (Latin)</button>
-              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="bn">Bengali (বাংলা)</button>
-              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="hi">Hindi (हिन्दी)</button>
+        <!-- Cinematic Hero Showcase Card (Interactive Specimen Plate) -->
+        <div class="hero-showcase-card">
+          <div class="showcase-card-header">
+            <div class="card-chip-tag">
+              <span class="chip-dot" aria-hidden="true"></span>
+              <span>STREAM 01 • REAL-TIME VECTOR ENGINE TESTBED</span>
             </div>
 
-            <div class="specimen-font-badge" id="specimen-font-badge">
+            <div class="card-script-tabs" role="tablist" aria-label="Select Specimen Script">
+              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="en">English (Latin)</button>
+              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="bn">বাংলা (Bengali)</button>
+              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="hi">हिन्दी (Hindi)</button>
+            </div>
+
+            <div class="card-font-readout" id="specimen-font-badge">
               Active Typeface: <strong>Hatekhori Regular (hatekhori.otf)</strong>
             </div>
-
-            <div class="specimen-size">
-              <label for="hero-size-slider">Size: <strong id="hero-size-readout">48px</strong></label>
-              <input type="range" id="hero-size-slider" min="28" max="84" value="48" />
-            </div>
           </div>
 
-          <div class="specimen-canvas" id="hero-canvas-plate">
+          <div class="showcase-card-stage">
+            <div class="stage-scale-control">
+              <label for="hero-size-slider">SCALE: <strong id="hero-size-readout">48px</strong></label>
+              <input type="range" id="hero-size-slider" min="28" max="84" value="48" />
+            </div>
+
             <textarea 
               id="hero-live-text" 
-              class="specimen-textarea" 
+              class="showcase-textarea" 
               rows="3" 
               spellcheck="false" 
               aria-label="Interactive Specimen Text"
               style="font-family: 'Hatekhori', 'Kalam', cursive;"
             >The quick brown fox jumps over the lazy dog. 12345</textarea>
           </div>
+
+          <div class="showcase-card-actionbar">
+            <div class="card-actions-left">
+              <button type="button" class="btn btn-fire-pill btn-lg" id="hero-enter-studio">
+                <span>LAUNCH FONT STUDIO</span>
+                <span class="arrow" aria-hidden="true">↗</span>
+              </button>
+            </div>
+
+            <div class="card-actions-right">
+              <span class="download-label">GUIDELINE SHEETS:</span>
+              <div class="hero-download-group">
+                <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline-pill" id="hero-download-english">
+                  <span>English (Latin) ↗</span>
+                </a>
+                <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline-pill" id="hero-download-sheet">
+                  <span>বাংলা (Bengali) ↗</span>
+                </a>
+                <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="btn btn-outline-pill" id="hero-download-hindi">
+                  <span>हिन्दी (Hindi) ↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <a href="#ticker-bar" class="scroll-explore-link">
+          <span>SCROLL TO EXPLORE</span>
+          <svg class="scroll-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </a>
+
+      </div>
+    </header>
+
+    <!-- SECTION: LIVE TICKER & SPECS ARCHITECTURE -->
+    <section class="ticker-section" id="ticker-bar">
+      <div class="wrap ticker-wrap">
+        
+        <div class="ticker-top-row">
+          <div class="ticker-live-status">
+            <span class="ticker-beacon" aria-hidden="true"></span>
+            <span><strong>ACTIVE ENGINE:</strong> REAL-TIME VECTOR EXTRACTION • ZERO AI HALLUCINATIONS</span>
+          </div>
+
+          <div class="ticker-info-block">
+            <span class="ticker-info-title">INFO.</span>
+            <p class="ticker-info-desc">REAL-TIME SIGNAL FOR VECTOR TYPOGRAPHY; YOUR HANDWRITING, DECODED AS IT HAPPENS.</p>
+            <div class="ticker-pills">
+              <a href="#specimen" class="btn btn-pill-sm">SPECIMEN ↗</a>
+              <button type="button" class="btn btn-pill-sm" id="ticker-launch-studio">STUDIO ↗</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticker-specs-bar">
+          <span class="specs-bar-label">ENGINE ARCHITECTURE</span>
+          <div class="specs-chips">
+            <span class="spec-chip">90 Latin Cells</span>
+            <span class="spec-chip">60 Bengali Glyphs</span>
+            <span class="spec-chip">60 Devanagari Glyphs</span>
+            <span class="spec-chip">100% Vector Béziers</span>
+            <span class="spec-chip">OpenType (.otf) CFF</span>
+            <span class="spec-chip">Potrace Sub-pixel Tracing</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: THE MONUMENTAL MANIFESTO -->
+    <section class="manifesto-section" id="manifesto">
+      <div class="manifesto-grid-bg" aria-hidden="true">
+        <svg class="manifesto-bezier-svg" viewBox="0 0 1000 600" fill="none" preserveAspectRatio="none">
+          <path d="M-50,300 C200,50 400,550 700,200 C850,-10 950,450 1100,250" stroke="rgba(224, 62, 26, 0.12)" stroke-width="1.5" stroke-dasharray="4 6"/>
+          <path d="M-50,150 C300,500 500,-50 800,350 C950,550 1000,100 1100,400" stroke="rgba(243, 112, 34, 0.08)" stroke-width="1.5"/>
+          <circle cx="200" cy="50" r="3" fill="#E03E1A" opacity="0.3"/>
+          <circle cx="400" cy="550" r="3" fill="#E03E1A" opacity="0.3"/>
+          <circle cx="700" cy="200" r="3" fill="#E03E1A" opacity="0.3"/>
+        </svg>
+      </div>
+
+      <div class="wrap manifesto-wrap">
+        <span class="crosshair crosshair-tl" aria-hidden="true">+</span>
+        <span class="crosshair crosshair-tr" aria-hidden="true">+</span>
+        <span class="crosshair crosshair-bl" aria-hidden="true">+</span>
+        <span class="crosshair crosshair-br" aria-hidden="true">+</span>
+
+        <span class="manifesto-micro-tag">INDIA'S FIRST HANDWRITING-TO-OPENTYPE ENGINE — ZERO AI HALLUCINATIONS.</span>
+
+        <h2 class="manifesto-headline">
+          HATEKHORI IS WHERE HANDWRITING TURNS INTO INSTALLABLE OPENTYPE FONTS — WITH ZERO PROMPTS, ZERO PREDICTION, AND ZERO POSTURING. JUST SHARP, MATHEMATICALLY ACCURATE BÉZIER CURVES THAT PRESERVE EVERY NATURAL STROKE, PRESSURE VARIATION, AND PERSONAL INK TRAIL ACROSS 1,000+ INDIC &amp; LATIN GLYPHS.
+        </h2>
+      </div>
+    </section>
+
+    <!-- SECTION: PIPELINE / HOW IT WORKS -->
+    <section class="pipeline-section" id="how">
+      <div class="wrap">
+        
+        <div class="pipeline-header">
+          <div class="section-pill">
+            <span class="chip-dot" aria-hidden="true"></span>
+            <span>PIPELINE OVERVIEW</span>
+          </div>
+
+          <h2 class="pipeline-headline">
+            WE EXTRACT YOUR GENUINE PEN STROKES WITH SUB-PIXEL GEOMETRIC PRECISION.
+          </h2>
+
+          <div class="section-divider-tag">
+            <span>ENGINE PIPELINE</span>
+          </div>
+        </div>
+
+        <div class="pipeline-grid">
+          
+          <div class="pipeline-card">
+            <span class="card-num">01</span>
+            <h3 class="card-title">PRINT &amp; WRITE</h3>
+            <p class="card-desc">Download our calibrated A4 guideline sheet. Fill character cells using your natural ink pen or marker. 4 optical corner fiducials ensure sub-millimeter registration.</p>
+            <div class="card-foot">
+              <a href="guideline-sheet-english.png" download class="card-link-pill">Download Sheet (A4) ↗</a>
+            </div>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-num">02</span>
+            <h3 class="card-title">SNAP &amp; RECTIFY</h3>
+            <p class="card-desc">Photograph the paper directly overhead with your smartphone. Computer vision detects corner fiducials, calculates the 3×3 homography matrix, and flattens skew in 100ms.</p>
+            <div class="card-foot">
+              <span class="card-meta-tag">Auto-Homography Matrix</span>
+            </div>
+          </div>
+
+          <div class="pipeline-card">
+            <span class="card-num">03</span>
+            <h3 class="card-title">TRACE &amp; COMPILE</h3>
+            <p class="card-desc">Potrace traces contours into smooth Bézier splines, normalizes baseline heights and proportional advance widths, and compiles a valid .OTF CFF font table.</p>
+            <div class="card-foot">
+              <span class="card-meta-tag">OpenType (.otf) Binary</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: FULL TYPOGRAPHIC SPECIMEN & MATRIX -->
+    <section class="section specimen-section" id="specimen">
+      <div class="wrap">
+        <div class="specimen-header">
+          <div class="section-pill">
+            <span class="chip-dot" aria-hidden="true"></span>
+            <span>TYPE ARCHITECTURE</span>
+          </div>
+          <h2>Interactive Specimen &amp; Glyph Matrix</h2>
+          <p class="sub">Inspect individual extracted glyphs, Unicode codepoints, optical size scales, and typographic proportions.</p>
         </div>
 
         <!-- Glyph Matrix & Inspector -->
@@ -135,7 +271,7 @@
           </div>
         </div>
 
-        <!-- Full Typographic Specimen Deck (Hatekhori Type Showcase) -->
+        <!-- Typographic Specimen Deck -->
         <div class="type-specimen-deck">
           
           <!-- Card 1: Complete Character Sets -->
@@ -247,59 +383,71 @@
       </div>
     </section>
 
-    <!-- Minimal How It Works Section -->
-    <section class="section" id="how">
-      <div class="wrap">
-        <div class="section-heading">
-          <span class="eyebrow">The Process</span>
-          <h2>One sheet in. One font out.</h2>
-        </div>
-
-        <div class="steps-grid">
-          <div class="step-col">
-            <span class="step-num">01</span>
-            <h3>Print &amp; write</h3>
-            <p>Download the free A4 sheet. Fill each character cell with your preferred pen in dark ink.</p>
-          </div>
-          <div class="step-col">
-            <span class="step-num">02</span>
-            <h3>Snap a photo</h3>
-            <p>Photograph the paper directly from above with your phone. 4 corner fiducial markers auto-deskew perspective.</p>
-          </div>
-          <div class="step-col">
-            <span class="step-num">03</span>
-            <h3>Install &amp; own</h3>
-            <p>The vector engine traces sub-pixel Béziers and outputs a genuine .OTF font file for Mac, Windows, iOS, and Web.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Minimal CTA Banner -->
-    <section class="section cta-section">
+    <!-- SECTION: PRE-FOOTER CTA BANNER -->
+    <section class="section ton-cta-section">
       <div class="wrap text-center">
-        <h2>Make your font today.</h2>
-        <p class="sub">Free and open source. Runs entirely on your browser and server.</p>
+        <div class="section-pill mb-4">
+          <span class="chip-dot" aria-hidden="true"></span>
+          <span>GET STARTED IN 2 MINUTES</span>
+        </div>
+        <h2 class="ton-cta-title">Build your personal font today.</h2>
+        <p class="ton-cta-sub">Free and open source. Runs entirely on your browser and server with zero AI hallucination.</p>
         <div class="hero-actions justify-center">
-          <button type="button" class="btn btn-primary" id="cta-enter-studio">
-            Launch Font Studio →
+          <button type="button" class="btn btn-fire-pill btn-lg" id="cta-enter-studio">
+            <span>LAUNCH FONT STUDIO</span>
+            <span class="arrow" aria-hidden="true">↗</span>
           </button>
-          <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="cta-download-sheet">
-            Download Guideline Sheet (A4)
+          <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline-pill btn-lg" id="cta-download-sheet">
+            <span>Download Guideline Sheet (A4) ↗</span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Minimal Footer -->
-    <footer class="footer">
-      <div class="wrap footer-inner">
-        <span>Hatekhori (হাতে খড়ি)</span>
-        <div class="footer-links">
-          <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png">Guideline Sheet</a>
-          <a href="https://github.com/s0um1kx/Hatekhori/blob/main/docs/PRD.md" target="_blank" rel="noopener noreferrer">Architecture</a>
-          <a href="https://github.com/s0um1kx/Hatekhori" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <!-- GLOWING EMBER LIGHTBAR DIVIDER -->
+    <div class="ton-lightbar-divider" aria-hidden="true"></div>
+
+    <!-- GRAND FOOTER (TON ARCHITECTURAL STATEMENT) -->
+    <footer class="ton-footer">
+      <div class="wrap">
+        
+        <div class="footer-top-row">
+          <div class="footer-huge-brand">HATEKHORI</div>
+          <button type="button" class="btn btn-fire-pill btn-xl" id="footer-enter-studio">
+            <span>LAUNCH FONT STUDIO</span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </button>
         </div>
+
+        <div class="footer-middle-row">
+          <div class="footer-pill-links">
+            <a href="https://github.com/s0um1kx/Hatekhori" target="_blank" rel="noopener noreferrer" class="footer-icon-pill">
+              <span>GITHUB ↗</span>
+            </a>
+            <a href="https://github.com/s0um1kx/Hatekhori/blob/main/docs/PRD.md" target="_blank" rel="noopener noreferrer" class="footer-icon-pill">
+              <span>DOCS ↗</span>
+            </a>
+            <button type="button" class="footer-icon-pill" id="footer-feedback-btn">
+              <span>FEEDBACK ↗</span>
+            </button>
+            <button type="button" class="footer-icon-pill" id="footer-privacy-btn">
+              <span>PRIVACY &amp; TERMS ↗</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="footer-bottom-bar">
+          <div class="footer-bottom-left">
+            <span>PRIVACY • TERMS</span>
+          </div>
+          <div class="footer-bottom-center">
+            <span>ENGINE: LIVE@HATEKHORI.STUDIO</span>
+          </div>
+          <div class="footer-bottom-right">
+            <span>&copy; 2026 HATEKHORI. ALL RIGHTS RESERVED.</span>
+          </div>
+        </div>
+
       </div>
     </footer>
 
