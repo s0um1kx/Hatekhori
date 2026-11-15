@@ -1,5 +1,6 @@
 import asyncio
 from contextlib import asynccontextmanager
+import hashlib
 import io
 import sys
 import tempfile
@@ -178,7 +179,7 @@ app = FastAPI(title="Hatekhori", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -232,12 +233,12 @@ def privacy_policy() -> dict:
             "rejected_upload_hashes": "SHA-256 hash only (never raw photos) kept up to 90 days for abuse detection.",
         },
         "legal_warranty": "Submitting users certify they own or have permission to convert their handwriting. Signature forgery is strictly prohibited.",
-        "abuse_and_takedown_contact": "soumik.workmail@gmail.com",
+        "abuse_and_takedown_contact": "privacy@hatekhori.org",
     }
 
 
 @app.get("/guideline-sheet.png")
-def guideline_sheet(script: str = "en") -> Response:
+def guideline_sheet(script: str = "bn") -> Response:
     content = _get_guideline_sheet_bytes(script)
     s = script.lower()
     name = "english" if s == "en" else ("hindi" if s == "hi" else "bengali")
@@ -424,7 +425,7 @@ def submit_feedback(payload: FeedbackPayload, request: Request) -> dict:
             detail="Too many feedback submissions. Please wait a minute before sending another.",
         )
 
-    ip_hash = f"ip_{abs(hash(client_ip)) % 1000000:06d}"
+    ip_hash = f"ip_{hashlib.sha256(client_ip.encode()).hexdigest()[:8]}"
     record = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "client_id": ip_hash,
@@ -456,4 +457,17 @@ if not FRONTEND_DIR.exists():
     FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 if not FRONTEND_DIR.exists():
     FRONTEND_DIR = Path.cwd() / "frontend"
+
+
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc: Exception):
+    """Serve branded 404 page for browser visits; plain text for API/curl."""
+    if "text/html" in request.headers.get("accept", ""):
+        page_404 = FRONTEND_DIR / "404.html"
+        if page_404.exists():
+            return FileResponse(page_404, status_code=404)
+    detail = getattr(exc, "detail", "Not Found")
+    return PlainTextResponse(f"404 Not Found: {detail}", status_code=404)
+
+
 app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

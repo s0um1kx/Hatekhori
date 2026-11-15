@@ -638,7 +638,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getApiBase() {
     if (window.location.protocol === 'file:') return 'http://127.0.0.1:8000';
-    if (window.location.port && window.location.port !== '8000') return 'http://127.0.0.1:8000';
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (isLocal && window.location.port && window.location.port !== '8000') return 'http://127.0.0.1:8000';
     return '';
   }
 
@@ -833,7 +834,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const res = await fetch('/api/feedback', {
+        const res = await fetch(`${getApiBase()}/api/feedback`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -1290,7 +1291,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- 6. Initial Page Boot ---
-  setScript('en');
+  setScript('bn');
   setStudioStage('sheet');
   updateCompileButtonState();
   handleRoute();
