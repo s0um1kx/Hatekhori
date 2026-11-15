@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>404 · Not Found — Hatekhori (হাতে খড়ি)</title>
+  <title>404: Page not found | Hatekhori (হাতে খড়ি)</title>
   
   <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png" />
   <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
@@ -15,27 +15,30 @@
 
   <style>
     :root {
-      --bg: #F2ECE1;
+      --bg: #F4EFE6;
+      --card-bg: #FFFFFF;
       --fg: #111111;
       --ink: #0034D3;
-      --ink-deep: #003087;
       --muted: #666666;
       --border: #DCD4C5;
-      --subtle: #E8E0D2;
+      --subtle: #F0EAE0;
+      --nav-bg: rgba(244, 239, 230, 0.9);
       --font-serif: "Instrument Serif", Georgia, serif;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       --font-mono: "DM Mono", monospace;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0D0D0D;
+        --bg: #0A0A0A;
+        --card-bg: #121214;
         --fg: #F0F0F0;
-        --ink: #4D7CFF;
-        --ink-deep: #80A3FF;
-        --muted: #888888;
-        --border: #242424;
-        --subtle: #141414;
+        --ink: #6B95FF;
+        --muted: #8E8E93;
+        --border: rgba(255, 255, 255, 0.08);
+        --subtle: rgba(255, 255, 255, 0.04);
+        --nav-bg: rgba(10, 10, 10, 0.85);
       }
     }
 
@@ -45,114 +48,352 @@
       padding: 0;
     }
 
+    html, body {
+      min-height: 100vh;
+    }
+
     body {
       background: var(--bg);
       color: var(--fg);
       font-family: var(--font-sans);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
-    .error-card {
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      padding: 48px 36px;
-      border-radius: 4px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    /* Minimal Top Navigation */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
     }
 
+    .nav-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-style: italic;
+      color: var(--fg);
+      text-decoration: none;
+      transition: opacity 160ms var(--ease-out);
+    }
+
+    .brand:hover {
+      opacity: 0.8;
+    }
+
+    .brand-symbol {
+      flex-shrink: 0;
+      color: var(--fg);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 160ms var(--ease-out);
+    }
+
+    .nav-links a:hover {
+      color: var(--fg);
+    }
+
+    /* Centered Stage */
+    .error-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+
+    /* Error Card */
+    .error-card {
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 44px 36px 36px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      position: relative;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .error-card {
+        animation: cardEnter 240ms var(--ease-out);
+      }
+      @keyframes cardEnter {
+        from {
+          opacity: 0;
+          transform: scale(0.98) translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    }
+
+    /* Hero Emblem Badge */
+    .emblem-wrapper {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .emblem-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(77, 124, 255, 0.22) 0%, transparent 70%);
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    @media (prefers-color-scheme: light) {
+      .emblem-glow {
+        display: none;
+      }
+    }
+
+    .emblem-tile {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: transform 160ms var(--ease-out);
+    }
+
+    .emblem-tile:hover {
+      transform: scale(1.04);
+    }
+
+    .emblem-svg {
+      width: 38px;
+      height: 38px;
+      display: block;
+    }
+
+    /* Brand Subtitle */
+    .brand-caption {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 14px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Badge */
     .badge-code {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink);
-      background: var(--subtle);
-      border: 1px solid var(--border);
-      padding: 4px 12px;
+      background: rgba(77, 124, 255, 0.08);
+      border: 1px solid rgba(77, 124, 255, 0.22);
+      padding: 4px 14px;
       border-radius: 99px;
       margin-bottom: 20px;
     }
 
-    .glyph-mark {
-      font-family: var(--font-serif);
-      font-size: 56px;
-      line-height: 1;
-      color: var(--fg);
-      margin-bottom: 16px;
-      user-select: none;
+    @media (prefers-color-scheme: light) {
+      .badge-code {
+        background: var(--subtle);
+        border-color: var(--border);
+        color: var(--ink);
+      }
     }
 
+    /* Heading */
     h1 {
       font-family: var(--font-serif);
-      font-size: 34px;
+      font-size: 38px;
       font-weight: 400;
-      line-height: 1.2;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
       margin-bottom: 12px;
       color: var(--fg);
     }
 
+    /* Description */
     p {
       color: var(--muted);
       font-size: 15px;
-      margin-bottom: 28px;
+      line-height: 1.6;
+      max-width: 42ch;
+      margin-bottom: 30px;
     }
 
-    .btn-home {
+    /* Luminous Action Button */
+    .btn-return {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      background: var(--fg);
-      color: var(--bg);
       text-decoration: none;
-      padding: 12px 24px;
+      padding: 12px 28px;
       font-size: 14px;
       font-weight: 500;
-      border-radius: 4px;
-      transition: opacity 160ms ease, transform 160ms ease;
+      border-radius: 8px;
+      transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), border-color 160ms var(--ease-out);
     }
 
-    .btn-home:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
+    @media (prefers-color-scheme: dark) {
+      .btn-return {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.07) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: #FFFFFF;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0, 0, 0, 0.45);
+      }
+      .btn-return:hover {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.11) 100%);
+        border-color: rgba(255, 255, 255, 0.45);
+        transform: translateY(-2px);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 12px 32px rgba(0, 0, 0, 0.55);
+      }
     }
 
-    .btn-home:active {
-      transform: scale(0.98);
+    @media (prefers-color-scheme: light) {
+      .btn-return {
+        background: #111111;
+        border: 1px solid #111111;
+        color: #FFFFFF;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+      }
+      .btn-return:hover {
+        background: #242424;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+      }
     }
 
+    .btn-return:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .btn-arrow {
+      flex-shrink: 0;
+      transition: transform 160ms var(--ease-out);
+    }
+
+    .btn-return:hover .btn-arrow {
+      transform: translateX(3px);
+    }
+
+    /* Footer Note */
     .footer-note {
-      margin-top: 36px;
+      margin-top: 32px;
       font-size: 12px;
       color: var(--muted);
       font-family: var(--font-mono);
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .nav-links {
+        display: none;
+      }
+      .error-card {
+        padding: 36px 24px 28px;
+      }
+      h1 {
+        font-size: 30px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <main class="error-card">
-    <span class="badge-code">Error 404 · পাতাটি মেলেনি</span>
-    <div class="glyph-mark" aria-hidden="true">হ</div>
-    <h1>Page or Font Not Found</h1>
-    <p>
-      The link you followed doesn't exist, was moved, or its generated font has passed the 30-day privacy retention window and was purged from our server.
-    </p>
-    <a href="/" class="btn-home">
-      <span>Return to Hatekhori Canvas</span>
-      <span aria-hidden="true">→</span>
-    </a>
-    <div class="footer-note">হাতে খড়ি · Digital Handwriting Atelier</div>
+  <header class="top-nav">
+    <div class="nav-wrap">
+      <a href="/" class="brand" aria-label="Hatekhori home">
+        <svg class="brand-symbol" width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+          <path d="M44 36H96V108H160V36H192L212 56V220H160V148L128 180L96 148V220H44Z"/>
+        </svg>
+        <span>Hatekhori</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Studio</a>
+        <a href="/#specimen">Specimen</a>
+        <a href="/#how">How it works</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="error-stage" role="main">
+    <div class="error-card">
+      <div class="emblem-wrapper">
+        <div class="emblem-glow" aria-hidden="true"></div>
+        <div class="emblem-tile" aria-hidden="true">
+          <svg class="emblem-svg" viewBox="0 0 256 256" fill="currentColor">
+            <path d="M44 36H96V108H160V36H192L212 56V220H160V148L128 180L96 148V220H44Z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="brand-caption">Hatekhori</div>
+
+      <div class="badge-code">Error 404: পাতাটি মেলেনি</div>
+
+      <h1>Page or font not found</h1>
+
+      <p>
+        This link does not exist, or the generated font passed its 30-day retention window and was removed from the server.
+      </p>
+
+      <a href="/" class="btn-return">
+        <span>Return to the studio</span>
+        <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+
+      <div class="footer-note">হাতে খড়ি: digital handwriting atelier</div>
+    </div>
   </main>
 
 </body>
