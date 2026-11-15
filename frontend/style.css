@@ -237,6 +237,16 @@ a:hover {
   gap: 8px;
   cursor: pointer;
   user-select: none;
+  transition: border-color var(--duration-fast), background-color var(--duration-fast), transform var(--duration-fast);
+}
+
+.btn-dropdown:hover {
+  border-color: var(--fg);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-dropdown:active {
+  transform: scale(0.98);
 }
 
 .nav-dropdown-trigger {
@@ -249,23 +259,25 @@ a:hover {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  padding: 0;
+  padding: 4px 0;
   transition: color var(--duration-fast) var(--ease-out);
   user-select: none;
 }
 
 .nav-dropdown-trigger:hover,
-.nav-dropdown-trigger[aria-expanded="true"] {
+.nav-dropdown-trigger[aria-expanded="true"],
+.sheet-dropdown:hover .nav-dropdown-trigger {
   color: var(--fg);
 }
 
 .dropdown-chevron {
-  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 
 .sheet-dropdown.is-open .dropdown-chevron,
-.sheet-dropdown [aria-expanded="true"] .dropdown-chevron {
+.sheet-dropdown [aria-expanded="true"] .dropdown-chevron,
+.sheet-dropdown:hover .dropdown-chevron {
   transform: rotate(180deg);
 }
 
@@ -275,21 +287,34 @@ a:hover {
   left: 0;
   min-width: 300px;
   max-width: 340px;
-  background: #141414;
+  background: rgba(18, 18, 18, 0.96);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 150;
   display: flex;
   flex-direction: column;
   gap: 4px;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-6px) scale(0.97);
+  transform: translateY(-8px) scale(0.96);
   transform-origin: top left;
-  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), visibility 160ms;
+  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1), transform 200ms cubic-bezier(0.16, 1, 0.3, 1), visibility 200ms;
   pointer-events: none;
+}
+
+/* Invisible hover bridge: covers the gap so cursor moving to the menu never triggers mouseleave */
+.sheet-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: transparent;
 }
 
 .sheet-dropdown.is-open .sheet-dropdown-menu {
@@ -299,16 +324,30 @@ a:hover {
   pointer-events: auto;
 }
 
+/* Hover-activated opening on pointer-enabled devices */
+@media (hover: hover) {
+  .sheet-dropdown:hover .sheet-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .cta-sheet-dropdown:hover .sheet-dropdown-menu {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 /* Nav dropdown alignment */
 .nav-sheet-dropdown .sheet-dropdown-menu {
-  top: calc(100% + 16px);
+  top: calc(100% + 14px);
   left: 0;
 }
 
 /* CTA centered dropdown alignment */
 .cta-sheet-dropdown .sheet-dropdown-menu {
   left: 50%;
-  transform: translateX(-50%) translateY(-6px) scale(0.97);
+  transform: translateX(-50%) translateY(-8px) scale(0.96);
   transform-origin: top center;
 }
 
@@ -320,21 +359,26 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-radius: 6px;
   text-decoration: none;
   color: var(--fg);
   background: transparent;
-  transition: background-color var(--duration-fast), transform var(--duration-fast);
+  transition: background-color 140ms ease, transform 140ms cubic-bezier(0.16, 1, 0.3, 1), border-color 140ms ease;
   border: 1px solid transparent;
   text-align: left;
 }
 
 .sheet-dropdown-item:hover,
 .sheet-dropdown-item:focus-visible {
-  background: var(--subtle);
-  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(3px);
   outline: none;
+}
+
+.sheet-dropdown-item:hover .sheet-item-title {
+  color: #ffffff;
 }
 
 .sheet-dropdown-item:active {
@@ -352,6 +396,7 @@ a:hover {
   font-size: 13.5px;
   font-weight: 500;
   color: var(--fg);
+  transition: color 140ms ease;
 }
 
 .sheet-item-tag {
@@ -359,9 +404,17 @@ a:hover {
   font-size: 10.5px;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.sheet-dropdown-item:hover .sheet-item-tag {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
 }
 
 .sheet-item-desc {
@@ -382,6 +435,15 @@ a:hover {
     left: 50%;
     min-width: 270px;
     max-width: calc(100vw - 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-dropdown-menu,
+  .dropdown-chevron,
+  .sheet-dropdown-item {
+    transition: none !important;
+    transform: none !important;
   }
 }
 

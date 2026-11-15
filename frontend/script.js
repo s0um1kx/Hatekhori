@@ -944,15 +944,44 @@ document.addEventListener("DOMContentLoaded", () => {
   if (footerLaunchStudio) footerLaunchStudio.addEventListener('click', () => switchView('studio'));
   if (studioBackBtn) studioBackBtn.addEventListener('click', () => switchView('landing'));
 
-  // --- Sheet Download Dropdowns (Navbar, Hero, CTA) ---
+  // --- Sheet Download Dropdowns (Navbar, Hero, CTA) with Fluid Hover & Touch Support ---
   const sheetDropdowns = $$('.sheet-dropdown');
+  const dropdownCloseTimers = new Map();
 
-  function closeAllSheetDropdowns() {
-    sheetDropdowns.forEach((dd) => {
+  function openDropdown(dd) {
+    if (dropdownCloseTimers.has(dd)) {
+      clearTimeout(dropdownCloseTimers.get(dd));
+      dropdownCloseTimers.delete(dd);
+    }
+    // Close other dropdowns
+    sheetDropdowns.forEach((other) => {
+      if (other !== dd) closeDropdown(other, true);
+    });
+    dd.classList.add('is-open');
+    const trigger = dd.querySelector('[aria-haspopup="true"]');
+    if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeDropdown(dd, immediate = false) {
+    if (dropdownCloseTimers.has(dd)) {
+      clearTimeout(dropdownCloseTimers.get(dd));
+      dropdownCloseTimers.delete(dd);
+    }
+    const doClose = () => {
       dd.classList.remove('is-open');
       const trigger = dd.querySelector('[aria-haspopup="true"]');
       if (trigger) trigger.setAttribute('aria-expanded', 'false');
-    });
+    };
+    if (immediate) {
+      doClose();
+    } else {
+      const timer = setTimeout(doClose, 160);
+      dropdownCloseTimers.set(dd, timer);
+    }
+  }
+
+  function closeAllSheetDropdowns(immediate = true) {
+    sheetDropdowns.forEach((dd) => closeDropdown(dd, immediate));
   }
 
   sheetDropdowns.forEach((dd) => {
@@ -960,19 +989,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const menu = dd.querySelector('.sheet-dropdown-menu');
     if (!trigger || !menu) return;
 
+    // Hover interactions with forgiving debounce bridge
+    dd.addEventListener('mouseenter', () => openDropdown(dd));
+    dd.addEventListener('mouseleave', () => closeDropdown(dd, false));
+
+    // Focus & click support for keyboard and mobile touch
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
       const isOpen = dd.classList.contains('is-open');
-      closeAllSheetDropdowns();
-      if (!isOpen) {
-        dd.classList.add('is-open');
-        trigger.setAttribute('aria-expanded', 'true');
+      if (isOpen) {
+        closeDropdown(dd, true);
+      } else {
+        openDropdown(dd);
       }
     });
 
     menu.querySelectorAll('.sheet-dropdown-item').forEach((item) => {
       item.addEventListener('click', () => {
-        closeAllSheetDropdowns();
+        closeDropdown(dd, true);
         showToast('Guideline sheet download started.');
       });
     });
@@ -980,13 +1014,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.sheet-dropdown')) {
-      closeAllSheetDropdowns();
+      closeAllSheetDropdowns(true);
     }
   });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      closeAllSheetDropdowns();
+      closeAllSheetDropdowns(true);
     }
   });
 
