@@ -12,6 +12,7 @@ Hatekhori ("holding the chalk") is named after the traditional Bengali ritual ma
 - [Agent & Engineering Guidelines](docs/AGENTS.md) — Standing instructions for agents and contributors working in this repository.
 - [Brand Strategy](docs/BRAND.md) — Positioning, cultural moat, competitive landscape, pillars, and voice.
 - [Brand Colour & Visual Guidelines](docs/hatekhori-brand-colors.md) — Locked design tokens, light/dark mode palette, and typography.
+- [Logo & Brand Asset Guidelines](docs/hatekhori-logo-guidelines.md) — Production vectors, clear space, minimum sizing, and favicon specifications.
 - [Layout & Grid Guidelines](docs/hatekhori-layout-grid.md) — Responsive grid system, landing showcase, studio workbench layout, and modals.
 - [Privacy Policy](docs/privacy-policy.md) — Zero AI model training commitment, data lifecycle, and early deletion procedures.
 - [Security Policy & Threat Model](docs/SECURITY.md) — Rate limiting, decompression bomb defense, EXIF scrubbing, and vulnerability disclosure.
