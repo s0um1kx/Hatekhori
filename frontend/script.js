@@ -201,15 +201,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Studio Progress & Results
   const stepProgress = $('#step-progress');
   const progressText = $('#progress-text');
-  const psteps = [
-    $('#pstep-1'),
-    $('#pstep-2'),
-    $('#pstep-3'),
-    $('#pstep-4'),
-    $('#pstep-5'),
-    $('#pstep-6')
-  ];
+  const monitorPercent = $('#monitor-percent');
+  const monitorProgressFill = $('#monitor-progress-fill');
+  const monitorProgressbar = $('#monitor-progressbar');
+  const monitorStepBadge = $('#monitor-step-badge');
   const studioEmptyState = $('#studio-empty-state');
+  const studioProcessingState = $('#studio-processing-state');
   const stepResult = $('#step-result');
   const downloadFontLink = $('#download-font');
   const btnShareFont = $('#btn-share-font');
@@ -584,52 +581,50 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCompileButtonState();
   }
 
-  function startProgressPulse(pstepsList, onStepChange) {
+  function updateProgressState(percent, stepNum, totalSteps, text) {
+    if (monitorPercent) monitorPercent.textContent = `${percent}%`;
+    if (monitorStepBadge) monitorStepBadge.textContent = `Step ${stepNum} of ${totalSteps}`;
+    if (progressText) progressText.textContent = text;
+    if (monitorProgressFill) monitorProgressFill.style.width = `${percent}%`;
+    if (monitorProgressbar) monitorProgressbar.setAttribute('aria-valuenow', percent);
+  }
+
+  function startProgressPulse() {
+    isSimulating = true;
     let current = 0;
     const steps = [
-      { text: "Ingesting scan and removing photo metadata...", duration: 600 },
-      { text: "Locating corner alignment markers...", duration: 800 },
-      { text: "Straightening and aligning page...", duration: 700 },
-      { text: "Isolating individual letter cells...", duration: 900 },
-      { text: "Tracing ink strokes into vector outlines...", duration: 1100 },
-      { text: "Building installable OpenType font tables...", duration: 1200 }
+      { percent: 18, text: "Reading sheet and removing photo metadata...", duration: 600 },
+      { percent: 36, text: "Straightening and cropping page...", duration: 750 },
+      { percent: 58, text: "Isolating character boxes...", duration: 750 },
+      { percent: 78, text: "Tracing ink strokes into vector curves...", duration: 950 },
+      { percent: 92, text: "Finalizing font file...", duration: 1100 }
     ];
 
     function runStep() {
       if (!isSimulating) return;
-      if (current < steps.length - 1) {
-        onStepChange(current, steps[current].text);
-        pstepsList.forEach((el, idx) => {
-          if (!el) return;
-          el.classList.toggle('active', idx === current);
-          el.classList.toggle('done', idx < current);
-        });
-        progressTimer = setTimeout(() => {
-          current++;
-          runStep();
-        }, steps[current].duration);
-      } else {
-        // Hold on final processing step with realistic dynamic pulse until server finishes
-        const activeIdx = steps.length - 1;
-        pstepsList.forEach((el, idx) => {
-          if (!el) return;
-          el.classList.toggle('active', idx === activeIdx);
-          el.classList.toggle('done', idx < activeIdx);
-        });
-        const pulseTexts = [
-          "Compiling OpenType (.otf) font tables...",
-          "Tracing strokes & synthesizing glyph contours...",
-          "Calculating optical metrics & advance widths...",
-          "Assembling font binary (still processing)..."
-        ];
-        let pulseIdx = 0;
-        function pulse() {
-          if (!isSimulating) return;
-          onStepChange(activeIdx, pulseTexts[pulseIdx % pulseTexts.length]);
-          pulseIdx++;
-          progressTimer = setTimeout(pulse, 1200);
+      if (current < steps.length) {
+        const s = steps[current];
+        updateProgressState(s.percent, current + 1, steps.length, s.text);
+        current++;
+        if (current < steps.length) {
+          progressTimer = setTimeout(runStep, s.duration);
+        } else {
+          // Server compilation hold: subtle pulse at 92-95%
+          const holdTexts = [
+            "Tracing ink strokes into vector curves...",
+            "Refining character outlines...",
+            "Calculating character widths and spacing...",
+            "Finishing installable font..."
+          ];
+          let holdIdx = 0;
+          function holdPulse() {
+            if (!isSimulating) return;
+            updateProgressState(95, 5, 5, holdTexts[holdIdx % holdTexts.length]);
+            holdIdx++;
+            progressTimer = setTimeout(holdPulse, 1200);
+          }
+          progressTimer = setTimeout(holdPulse, 1100);
         }
-        pulse();
       }
     }
     runStep();
@@ -967,6 +962,7 @@ document.addEventListener("DOMContentLoaded", () => {
     switchView('studio', false);
     setStudioStage('workbench');
     if (studioEmptyState) studioEmptyState.hidden = true;
+    if (studioProcessingState) studioProcessingState.hidden = true;
     if (stepResult) stepResult.hidden = false;
     updateStepperPill(spillExport);
     if (downloadFontLink) downloadFontLink.href = `/download-font/${id}`;
@@ -1083,13 +1079,11 @@ document.addEventListener("DOMContentLoaded", () => {
       btnCompile.disabled = true;
       if (stepProgress) stepProgress.hidden = false;
       if (studioEmptyState) studioEmptyState.hidden = true;
+      if (studioProcessingState) studioProcessingState.hidden = false;
       if (stepResult) stepResult.hidden = true;
       updateStepperPill(spillCompile);
 
-      isSimulating = true;
-      startProgressPulse(psteps, (stepIdx, txt) => {
-        if (progressText) progressText.textContent = txt;
-      });
+      startProgressPulse();
 
       try {
         const formData = new FormData();
@@ -1119,21 +1113,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const genData = await genRes.json();
         stopProgressPulse();
+        updateProgressState(100, 5, 5, "Font ready!");
         if (genData.script && genData.script !== currentScript) {
           setScript(genData.script);
         }
         skippedBlankGlyphs = new Set(genData.skipped_blank || []);
 
-        psteps.forEach((el) => {
-          if (el) {
-            el.classList.remove('active');
-            el.classList.add('done');
-          }
-        });
-
-        if (stepProgress) stepProgress.hidden = true;
-        if (stepResult) stepResult.hidden = false;
-        updateStepperPill(spillExport);
+        setTimeout(() => {
+          if (stepProgress) stepProgress.hidden = true;
+          if (studioProcessingState) studioProcessingState.hidden = true;
+          if (stepResult) stepResult.hidden = false;
+          updateStepperPill(spillExport);
+        }, 350);
 
         if (downloadFontLink) downloadFontLink.href = `/download-font/${id}`;
 
@@ -1168,6 +1159,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (err) {
         stopProgressPulse();
         if (stepProgress) stepProgress.hidden = true;
+        if (studioProcessingState) studioProcessingState.hidden = true;
         if (studioEmptyState) studioEmptyState.hidden = false;
         updateStepperPill(spillUpload);
         lastPipelineError = err.message || 'Processing failed.';
@@ -1243,6 +1235,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (studioLoadDemoBtn) {
     studioLoadDemoBtn.addEventListener('click', () => {
       if (studioEmptyState) studioEmptyState.hidden = true;
+      if (studioProcessingState) studioProcessingState.hidden = true;
       if (stepResult) stepResult.hidden = false;
       updateStepperPill(spillExport);
       skippedBlankGlyphs.clear();

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=4.5" />
+  <link rel="stylesheet" href="style.css?v=4.6" />
 </head>
 <body>
 
@@ -509,38 +509,18 @@
               </div>
             </div>
 
-            <!-- Card 3: Live Vector Engine Progress Monitor -->
-            <div class="deck-card monitor-card" id="step-progress" hidden>
-              <div class="monitor-header">
-                <span class="monitor-spinner" aria-hidden="true"></span>
-                <strong id="progress-text">Tracing handwriting...</strong>
+            <!-- Card 3: Modern Fluid Font Synthesis Progress -->
+            <div class="deck-card monitor-card" id="step-progress" hidden aria-live="polite">
+              <div class="monitor-top-row">
+                <div class="monitor-indicator">
+                  <span class="monitor-pulse-dot" aria-hidden="true"></span>
+                  <span class="monitor-step-badge" id="monitor-step-badge">Step 1 of 5</span>
+                </div>
+                <span class="monitor-percent" id="monitor-percent">15%</span>
               </div>
-
-              <div class="monitor-steps">
-                <div class="monitor-step done" id="pstep-1">
-                  <span class="step-check">✓</span>
-                  <span>Ingesting scan and removing photo metadata</span>
-                </div>
-                <div class="monitor-step active" id="pstep-2">
-                  <span class="step-check">●</span>
-                  <span>Locating corner alignment markers</span>
-                </div>
-                <div class="monitor-step" id="pstep-3">
-                  <span class="step-check">○</span>
-                  <span>Straightening and aligning page</span>
-                </div>
-                <div class="monitor-step" id="pstep-4">
-                  <span class="step-check">○</span>
-                  <span>Isolating individual letter cells</span>
-                </div>
-                <div class="monitor-step" id="pstep-5">
-                  <span class="step-check">○</span>
-                  <span>Tracing ink strokes into vector outlines</span>
-                </div>
-                <div class="monitor-step" id="pstep-6">
-                  <span class="step-check">○</span>
-                  <span>Building installable OpenType font tables</span>
-                </div>
+              <h4 class="monitor-phase-text" id="progress-text">Reading sheet and removing photo metadata...</h4>
+              <div class="monitor-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="15" id="monitor-progressbar">
+                <div class="monitor-progress-fill" id="monitor-progress-fill" style="width: 15%;"></div>
               </div>
             </div>
 
@@ -558,6 +538,20 @@
               <button type="button" class="btn btn-outline" id="studio-load-demo-btn">
                 Test with Demo Handwriting
               </button>
+            </div>
+
+            <!-- Processing Canvas State (Active while compiling) -->
+            <div class="stage-standby stage-processing" id="studio-processing-state" hidden aria-live="polite">
+              <div class="processing-pulse-glow" aria-hidden="true"></div>
+              <h3 class="standby-title">Building your handwriting font</h3>
+              <p class="standby-desc" id="processing-canvas-desc">
+                Converting ink strokes into vector curves. Your live interactive preview will appear here in a moment.
+              </p>
+              <div class="processing-skeleton" aria-hidden="true">
+                <div class="skeleton-line skeleton-line-lg"></div>
+                <div class="skeleton-line skeleton-line-md"></div>
+                <div class="skeleton-line skeleton-line-sm"></div>
+              </div>
             </div>
 
             <!-- Active Font Result View (Revealed when font compiles) -->
@@ -789,6 +783,6 @@
   <!-- Toast Notification Pill -->
   <div id="toast" class="toast-pill" role="status" aria-live="polite" hidden></div>
 
-  <script src="script.js?v=4.5"></script>
+  <script src="script.js?v=4.6"></script>
 </body>
 </html>
