@@ -1,154 +1,169 @@
-# Hatekhori (হাতে খড়ি) — Product Requirements Document v2
+# Hatekhori (হাতে খড়ি) — Product Requirements Document (PRD)
 
-> Supersedes the original PRD. Rewritten after brand/market validation research and a direct competitor study (see BRAND.md for the full reasoning behind these decisions).
-
-## 1. Overview
-
-**Hatekhori** ("holding the chalk") is named after the traditional Bengali ritual marking a child's first step into formal education. Hatekhori turns a person's actual handwriting into a real, installable, ownable font — starting with Bengali and Hindi, the scripts no existing tool treats as first-class.
-
-**What changed from v1:** Hatekhori is not "a handwriting-to-font website that will eventually support Indic scripts." It is an Indic-first typeface atelier that happens to validate its engineering pipeline in English first, privately, before anything ships publicly. See §4 for why, and §4a for what competitor research confirmed about that decision.
-
-**Format:** Website (not a native app).
-
-**Primary audience:** Indian developers and designers — proud of their own script, technical enough to tolerate an early build, invested enough in the idea to spread it. (Full persona and competitor reasoning in BRAND.md.)
+> Version: 2.5 (Final Architecture Specification)  
+> Companion Docs: `BRAND.md`, `hatekhori-brand-colors.md`, `hatekhori-layout-grid.md`, `privacy-policy.md`, `SECURITY.md`, `AGENTS.md`.
 
 ---
 
-## 2. Vision
+## 1. Executive Summary & Product Vision
 
-**One line:** Hatekhori preserves human handwriting — starting with the scripts the world's font tools forgot — as ownable, installable type, in an era where AI can fake handwriting for everyone but can't fake yours.
+**Hatekhori** ("holding the chalk") is an open-source, web-based digital typeface atelier and handwriting preservation engine. Named after the traditional Bengali ritual where a child draws their first letter on a slate, Hatekhori turns real handwriting into an installable, ownable OpenType (`.otf`) font file.
 
-**Three horizons:**
-- **Now:** A working pipeline that turns real handwriting into a real font, without looking like a ransom note.
-- **Next:** A personal type system — your font, live on your own site/portfolio/Figma files, not just a downloaded file.
-- **Later:** An archive — family handwriting, a first teacher's alphabet, a grandparent's script — preserved as usable type before it's lost.
-
----
-
-## 3. Problem & Why Now
-
-Two forces, both real and evidenced, not just a hunch:
-- **Anti-AI-slop backlash:** 2026 design commentary consistently names "Anti-AI Crafting" — the deliberate rejection of AI's hyper-polished look — as the defining trend of the year.
-- **Indic scripts are a real technical gap, not just an underserved market.** A text-ready Bengali font requires a glyph closure (base forms + conjuncts + matras + half-forms) that can run past 1,000 glyphs — an order of magnitude beyond a Latin A–Z/a–z/0–9 set. Every mainstream handwriting-to-font tool is Latin-script-only. This is Hatekhori's actual, defensible wedge.
+### Primary Objectives
+1. **Indic-First Craft:** First-class support for **Bengali (বাংলা)** and **Hindi (हिन्दी)** alongside **English (Latin)**.
+2. **Accountless & Privacy-First:** No accounts, no logins, zero behavioral tracking, and **zero AI model training**.
+3. **Single Focused Path:** A guided, friction-free two-stage atelier flow: Sheet Preparation → Upload & Creation.
+4. **Instant Typographic Utility:** Immediate interactive specimen testing, shareable live preview links, and ready-to-use `@font-face` CSS snippets.
 
 ---
 
-## 4. Build Order (the decision that changed everything)
+## 2. Multi-Script Specifications
 
-**Technical sequencing and brand sequencing are deliberately different.**
+Hatekhori standardizes character grids across three supported scripts, formatted for standard A4 paper at 100% scale with four precision corner registration fiducials.
 
-- **Internally, first:** Build and validate the core pipeline — capture → cleanup → vectorize → metrics (baseline, x-height, kerning) → usable font file — using **English** as the test script, because it's small (~60–90 glyphs) and cheap to iterate on. This phase is never shown publicly as "the product."
-- **Publicly, first:** Once the pipeline clears its own quality bar (§9), the first script Hatekhori launches with — the one anyone outside the builder ever sees — is **Bengali and/or Hindi**.
-
-### 4a. What the competitor study confirmed
-
-A direct study of the existing handwriting-to-font market (Calligraphr, YourFonts, Fontself, iFontMaker, and critically **FontCrafter**) found that FontCrafter is not just a free English tool — it's a full ecosystem: the font generator (500+ glyphs, ligatures, contextual alternates, color-font effects, OTF/TTF/WOFF2/Base64 export, 100% local/private, no account) plus a family of companion apps (QuoteCrafter, CardCrafter, WeddingCrafter, etc.) and a phone app for using the font everywhere, already positioned explicitly against Calligraphr's subscription model.
-
-**This is a second, independent reason English is validation-only, never the product:** even a well-built English offering from Hatekhori would be a slower, paid second copy of something free, private, and feature-complete that already exists. There is no version of "compete on English handwriting-to-font" that isn't a losing fight. Bengali/Hindi conjunct support is the one thing none of these tools — legacy or free-ecosystem — currently do. That is the only uncontested ground, and Hatekhori's entire engineering effort belongs there.
+| Script | Grid Dimensions | Total Cells | Included Characters |
+| :--- | :--- | :--- | :--- |
+| **English (Latin)** | 10 cols × 9 rows | 90 Cells | Uppercase `A–Z`, lowercase `a–z`, numbers `0–9`, basic punctuation (`! ? , . : ; " ' - ( ) / @ # $ % & * + =`). |
+| **Bengali (বাংলা)** | 10 cols × 6 rows | 60 Cells | 11 স্বরবর্ণ (Vowels), 39 ব্যঞ্জনবর্ণ ও বিশেষ চিহ্ন (Consonants & Specials: `ঁ ং ঃ ৎ`), 10 কারচিহ্ন (Vowel Signs / Matras: `া ি ী ু ূ ৃ ে ৈ ো ৌ`). |
+| **Hindi (हिन्दी)** | 10 cols × 6 rows | 60 Cells | 11 स्वर (Independent Vowels), 39 व्यंजन (Consonants & Specials), 10 मात्राएँ (Dependent Vowel Signs: `ा िर ी ु ू ृ े ै ो ौ`). |
 
 ---
 
-## 5. Core Flow (single path, no split modes)
+## 3. User Experience & Application Architecture
 
-**v1 had two capture modes (Quick / Precision). This is cut.** There is one flow:
+The application is structured into two primary full-width views:
 
-1. User is shown one well-designed guideline sheet — covering the target script's required character set (for English: A–Z/a–z/0–9, internal validation only; for Bengali/Hindi: base consonants, vowel signs, and the conjunct set the engineering phase determines is achievable at launch quality).
-2. User writes on it — either printed, or on any paper following the same layout.
-3. Capture happens via **QR code + phone camera** (auto-corrects perspective/lighting/crop) or **direct upload** of an existing photo.
-4. System validates the upload is actually a filled guideline sheet, with a clear, non-alarming error message if not.
-5. Handwriting is processed into a real font file.
-6. User previews the result on a **visual canvas** with a **Human / Machine toggle**:
-   - **Human:** the rendered font, shown naturally (e.g., on a mock portfolio/card).
-   - **Machine:** the underlying technical representation — vector paths / font data.
-
----
-
-## 6. Upload Requirements
-
-- **Accepted formats:** JPG, PNG, HEIC. PDF: decide during Milestone 1 based on how much it complicates validation.
-- **Size limit:** to be set once real file sizes from the capture flow are known.
-- **Validation:** must reject non-guideline-sheet uploads with a clear, on-brand error.
-
-### 6a. Content & Upload Guardrails
-
-**This is infrastructure, not brand differentiation** — it lives quietly underneath the product, not in the craft narrative (see BRAND.md). It exists precisely because the product is accountless (§10): with no identity layer to ban, throttle, or trace a bad actor, every safeguard has to live in the upload pipeline itself.
-
-Risk categories this needs to cover: illegal imagery uploaded as a fake "handwriting sample," someone submitting another person's handwriting/signature (a forgery concern, not just a misuse one), offensive content written on the sheet itself, resource abuse (decompression bombs, oversized dimensions, scripted flooding), and privacy leakage (phone photos carrying EXIF GPS data by default).
-
-**Baseline — required before any UI ships, even internally:**
-- Real content-sniffing on file bytes, not just extension/MIME header
-- Hard caps on file size *and* pixel dimensions
-- Strip EXIF metadata on ingest, always, no exceptions
-- The existing guideline-sheet structural validation (§5/§6) does double duty here: a genuine guideline-sheet photo has a specific shape most junk or inappropriate images won't match, so this check is a security property as well as a UX one
-
-**Required before the Bengali/Hindi public launch — non-negotiable:**
-- An automated image-safety classifier (NSFW/violence/CSAM-signal detection) gating entry *before* anything reaches vectorization or storage — hard reject, not a soft warning, with the rejected image's hash logged for abuse review rather than silently discarded
-- A lightweight, non-identity consent checkbox at submission ("this is my own handwriting and I have the right to submit it") — a legal/provenance safeguard, not an account, so it doesn't reopen the auth question
-- IP- or session-based rate limiting, since there's no account to throttle instead
-- Raw uploaded photos are never displayed publicly by default — only the derived font/glyphs are shown, shrinking the blast radius of anything that slips past the classifier
-- A visible, no-account-required abuse/takedown contact (a plain email link), since there's no user to ban — only a way for someone to flag "that's my handwriting/signature and I didn't consent"
-
-**Deferred — only relevant if a public gallery/showcase feature is ever built:**
-- Human moderation queue for classifier-borderline cases
-- Separate consent for "process this for me" vs. "make this visible to others"
-
-### 6b. Data Retention & Privacy
-
-**An extension of §6a's infrastructure, not a separate legal afterthought.** Because there's no account system, retention rules and deletion have to be designed around the pipeline and session, not a user record.
-
-| Data | Handling | Retention |
-|---|---|---|
-| Raw uploaded photo | Processed (validate → vectorize → metrics) | Deleted immediately on successful font generation; deleted within 24h regardless if generation fails |
-| Generated font + provenance data (§7) | Held so the user can (re)download it | Fixed window (e.g. 30 days) via the session/download link, then purged server-side — not indefinite |
-| Consent record (§6a checkbox) | Tied to the same session as the photo/font | Purged together with the underlying submission |
-| Rejected/flagged upload hashes (§6a classifier) | Hash only, never the image, for abuse-pattern detection | Rolling window (e.g. 90 days) unless part of an active abuse investigation |
-| Aggregate/anonymized usage stats | No personal or image data | Indefinite — product telemetry, exempt from the rest of this table |
-
-**The core promise:** uploaded handwriting is never used to train any model, Hatekhori's or anyone else's — no opt-out needed because there is no opt-in path either. If handwriting samples are ever used to improve the pipeline itself, that requires a separate, explicit opt-in at submission — never bundled into the §6a processing consent.
-
-**Deletion without an account:** the §6a abuse/takedown contact doubles as the deletion request path — someone emails describing roughly when/what they submitted, support locates and purges by session metadata, no identity system required. State this explicitly in the on-site policy rather than leaving it implicit.
-
-**Self-hosted disclaimer:** since Hatekhori is open source, this retention model describes the hosted instance only — a self-hosted deployment is under its own operator's terms, and the policy should say so.
+### View 1: Minimal Landing Page & Typographic Showcase (`#landing-view`)
+- **Navigation (`.nav`):**
+  - Brand identity `"Hatekhori"`.
+  - Jump links: `"How it works"`, `"Specimen"`.
+  - Guideline sheet download dropdown (English 90 cells, Bengali 60 cells, Hindi 60 cells).
+  - Modal action buttons: `"Feedback"`, `"Privacy & Terms"`.
+  - Primary CTA: `"Launch Studio"`.
+- **Hero Section (`.hero`):**
+  - Display title in `Instrument Serif`: `"Turn your handwriting into a real font."`
+  - Concise lead copy highlighting multi-script support.
+  - Action buttons: `"Launch Font Studio"` primary button + `"Download Sheet"` dropdown.
+  - Looping atmospheric video card (`hatekhori-chalk.mp4`) showing chalk writing on slate.
+- **Interactive Specimen Section (`#specimen`):**
+  - Script selector tabs (`English`, `Bengali`, `Hindi`) with dynamic Active Typeface Badge (`Hatekhori Bangla`, `Hatekhori Hindi`, or `Hatekhori Latin`).
+  - Interactive `<textarea>` populated with culturally rich sample text in the active script.
+  - Two-column Matrix & Glyph Inspector: clickable character matrix paired with a magnified glyph preview (`#big`) and Unicode hex codepoint (`#cp`, e.g., `U+0985`).
+  - Full Typographic Specimen Deck:
+    1. *Character Set & Glyph Roster:* Explicit display of all 60–90 supported characters.
+    2. *Optical Scale Waterfall:* Responsive rendering at 48px, 32px, 24px, and 18px.
+    3. *Continuous Editorial Prose:* Body text readability test demonstrating line rhythm.
+- **Process Section (`#how`):**
+  - 3-step grid: `01 Print & write` → `02 Snap a photo` → `03 Install & own`.
+- **Atmospheric CTA Banner (`#cta`):**
+  - Full-bleed dark slate section inviting the user to build their font immediately.
+- **Fathom-Style Footer (`#main-footer`):**
+  - 4-column sitemap: Navigation, Guideline Sheets, Resources, Ethics & Legal.
+  - Prominent data takedown contact: `soumik.workmail@gmail.com`.
+  - Architectural giant `"Hatekhori"` wordmark.
 
 ---
 
-## 7. Output / System (not just a file — but scoped to the Indic product only)
+### View 2: Studio Workbench (`#studio-view`)
 
-Give a system, not a file: font file(s), a ready-to-paste web snippet, a Figma-installable version if in scope, some marker of provenance (name, date). **Important scope note post-competitor-study:** this system layer is built for the Bengali/Hindi output, not as an attempt to match FontCrafter's English app family (QuoteCrafter, PenSend, etc.) feature-for-feature — that fight is already lost and not worth entering. None of this needs to be in Milestone 1.
+A distraction-free, two-stage creation workbench:
+
+#### Stage 1: Guideline Sheet Preparation (`#stage-sheet-panel`)
+- **Visual Preview Plate:** High-resolution card displaying the selected guideline sheet with corner fiducial badge and `"Preview Full Size ↗"` hover overlay. Clicking opens the full-screen zoom lightbox modal (`#sheet-lightbox-modal`).
+- **Configuration Box:**
+  - Language selector pills: `English (Latin)`, `Bengali (বাংলা)`, `Hindi (हिन्दी)`.
+  - Printing criteria checklist: Standard A4 at 100% scale (no "fit to page"), dark ink pen, flat paper with all 4 corner markers clearly visible.
+  - Action buttons: Primary `"Download Sheet"` + outline `"Already filled? Go to upload →"`.
+
+#### Stage 2: Font Creation Workbench (`#stage-workbench-panel`)
+- **Left Deck (Upload & Engine Progress):**
+  - *Script Language Selector:* Radio pill switcher (`English`, `Bengali`, `Hindi`) with automatic script detection fallback.
+  - *Dropzone (`#dropzone`):* Drag-and-drop or file browser supporting JPG, PNG, and HEIC. Displays live preview with change and remove actions.
+  - *Legal Consent Checkbox:* Non-identity provenance certification ("I certify this is my own handwriting and I have the right to submit it").
+  - *Action Button:* `"Generate Font"` button (enabled only when both photo and consent are provided).
+  - *Vector Engine Monitor (`#step-progress`):* Real-time progress pulse detailing the 6 backend pipeline phases:
+    1. Ingesting scan and removing photo metadata
+    2. Locating corner alignment markers
+    3. Straightening and aligning page
+    4. Isolating individual letter cells
+    5. Tracing ink strokes into vector outlines
+    6. Building installable OpenType font tables
+- **Right Deck (Typography Laboratory & Live Font Tester):**
+  - *Standby Empty State:* Clear instructional state with a `"Test with Demo Handwriting"` shortcut for immediate previewing.
+  - *Active Result State (`#step-result`):*
+    - Top bar: `"✓ Font ready"` status badge, `"Share Link"` button (copies unique live URL), and `"Download Font (.otf)"` primary button.
+    - Specimen toolbar: Font size slider (`18px` to `110px`), `"Copy @font-face"` CSS helper, and `"Glyph Matrix"` toggle drawer.
+    - Live Canvas Plate: Interactive editable `<textarea>` rendering typed text in the freshly compiled user font.
+    - Glyph Matrix Drawer: Expandable grid of extracted individual glyphs that can be clicked to insert directly into the canvas.
 
 ---
 
-## 8. Business Model
+## 4. Technical Pipeline Specifications
 
-**Open source, no payment gateway for now.** No monetization layer is being built at this stage — the project ships as open source with no checkout, no license key, no paid tier. If a business model is introduced later, the standing constraint carried over from earlier thinking is: **one-time payment, not subscription** — a subscription for access to *your own handwriting* is a trust-breaking model in this category, a documented complaint against the incumbent. That remains the fallback direction if/when monetization is revisited, but it is explicitly not being built now.
+### Ingest & Image Normalization (`pipeline/ingest.py`)
+- **Chunked Stream Ingest:** Reads incoming uploads in 64KB chunks up to an absolute ceiling of 15MB (`MAX_FILE_SIZE_BYTES`). Aborts with `HTTP 413` if exceeded.
+- **Decompression Bomb Protection:** Hard cap of `Image.MAX_IMAGE_PIXELS = 36_000_000` (36 Megapixels) and maximum pixel dimension of 6,000px per side.
+- **EXIF Metadata Scrubbing:** All EXIF, IPTC, and XMP metadata dictionaries are completely stripped on ingest. Orientation is normalized via `ImageOps.exif_transpose()`.
 
----
+### Structural Alignment & Validation (`pipeline/validate.py`)
+- **Fiducial Registration:** Detects 4 solid black square fiducial markers at the page corners.
+- **Perspective Keystone Correction:** Calculates four-point homography transform to warp and deskew tilted or angled phone captures into a perfect rectangle.
+- **Ink Density Check:** Verifies minimum dark-pixel coverage across cell coordinates to reject blank or unwritten sheets.
 
-## 9. Milestone 1 — Definition of Done
-
-Milestone 1 is **not** "the English website." It is:
-
-**The pipeline kill-test:** Take a small batch of real, varied handwriting photos (different pens, lighting, handwriting neatness) through capture → vectorize → metrics → font export, in English. Evaluate: does the output look like a font a designer would actually use, or a ransom note?
-
-- **Pass →** proceed to building the real guideline-sheet UI and capture flow (still privately, still English), then begin Bengali/Hindi glyph-set scoping in parallel.
-- **Fail →** stop. Fix the vectorization/metrics pipeline before writing any more UI code.
-
----
-
-## 10. Non-Goals
-
-- Not a generic AI-handwriting-font generator — it's specifically about a person's **own** handwriting as personal, ownable output.
-- Not a native mobile app — web-first.
-- Not, at launch, a tool marketed around English handwriting — English is internal validation only, per §4.
-- Not two capture tiers of differing quality — per §5.
-- **Not an attempt to out-feature FontCrafter's free English ecosystem** — no companion-app family, no competing on "free," no leading with "not AI handwriting" as the sole differentiator. That ground is already occupied and already lost; Hatekhori's differentiation is script correctness for Bengali/Hindi, not feature parity in English.
-- **Not an accounted-for product.** No auth, no login, no signup wall, no user accounts. With no payment gateway and no re-download/provenance-to-a-paying-user problem to solve, there is no structural reason to gate any part of the core flow (§5) behind identity. Provenance (name, date — §7) is a plain form field at export time, not an account system. Revisit only if a future "Next"-horizon feature (a persistent, live-on-your-site type system) genuinely requires it — and even then, prefer a self-sovereign, exportable state (a project file the user keeps) over a login wall.
+### Vectorization & Font Compilation (`pipeline/vectorize.py`, `pipeline/compile.py`)
+- **Tracing:** Sub-pixel contour tracing using Potrace to convert raster ink marks into smooth Bézier curves.
+- **Metrics Calculation:** Automatically calculates baseline, ascent, descent, and advance width based on cell geometry.
+- **OpenType Compilation:** Compiles standard TrueType / OpenType (`.otf` CFF) binary tables, including `head`, `hhea`, `maxp`, `OS/2`, `hmtx`, `cmap`, and `CFF `.
 
 ---
 
-## 11. Open Questions
+## 5. Security Architecture & Threat Model
 
-- Exact character/conjunct set for Bengali/Hindi launch — determined by what the pipeline can actually render well.
-- Upload size limit and PDF support — deferred to real data from Milestone 1.
-- Exact pricing tiers — deferred until output quality is proven.
-- Whether Telugu is a second-wave Indic script or stays out of scope.
+*Detailed comprehensively in `SECURITY.md`.*
+
+1. **Denial of Service (DoS):**
+   - Sliding-window rate limiter per client IP: 15 req/min on `/ingest`, 6 req/min on `/generate`.
+   - Concurrency semaphore (`_GENERATE_SEMAPHORE = AsyncBoundedSemaphore(2)`) restricts parallel CPU-intensive vectorization to 2 threads.
+2. **Path Traversal Protection:**
+   - Route parameters (`{upload_id}`) are strictly typed as standard library `uuid.UUID`.
+   - Download format parameter is strictly restricted to `"otf"` or `"ttf"`.
+3. **Abuse Tracking:**
+   - Rejected uploads are hashed (SHA-256) and recorded in `rejected_hashes.log`. Raw rejected images are never retained.
+4. **Browser Security Headers:**
+   - `X-Content-Type-Options: nosniff`
+   - `X-Frame-Options: DENY`
+   - `Referrer-Policy: strict-origin-when-cross-origin`
+   - Strict `Content-Security-Policy` and `Permissions-Policy`.
+
+---
+
+## 6. Data Lifecycle & Privacy Contract
+
+*Detailed comprehensively in `privacy-policy.md`.*
+
+| Data Category | Purpose | Retention Window | Purge Mechanism |
+| :--- | :--- | :--- | :--- |
+| **Raw Uploaded Photo** | Process into font | Single compilation run | Unlinked immediately upon font compilation; unlinked within 24h on error. |
+| **Generated Font (.otf)** | User download & testing | 30 days from creation | Purged permanently by hourly background sweep task. |
+| **Submission Consent** | Legal certification | Single session | Purged together with the underlying submission. |
+| **Rejected Upload Hashes**| Abuse prevention | Rolling 90-day window | SHA-256 hashes only. No image data retained. |
+| **Telemetry** | Health monitoring | Indefinite | Strictly anonymized count numbers. |
+
+**Zero Model Training:** Uploaded handwriting is never used to train machine learning models — ours, a partner's, or anyone else's.
+
+---
+
+## 7. Business Model & Governance
+
+- **100% Free & Open Source:** Released under the MIT license on [GitHub](https://github.com/s0um1kx/Hatekhori).
+- **No Monetization Layer:** No checkout, no paid tiers, no subscription traps.
+- **Takedown & Inquiries:** Managed directly by the author via `soumik.workmail@gmail.com`.
+
+---
+
+## 8. Explicit Non-Goals
+
+1. **No User Accounts:** No registration, no login walls, no user database.
+2. **No Generic AI Font Generation:** Hatekhori exclusively digitizes a person's real, physical handwriting.
+3. **No Native App Store Wrappers:** Desktop-first, fully responsive web application.
+4. **No Feature Parity Battles with Latin-Only Utilities:** We do not build English-only companion apps (greeting card generators, quote makers, etc.). All engineering focus remains on handwriting fidelity and Indic script preservation.

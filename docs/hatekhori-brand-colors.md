@@ -1,33 +1,103 @@
-# Hatekhori — Brand Colour Guideline
+# Hatekhori (হাতে খড়ি) — Brand Colour & Visual Guidelines
 
-*Companion to hatekhori-layout-grid.md, PRD.md and BRAND.md. Locked palette — implement these values exactly, don't approximate.*
+*Companion to `hatekhori-layout-grid.md`, `PRD.md`, and `BRAND.md`. Locked palette and design tokens — implement these exact values across all frontend stylesheets and components.*
 
-## Locked palette (from the Ctrl+ brand board)
+---
 
-| Role | Hex | Usage |
-|---|---|---|
-| **Stage / paper** | `#F2ECE1` | Page background, panel surface — the "paper" everywhere. Never pure white (`#FFFFFF`). |
-| **Ink (primary)** | `#0034D3` | All text, strokes, primary buttons, active/selected states, the character-grid selection. This is the one colour that carries the brand — it does the work a logo usually does. |
-| **Ink (deep)** | `#003087` | Reserved for emphasis on top of the primary blue — pressed/active states, headings sitting on a blue fill, the darkest stop when blue sits on blue. |
-| **Tint** | `#99CCFF` | Light wash only — hover backgrounds, disabled/inactive fills, the unselected side of a toggle. Don't set body text below 14px on this tint; contrast gets thin. |
+## 1. The Design Philosophy: Chalk, Slate, and Paper
 
-## The rule behind the palette
+Hatekhori ("holding the chalk") is rooted in the traditional ritual marking a child's first step into literacy — drawing their very first letter with white chalk on a slate stone.
 
-One saturated colour (`#0034D3`) does the brand-carrying work. Everything else — the paper, the tint, the deep accent — is a supporting stop of that *same* blue family, not a competing hue. No third colour, no gradients, no decorative accent added "for variety." If you need a status colour later (error/success), add the smallest possible palette on top of this — don't let it become a fifth brand colour.
+The brand's visual identity reflects this tactile, cultural origin:
+- **No artificial AI gradients** or trendy purple SaaS palettes.
+- **High-contrast, unadorned editorial typography**: the clarity of ink on paper, the timelessness of chalk on a chalkboard.
+- **Instrument-level precision**: 1px hairline borders, monochrome surfaces, and subtle, intentional accents.
 
-## Where the two colour registers apply
+---
 
-- **Editor / tool screens**: `#0034D3` on `#F2ECE1`, hairline borders, flat — no shadows, no decoration. This is the instrument-panel read (see layout-grid.md §5).
-- **Marketing / landing surfaces**: same palette, but the Ctrl+ board's loose hand-drawn squiggle motif (the `@`, spirals, doodles) is fair game here as background texture or empty-state illustration. Keep it off the editor screen — decorative linework fights the precision-tool feel the product actually needs.
+## 2. Locked Design Tokens & Color Palette
 
-## Do / don't
+The interface supports both **Light Mode (Paper & Charcoal Ink)** and **Dark Mode (Chalkboard & Deep Slate)** via standard CSS custom properties.
 
-**Do**
-- Use `#0034D3` as the single accent everywhere an accent is needed — buttons, links, active states, selection.
-- Keep `#F2ECE1` as the only background tone for product surfaces.
-- Use `#99CCFF` only for "quieter than default" states (hover, inactive, unselected) — never as a primary fill.
+### Light Mode (Default — Clean Paper Atelier)
 
-**Don't**
-- Don't introduce a second saturated hue anywhere in the product.
-- Don't use pure black or pure white — everything routes through this four-value palette.
-- Don't let the squiggle/doodle motif appear inside the editor/tool UI.
+| Token | Hex | Usage & Role |
+| :--- | :--- | :--- |
+| `--bg` | `#FFFFFF` | Primary canvas and page background. Clean, bright paper surface. |
+| `--fg` | `#111111` | Primary text, titles, deep charcoal ink, primary button fills. |
+| `--muted` | `#666666` | Secondary body text, sub-labels, metadata readouts, inactive chevrons. |
+| `--border` | `#E5E5E5` | Structural 1px hairline boundaries, card edges, divider rules. |
+| `--subtle` | `#F7F7F7` | Inset backgrounds, secondary containers, inactive tabs, table zebra stripes. |
+| `--accent` | `#111111` | Primary interactive elements, selected pill tags, active focus rings. |
+| `--accent-hover` | `#333333` | Hover fill on primary buttons and interactive elements. |
+| `--red` | `#D2271B` | Intentional alert accent: destructive actions, remove photo, error states. |
+
+### Dark Mode (Chalkboard & Deep Slate)
+
+Automatically activated via `@media (prefers-color-scheme: dark)`:
+
+| Token | Hex | Usage & Role |
+| :--- | :--- | :--- |
+| `--bg` | `#0D0D0D` | Primary canvas background — deep slate stone / chalkboard. |
+| `--fg` | `#F0F0F0` | Primary text, titles, high-contrast chalk-white letterforms. |
+| `--muted` | `#888888` | Muted chalk dust labels, secondary copy, inactive elements. |
+| `--border` | `#242424` | Hairline panel borders, card dividers. |
+| `--subtle` | `#141414` | Recessed slate containers, inactive pill buttons, dropzone idle plate. |
+| `--accent` | `#F0F0F0` | High-contrast chalk-white buttons and active tab indicators. |
+| `--accent-hover` | `#D0D0D0` | Hover fill on chalk-white buttons. |
+| `--red` | `#E03529` | High-visibility alert accent in dark mode. |
+
+---
+
+## 3. Atmospheric Surfaces & Cinematic Accents
+
+For cinematic moments — the **Hero Chalk Video Card** and the **Atmospheric Call-to-Action (CTA) Banner** — Hatekhori uses a controlled deep-slate atmosphere:
+
+```css
+/* Atmospheric CTA Banner Background */
+background: 
+  radial-gradient(ellipse 70% 60% at 50% 50%, rgba(38, 38, 38, 0.85) 0%, rgba(13, 13, 13, 0.98) 100%),
+  #0D0D0D;
+```
+
+- **Video Backdrop:** `hatekhori-chalk.mp4` with poster `hatekhori-chalk-poster.jpg`, depicting chalk writing on slate.
+- **Glassmorphic Touch:** `.btn-glass` provides subtle glass surface depth on primary buttons without sacrificing readability.
+
+---
+
+## 4. Typographic Palette
+
+Typography is central to Hatekhori's identity as a type foundry and atelier:
+
+| Family | Stack | Role |
+| :--- | :--- | :--- |
+| **Serif (Headings)** | `"Instrument Serif", Georgia, serif` | Editorial headlines, landing hero title, section headers. Gives the brand literary authority and craft warmth. |
+| **Sans (Interface)** | `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif` | Clean, neutral UI controls, body copy, instructions, navigation, forms. |
+| **Monospace (Data)** | `"DM Mono", monospace` | Technical indicators, cell counts, Unicode codepoints (e.g., `U+0985`), engine progress states, file sizes. |
+| **Handwriting (Latin)** | `"Hatekhori Latin", "Hatekhori", "Kalam", cursive` | Specimen preview for English handwriting fonts. |
+| **Handwriting (Bengali)** | `"Hatekhori Bangla", "Tiro Bangla", serif` | Specimen preview for Bengali handwriting fonts. |
+| **Handwriting (Hindi)** | `"Hatekhori Hindi", "Tiro Devanagari Hindi", serif` | Specimen preview for Hindi handwriting fonts. |
+
+---
+
+## 5. Motion & Transitions
+
+- **Primary Easing:** `--ease-out: cubic-bezier(0.23, 1, 0.32, 1);`
+- **Fast Duration:** `--duration-fast: 160ms;`
+- **Button Feedback:** Micro-shift on hover (`transform: translateX(3px)` for forward arrows, `translateX(-3px)` for back buttons).
+- **Reduced Motion:** Always respect `prefers-reduced-motion: reduce` by disabling transitions and video backgrounds.
+
+---
+
+## 6. Do / Don't
+
+### Do
+- Maintain high contrast between foreground and background in both light and dark themes.
+- Use `Instrument Serif` exclusively for large display statements and section headings.
+- Keep hairline borders 1px solid (`var(--border)`) without heavy drop shadows.
+- Keep error/alert states strictly within the single `--red` token.
+
+### Don't
+- Never introduce saturated blues, purples, or multicolored gradients into the product UI.
+- Never use cartoonish emojis in interface buttons, labels, or toasts — use clean SVGs (Lucide style).
+- Never allow low-contrast gray text on dark surfaces (body text must meet WCAG AAA / AA standards).

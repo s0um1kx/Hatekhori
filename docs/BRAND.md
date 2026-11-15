@@ -1,119 +1,99 @@
 # Hatekhori (হাতে খড়ি) — Brand Strategy
 
-> This is the resolved version, after arguing six independent strategy passes (including conflicting ones) against each other and against underlying market + competitor research. Where sources disagreed, the disagreement and reasoning are kept below — this document is meant to be argued with again later, not treated as scripture.
+> Finalized Brand Strategy and Positioning. This document defines the mission, competitive moat, visual direction, and voice for Hatekhori.
 
 ---
 
-## 1. The Single Idea
+## 1. The Core Idea
 
-**Hatekhori is not a font tool that added Bengali/Hindi support later. It is a Bengali/Hindi handwriting-preservation atelier that happens to have proven its engineering in English first — and doesn't say so publicly until the moat is real.**
+**Hatekhori turns a person's real handwriting into an ownable, installable font — treating Indic scripts (Bengali and Hindi) and English with first-class craft, reverence, and technical precision.**
 
-Everything below follows from this one sentence.
-
----
-
-## 2. Why This Idea, and Not the Alternatives
-
-Multiple credible-sounding strategies were argued for this project. Three real disagreements had to be resolved:
-
-**Bengali Day 1 vs. English-first validation.**
-One line of reasoning: launching English-first makes Hatekhori "an Indian Calligraphr clone with a Bengali name," and Bengali/Hindi should launch immediately to avoid that trap. Another line of reasoning: a Bengali font's required glyph set (base forms + conjuncts + matras + half-forms) can run past 1,000 glyphs — twenty times the complexity of an English A–Z/a–z/0–9 set — making it a bad first thing to build, unvalidated, as a solo/small build.
-**Resolution:** don't choose one — sequence them differently. Build the pipeline in English (cheap to iterate, fast to validate), but never show it publicly as the product. The public brand debut is Bengali/Hindi, once the pipeline is proven.
-
-**Two capture modes vs. one.**
-The original PRD split "Quick Mode" (low effort, any paper) from "Precision Mode" (structured template, higher fidelity). Resolution: one flow. A craft/atelier brand cannot knowingly ship a path that produces worse output — one bad font shared publicly does lasting reputational damage no amount of Precision Mode polish undoes. Speed and quality are both properties of one well-designed guideline sheet.
-
-**Who the first real user is.**
-Candidates ranged from "Western portfolio developer chasing an aesthetic accent" (easy to reach, but already served free — see §3) to "Bengali/Telugu diaspora preserving family heirlooms" (the real emotional core, but too high-stakes to be anyone's first experience of an unproven product).
-**Resolution:** the first real user sits in the overlap — an Indian developer or designer who wants **their own script**, rendered as **their own font**, technical enough to tolerate roughness, invested enough in the mission to talk about it.
+Named after the traditional Bengali ritual marking a child's very first step into literacy — holding chalk (*খড়ি*) in hand (*হাতে*) to draw their first letters on a slate — Hatekhori stands for human expression in an era where AI can fake handwriting for everyone, but cannot preserve yours.
 
 ---
 
-## 3. Competitive Landscape (this decides more than any brand exercise)
+## 2. The Cultural & Technical Wedge
 
-Four distinct tiers exist, and confusing them leads to fighting the wrong battle:
+### The Problem in Font Tools
+Every mainstream handwriting-to-font tool in existence (Calligraphr, YourFonts, Fontself, FontCrafter) was built exclusively around the Latin alphabet:
+- Latin is structurally straightforward: 26 uppercase letters, 26 lowercase letters, 10 numbers, and punctuation.
+- Indic scripts (Bengali, Hindi/Devanagari, and others) require complex script structures: base consonants, independent vowels, dependent vowel signs (*kar-chinha / matras*), and conjuncts (*juktakkhor*).
+- Western tools routinely treat Indic scripts as an unsupported edge case or an unaddressed roadmap item.
 
-**Tier 1 — Legacy paid utilities.** Calligraphr, YourFonts, MyScriptFont/Fontifier lineage. Print-template, scan, upload, TTF/OTF out. Beatable on pricing model (subscription-for-your-own-handwriting is a documented complaint) but not an interesting fight — they're already losing ground to Tier 3.
+### The Problem in Digital Culture
+In an era saturated with synthetic, algorithmically generated content ("AI slop"), handwritten letterforms are an irreplaceable marker of human identity, affection, and personal heritage. When an artisan writes, their handwriting carries distinct muscle memory, pressure, and cadence. 
 
-**Tier 2 — Pro creative-tool integrations.** Fontself (Illustrator/Photoshop extension, real Kickstarter traction — 760 backers, €37,625 in 2015, now used by agencies for color-font work), iFontMaker (iPad, draw-first). Different customer entirely — professional designers already inside Adobe/iPad workflows. Not really competing for Hatekhori's person.
-
-**Tier 3 — The actual threat: free ecosystem killers.** FontCrafter is the one that matters. It's not just a free font generator — it's a full ecosystem: the core tool (500+ glyphs, ligatures, contextual alternates, color-font effects, OTF/TTF/WOFF2/Base64 export, 100% local/private processing, no account) plus a family of companion apps (QuoteCrafter, LetterCrafter, CertificateCrafter, CardCrafter, GreetingCrafter, WeddingCrafter, LabelCrafter, EnvelopeCrafter) and a phone app, PenSend, for typing in your handwriting font and sharing it anywhere. It's already positioned explicitly against Calligraphr's subscription model.
-
-**Verdict on Tier 3: for English, this fight is already over.** Free, private, feature-complete, and first to occupy the "anti-subscription, anti-Calligraphr" story. Nothing Hatekhori could build in English would be the original in that space — only a slower, paid, second copy of it.
-
-**Tier 4 — Craft/foundry brand donors (not competitors).** Pangram Pangram, Atipo Foundry, ABC Dinamo, paper.design, Figma. Different job entirely (they sell finished typefaces or design surfaces, not a handwriting-to-font pipeline) — but real sources for brand mechanics worth borrowing, listed in §7.
-
-This is the second, independent reason (beyond glyph-count complexity) that Indic-first is correct: it isn't just the more interesting identity, after this research it's the *only* uncontested one. Calligraphr, YourFonts, Fontself, and FontCrafter's entire ecosystem all stop at Latin scripts. None of them handle Bengali/Hindi conjuncts. That gap is real and it is Hatekhori's alone.
+Hatekhori preserves this human touch without requiring complex type design software or expensive subscriptions.
 
 ---
 
-## 4. Positioning
+## 3. Competitive Landscape
 
-**For** Indian developers and designers who are proud of their own script and tired of every tool treating it as an afterthought,
-**Hatekhori is** a personal type atelier that turns real handwriting into an ownable, installable font — Indic scripts first, not as a phase-3 add-on,
-**Unlike** Calligraphr, YourFonts, or free ecosystems like FontCrafter, all of which are Latin-script-only and treat Bengali/Hindi conjuncts as unsupported territory, not a gap worth closing.
+Four distinct tiers define the handwriting-to-font space:
 
-**What Hatekhori sells:** ownership and script correctness, not speed, novelty, or feature count. The pitch is never "turn your handwriting into a font in seconds, free" — that's FontCrafter's ground, and it's already won.
+| Tier | Players | Positioning & Flaws | Hatekhori's Advantage |
+| :--- | :--- | :--- | :--- |
+| **Tier 1: Legacy Paid Utilities** | Calligraphr, YourFonts | Print-and-scan templates behind paywalls and monthly subscriptions. Users resent paying recurring rent for access to their own handwriting. | 100% free and open-source. No subscriptions, no account walls, zero lock-in. |
+| **Tier 2: Pro Creative Integrations** | Fontself, iFontMaker | Adobe Illustrator/Photoshop extensions and iPad drawing apps. Built for professional lettering artists with expensive Adobe subscriptions. | Accessible to anyone with a pen, a piece of paper, and a smartphone camera. |
+| **Tier 3: Free English Utilities** | FontCrafter | A capable, free utility with a companion app ecosystem for Latin scripts, but completely blind to Indic scripts. | First-class support for Bengali (*বাংলা*) and Hindi (*हिन्दी*) alongside English (*Latin*). |
+| **Tier 4: Independent Type Foundries** | Pangram Pangram, Atipo, Dinamo | Inspirational craft brands, editorial rigor, and high typographic standards. | Borrow their restraint, typographic poise, and presentation dignity rather than looking like a generic SaaS form. |
+
+**The Moat:** Bengali and Hindi script correctness is Hatekhori's defensible ground. No other accessible web utility bridges the Indic handwriting-to-OpenType pipeline with this level of craft.
+
+---
+
+## 4. Brand Positioning
+
+- **For:** Indian developers, designers, writers, and cultural preservationists who take pride in their language and want their real handwriting as an installable digital typeface.
+- **Hatekhori is:** A digital typeface atelier and handwriting preservation engine that turns written sheets into installable OpenType (.otf) fonts.
+- **Unlike:** Calligraphr, FontCrafter, or generic AI font generators, which ignore Indic scripts, enforce monthly subscriptions, or gate your font behind accounts.
+- **What Hatekhori Sells:** Authenticity, ownership, and cultural dignity. The pitch is never "generate 100 fonts in seconds" — it is the quiet satisfaction of typing with your own genuine hand.
 
 ---
 
 ## 5. Brand Pillars
 
-**1. Craft is non-negotiable, even if it means saying no.**
-No output ships that wouldn't survive being looked at by someone who actually reads the script. Reject poor-quality photos with a clear, kind message rather than shipping a bad result.
+1. **Craft & Script Dignity Above All:**
+   No font ships that looks like a ransom note or distorts the sacred geometry of the script. We provide clear, kind guidance on lighting and pen choice rather than producing illegible glyphs.
 
-**2. Ownership, not rental.**
-One-time payment, forever access, no subscription.
+2. **Complete Ownership, Zero Rental:**
+   Your handwriting is uniquely yours. Hatekhori is free, open source, and accountless. No subscriptions, no credits, no paywalls.
 
-**3. Indic-first is identity, not a roadmap checkbox.**
-Bengali/Hindi are not "coming in phase 3." They are the reason Hatekhori exists, and the one thing no competitor — legacy, pro, or free-ecosystem — currently does.
+3. **Absolute Privacy as Core Ethics:**
+   - **Zero AI Training:** Uploaded handwriting is never used to train machine learning models — ours or anyone else's.
+   - **No Account Wall:** No email capture, no passwords, no behavioral trackers.
+   - **Ephemeral Ingest:** Photos are deleted immediately upon font compilation; compiled fonts are purged after 30 days.
 
-**4. Time is respected by having one good path, not two mediocre ones, and by not chasing a feature war we can't win.**
-No forced ceremony, no account walls, and — new, post-competitor-research — no attempt to out-build FontCrafter's English app family. Engineering effort goes entirely toward the Indic pipeline, not toward matching a free competitor feature-for-feature in the one language everyone else already does well.
-
----
-
-## 6. Voice & Tone
-
-- Warm, quiet confidence — closer to a craftsperson describing their work than a SaaS product launch.
-- Never say "AI-powered." The entire point is that a person made this, not an algorithm.
-- Error and edge-case copy should feel considered, not like a system alert.
-- Avoid borrowing a founder story that isn't actually the founder's own — any personal narrative in marketing should be written by the person it's about, not invented on their behalf. (An earlier draft of this strategy fabricated a personal origin story; flagged here so it isn't reused as if true.)
+4. **Radical Simplicity:**
+   One clear, focused path: Print sheet → Write by hand → Snap photo → Own your font. No confusing split tiers or feature bloat.
 
 ---
 
-## 7. Visual Direction & What to Steal (applied to the Indic product only)
+## 6. Visual Identity & Design Language
 
-- Figma-level precision, paper.design-level restraint — minimal, editorial, generous whitespace.
-- Paper/ink texture where it's honest, not decorative AI-gradient default.
-- No generic "three equal cards" SaaS layout, no purple gradients, no dashboard-grid-of-fonts feel.
-- The Human/Machine toggle is the most ownable visual idea in the product — worth designing as a genuine centerpiece.
+Hatekhori’s visual direction draws from two physical touchstones: **the classroom slate stone** and **fine editorial print**.
 
-**From the craft-foundry tier, applied to Bengali/Hindi, not English:**
-- Pangram Pangram's "gallery, not catalog" restraint and named-edition framing (e.g. "Hatekhori — Bengali Edition 01") — never applied to an English offering, where it would just look like a slower FontCrafter.
-- Atipo Foundry's pay-what-you-want goodwill and founder-story-forward posture — once there's a real, honestly-written story to tell.
-- Figma's plugin-as-distribution lesson — worth pursuing later, but for the Indic output, not as a way to compete with FontCrafter's English app family.
-
-**What NOT to do, now confirmed by competitor research:**
-- Don't compete on "free" — FontCrafter already won that.
-- Don't build an English companion-app ecosystem (a PenSend/QuoteCrafter equivalent) — that fight is lost before it starts.
-- Don't lead marketing with "not AI handwriting" as if that alone is the differentiator — FontCrafter and Calligraphr both already imply/claim human-made handwriting; the differentiator that actually holds is script correctness for Bengali/Hindi, not the human-vs-AI framing alone.
+- **Chalkboard & Slate Aesthetics:** Deep slate backgrounds (`#0D0D0D`), high-contrast chalk-white letterforms (`#F0F0F0`), and looping atmospheric visuals of chalk writing on slate (`hatekhori-chalk.mp4`).
+- **Paper & Charcoal Ink:** In light mode, clean white paper (`#FFFFFF`) paired with deep charcoal ink (`#111111`) and 1px hairline structural borders (`#E5E5E5`).
+- **Typographic Authority:**
+  - *Headlines:* `Instrument Serif` — literary, timeless, authorial.
+  - *User Interface:* Clean, native system sans-serif — effortless and legible.
+  - *Technical Readouts:* `DM Mono` — precise, unpretentious, instrument-like.
+- **Restraint:** No decorative squiggles or distracting doodles on studio workbench surfaces. The handwriting specimen itself is the artwork.
 
 ---
 
-## 8. Primary Persona
+## 7. Voice and Tone
 
-**The vernacular-proud builder** — an Indian developer or designer, comfortable with rough early software, who wants their own handwriting, in their own script, as something they actually use. Motivated by identity and correctness more than convenience. Tolerant of an imperfect first version *because* they believe in why it exists.
-
-**Deliberately not the primary persona (yet):**
-- The Western/English-first portfolio developer chasing a personal-brand accent — already served, for free, better, by FontCrafter's ecosystem. Building for them first buys no moat and picks a fight Hatekhori loses.
-- The full emotional heirloom/diaspora preservation use case — real and powerful, but too significant a moment to attach to an unproven first version.
+- **Warm, Quiet Confidence:** The tone of a master craftsperson or bookbinder describing their workshop. Never hypy, never corporate, never frantic.
+- **Anti-AI-Slop:** Never use buzzwords like "AI-powered," "revolutionary algorithm," or "magic font generator." The magic is that a real human being sat down with a pen and wrote.
+- **Kind and Helpful Error Handling:** When a photo fails alignment or lighting is poor, provide friendly, actionable advice (e.g., *"Keep the paper flat and make sure all four corner markers are visible"*), never cryptic code errors.
+- **No Emojis in Core UI:** Use clean, monoline SVG icons (Lucide / Feather style) to preserve professional dignity.
 
 ---
 
-## 9. Open Strategic Questions (not yet decided)
+## 8. Target Persona: The Vernacular-Proud Builder
 
-- Exact pricing tiers — deferred until pipeline quality (and therefore real value) is known.
-- Whether a Figma plugin / npm package / CDN snippet is a v1 commitment or a later system layer — and if so, built for the Indic output specifically, not as an English-competing feature.
-- Whether Telugu joins the initial Indic scope or is a clearly later addition.
-- What the actual founder story is — to be written honestly, by the person living it, not assumed.
+- **Profile:** An Indian designer, developer, or creative writer who loves typography and is frustrated that digital tools treat their native script as an afterthought.
+- **Motivation:** Wants to sign their personal website, code editor, wedding stationery, or editorial portfolio in their genuine handwriting — in Bengali, Hindi, or English.
+- **Values:** Cares deeply about privacy, open source software, script correctness, and visual elegance.

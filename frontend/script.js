@@ -184,11 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileMetaName = $('#file-meta-name');
   const fileMetaSize = $('#file-meta-size');
 
-  // Stepper Pills & Actions
-  const spillSheet = $('#spill-sheet');
-  const spillUpload = $('#spill-upload');
-  const spillCompile = $('#spill-compile');
-  const spillExport = $('#spill-export');
+  // Legal & Actions
   const legalCheckbox = $('#consent-checkbox') || $('#legal-consent');
   const btnCompile = $('#btn-compile') || $('#generate-button');
   const compileConsentWarning = $('#compile-consent-warning');
@@ -465,12 +461,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tabStageWorkbench.classList.toggle('active', !isSheet);
       tabStageWorkbench.setAttribute('aria-selected', !isSheet ? 'true' : 'false');
     }
-    if (isSheet) {
-      updateStepperPill(spillSheet);
-    } else {
-      const hasPhoto = Boolean(activeSelectedFile || (fileInput && fileInput.files && fileInput.files.length > 0));
-      updateStepperPill(hasPhoto ? spillCompile : spillUpload);
-    }
   }
 
   function switchView(viewName, pushHistory = true) {
@@ -521,13 +511,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function updateStepperPill(activePill) {
-    [spillSheet, spillUpload, spillCompile, spillExport].forEach((pill) => {
-      if (pill) pill.classList.remove('active');
-    });
-    if (activePill) activePill.classList.add('active');
-  }
-
   function updateCompileButtonState() {
     if (!btnCompile) return;
     const hasPhoto = Boolean(activeSelectedFile || (fileInput && fileInput.files && fileInput.files.length > 0));
@@ -535,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnCompile.disabled = !hasPhoto || !hasConsent;
 
     if (compileConsentWarning) {
-      compileConsentWarning.hidden = hasConsent;
+      compileConsentWarning.hidden = !hasPhoto || hasConsent;
     }
   }
 

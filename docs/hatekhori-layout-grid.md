@@ -1,74 +1,137 @@
-# Hatekhori — Layout & Grid Guidelines
+# Hatekhori (হাতে খড়ি) — Layout & Grid Guidelines
 
-*Companion to PRD.md, BRAND.md and the account-level design.md. This file is the actual grid math and page-layout rules — the thing an AI coding agent (or you) checks before placing a single div.*
+*Companion to `hatekhori-brand-colors.md`, `PRD.md`, and `BRAND.md`. This file documents the layout architecture, responsive grid system, and component patterns for Hatekhori.*
 
-## 1. What the reference clip is actually doing
+---
 
-The clip you sent (**Scriptscript by Schultzschultz**) isn't decoration — it's a formula:
+## 1. Grid Architecture
 
-- **One saturated "stage" colour, one "ink" colour, nothing else.** Burnt orange background, indigo-blue strokes/labels. No gradient, no third accent competing for attention.
-- **Panels are instruments, not cards.** Thin 1px hairline borders, square corners, mono/technical labels in small caps (`Script`, `word space`, `letter width`). It reads like an oscilloscope, not a website.
-- **Three-zone workspace**: glyph editor (left) → live preview (centre) → parameters + mini-output (right). Each zone has exactly one job. Nothing is duplicated between zones.
-- **A single moving detail** (the rotating logo mark) is the *only* motion in the whole frame — so it actually gets noticed.
+Hatekhori is built desktop-first as a designer and developer tool, with a fluid, accessible responsive layout that gracefully scales down to mobile devices.
 
-The lesson isn't "use orange." It's: **pick one stage colour + one ink colour, commit completely, and let the grid do the rest of the work.**
+### Breakpoints & Columns
 
-## 2. Competitor scan
+| Breakpoint | Viewport Width | Columns | Outer Margin | Gutter | Max Content Width |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Desktop** | ≥ 1280px | 12 | 64px | 24px | 1200px |
+| **Laptop** | 1024–1279px | 12 | 48px | 20px | Fluid (100%) |
+| **Tablet** | 768–1023px | 8 | 32px | 16px | Fluid (100%) |
+| **Mobile** | < 768px | 4 | 20px | 12px | Fluid (100%) |
 
-| Product | Layout | Colour | Read |
-|---|---|---|---|
-| **FontCrafter** | Single-page utility, plain scan→upload→download steps, default form styling | Near-colourless — white background, system blue links | Feels like a tool a developer shipped in a weekend (it was — "one HTML file, 6,300 lines"). Zero brand identity, which is *the point* for them: free-utility positioning. |
-| **Calligraphr** | Classic SaaS dashboard: sidebar + grid-template downloader + account gate | Corporate blue/white, stock SaaS palette | Functional but generic — could be any B2B tool. Account-first (login before you even see the template). |
-| **FontCraft** | iPad-first draw canvas, tool palette down one side | Soft neutral greys, light accent | Reads as a drawing app, not a type tool — friendly but not confident. |
+### Strict Spacing Scale
 
-**The gap**: none of your direct competitors have a stage colour. They're all "default web app" white/grey/blue. That's the whitespace — a confident, saturated, consistent colour identity is instantly differentiating in this category, the same way Schultzschultz's orange makes their tool memorable in a screen recording alone.
+Arbitrary margin and padding values are prohibited. All layout spacing must use the standard scale:
+`4px · 8px · 12px · 16px · 24px · 32px · 48px · 64px · 96px · 120px`
 
-## 3. Brand colour
+- **Touch targets:** Minimum `44 × 44px` with at least `8px` spacing.
+- **Micro-labels / tags:** `11px` to `13px` in `var(--font-mono)`.
+- **Body text:** `15px` to `16px` with line-height `1.5` to `1.6`.
+- **Headlines:** Clamped responsive fluid type (`clamp(36px, 5vw, 64px)` for hero titles).
 
-Locked and maintained separately in **hatekhori-brand-colors.md** — the palette (`#0034D3` ink, `#F2ECE1` paper, `#99CCFF` tint, `#003087` deep accent), the reasoning behind it, and where the Ctrl+ board's squiggle motif is and isn't allowed. Read that file alongside this one; the grid rules below assume that palette.
+---
 
-## 4. Grid system
+## 2. Core Surface 1: Minimal Landing Page & Type Showcase
 
-**12-column grid, desktop-first (this is a designer/developer tool — desktop is primary, mobile is secondary per the existing PRD).**
+The landing page (`#landing-view`) serves as the introduction and live proof of the font engine:
 
-| Breakpoint | Viewport | Columns | Margin | Gutter | Max content width |
-|---|---|---|---|---|---|
-| Desktop (default) | ≥1280px | 12 | 64px | 24px | 1200px |
-| Laptop | 1024–1279px | 12 | 48px | 20px | fluid |
-| Tablet | 768–1023px | 8 | 32px | 16px | fluid |
-| Mobile | <768px | 4 | 20px | 12px | fluid |
+### A. Minimal Navigation (`.nav`)
+- Fixed/sticky bar with backdrop blur (`backdrop-filter: blur(12px)`).
+- Left: Brand logo `"Hatekhori"` linking to top.
+- Center/Right: Navigation links (`#how`, `#specimen`), guideline sheet download dropdown menu, Feedback modal trigger, Privacy & Terms modal trigger.
+- Primary Action: `"Launch Studio"` button with animated hover arrow.
 
-Spacing scale (use only these values — no arbitrary padding):
-`4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96px`
+### B. Hero Section (`.hero`)
+- Two-column grid layout (60% content / 40% media on desktop; stacked single-column on mobile).
+- Left: Editorial headline in `Instrument Serif` (`"Turn your handwriting into a real font."`), concise lead description, and dual actions: `"Launch Font Studio"` primary button + `"Download Sheet"` dropdown.
+- Right: Atmospheric video card displaying the tactile ritual of chalk writing on slate (`hatekhori-chalk.mp4`).
 
-Baseline row height for anything grid-like (character picker, glyph list): **40px**, so a 26-letter A–Z grid always lines up cleanly regardless of column count.
+### C. Interactive Specimen & Laboratory (`#specimen`)
+- **Specimen Bar:** Script selector tabs (`English (Latin)`, `Bengali (বাংলা)`, `Hindi (हिन्दी)`) with live Active Typeface Badge (`Hatekhori Bangla`, `Hatekhori Hindi`, or `Hatekhori Latin`).
+- **Live Canvas Plate:** Large interactive `<textarea>` preloaded with culturally authentic sample text in the active script, rendered in the corresponding handwritten font.
+- **Matrix & Glyph Inspector:** Two-column component pairing an interactive character cell grid with a live Inspector card displaying the magnified glyph (`#big`) and its exact Unicode codepoint (`#cp`, e.g., `U+0985`).
+- **Type Specimen Deck (3 Cards):**
+  1. *Character Set & Glyph Roster:* Explicit display of all supported letters, consonants, vowels, and matras.
+  2. *Optical Scale Waterfall:* Fluid type rendering at 48px, 32px, 24px, and 18px.
+  3. *Continuous Prose Readability:* Body paragraph demonstrating rhythm, line height, and text texture.
 
-## 5. Page-level layout patterns
+### D. Process Section (`#how`)
+- Three-column grid (`01 Print & write`, `02 Snap a photo`, `03 Install & own`).
+- High-contrast step numbering with concise, clear instructions.
 
-**Landing / marketing pages** (stage-colour background allowed here):
-- 12-col grid, but content itself sits in a **max 8-column** measure — never let marketing copy run the full width, it reads as unstructured/AI-generated.
-- One hero statement, one supporting line, one CTA. No stacked feature-card grids of 6+ identical boxes (this is exactly the "AI slop" pattern design.md already flags).
+### E. Atmospheric CTA Banner (`#cta`)
+- Full-bleed dark slate section with radial illumination.
+- Direct prompt: `"Make your font today."` with `"Launch Font Studio"` button.
 
-**Capture flow** (guideline sheet → photo/upload → validation):
-- Single column, centred, max 6 columns wide. This is a sequential task — don't give it a multi-panel layout, one thing happens at a time.
-- Progress indicator uses the ink colour only, no rainbow progress bars.
+### F. Fathom-Style Footer (`#main-footer`)
+- 4-column sitemap grid: Navigation, Guideline Sheets, Resources (GitHub & Spec), Ethics & Legal (Privacy, Data Takedown, Contact).
+- Architectural giant `"Hatekhori"` wordmark anchored at the base with generous breathing room.
 
-**Editor / canvas screen** (this is your Schultzschultz moment — where the tool should feel like an instrument):
-- Three-zone layout, same logic as the reference: **glyph/character grid** (3 cols) → **live canvas preview** (6 cols) → **Human/Machine toggle + output panel** (3 cols).
-- Panels get thin 1px borders on the paper surface colour, not drop-shadowed cards — shadows read as generic UI-kit, hairlines read as instrument.
-- The Human/Machine toggle is the single most important control on this screen — give it its own fixed position (top of the right panel), don't bury it in a settings menu.
+---
 
-**Gallery / output states** (font preview, download):
-- 8-column grid, no more than 3 items per row even on wide screens — this is a craft product, not a marketplace grid.
+## 3. Core Surface 2: Studio Workbench (`#studio-view`)
 
-## 6. Do / don't (extends design-guidelines.md)
+The studio operates as an **Atelier Two-Stage Flow**, keeping each step focused and distraction-free:
 
-**Do**
-- One stage colour, one ink colour, one neutral paper tone — that's the whole palette.
-- Hairline borders + mono/uppercase micro-labels for anything tool-like (editor, parameters).
-- Let every panel do exactly one job, same as the reference clip's three zones.
+### Top Navigation & Stage Switcher
+- Left: `"Back to Overview"` button returning to the landing view.
+- Center: Segmented stage tabs (`1. Guideline Sheet` ↔ `2. Upload & Studio`).
 
-**Don't**
-- Don't default to white-background SaaS layout — that's literally what FontCrafter and Calligraphr already look like; matching them erases your differentiation.
-- Don't add a second accent colour "for variety" — the reference clip's whole impact comes from restraint.
-- Don't drop-shadow panels on the editor screen — flat + hairline reads as precision tool, shadows read as generic dashboard template.
+### Stage 1: Guideline Sheet Preparation (`#stage-sheet-panel`)
+Two-column atelier layout:
+- **Left (Preview Plate):** High-resolution visual card of the guideline sheet with registration fiducial corner badge and `"Preview Full Size ↗"` hover overlay. Clicking opens the lightbox modal.
+- **Right (Configuration Box):**
+  - Step eyebrow: `Step 1: Download guideline sheet`.
+  - Language sheet selector pills: `English (Latin)` (90 cells), `Bengali (বাংলা)` (60 cells), `Hindi (हिन्दी)` (60 cells).
+  - Guidelines card: 100% scale printing instruction, dark ink pen recommendation, flat paper alignment rule.
+  - Action buttons: Primary `"Download Sheet"` + outline `"Already filled? Go to upload →"`.
+
+### Stage 2: Font Creation Workbench (`#stage-workbench-panel`)
+Split-pane workshop layout:
+- **Left Deck (Upload & Pipeline Monitor):**
+  - *Upload Card:* Sheet language switcher pills, drag-and-drop zone (`#dropzone`) supporting JPG/PNG with file preview and change/remove actions.
+  - *Consent Checkbox:* Legal certification checkbox ("I certify this is my own handwriting and I have the right to submit it").
+  - *Compile Action:* `"Generate Font"` button (disabled until file and consent are verified).
+  - *Progress Monitor (`#step-progress`):* Real-time 6-step vector engine pipeline indicator:
+    1. Ingesting scan and removing photo metadata
+    2. Locating corner alignment markers
+    3. Straightening and aligning page
+    4. Isolating individual letter cells
+    5. Tracing ink strokes into vector outlines
+    6. Building installable OpenType font tables
+- **Right Deck (Typography Laboratory & Live Font Tester):**
+  - *Standby Empty State:* Friendly invitation to upload a sheet, with `"Test with Demo Handwriting"` option for immediate evaluation.
+  - *Active Result State (`#step-result`):*
+    - Top bar: `"✓ Font ready"` badge, `"Share Link"` button (copies unique live URL), `"Download Font (.otf)"` primary button.
+    - Specimen toolbar: Font size slider (`18px` to `110px`), `"Copy @font-face"` CSS helper, and `"Glyph Matrix"` drawer toggle.
+    - Interactive Canvas Plate: Live `<textarea>` rendering typed text in the freshly compiled user font.
+    - Glyph Matrix Drawer: Expandable grid of extracted individual glyphs that can be clicked to insert directly into the canvas.
+
+---
+
+## 4. Modal Design Patterns
+
+All modals follow standard accessible dialog mechanics:
+- Screen-filling backdrop with blur (`rgba(0,0,0,0.65)`).
+- Centered card with maximum width `680px` (`920px` for sheet lightbox).
+- Trapped keyboard focus and `Escape` key close listener.
+- Click-outside-to-dismiss behavior.
+
+1. **Feedback & Bug Report Modal (`#feedback-modal`):**
+   - Category selector, message input with character count, optional contact info, and auto-detected diagnostics (active script, upload ID, error log).
+2. **Privacy Policy Modal (`#privacy-modal`):**
+   - Clean tabular display of the 30-day font retention schedule, zero AI training commitment, and deletion procedures.
+3. **Guideline Sheet Zoom Lightbox (`#sheet-lightbox-modal`):**
+   - Full-fidelity inspection view of the A4 grid with printing tips and direct download trigger.
+
+---
+
+## 5. Layout Do / Don't
+
+### Do
+- Ensure hairline borders (`1px solid var(--border)`) are used instead of heavy drop shadows.
+- Keep the two-stage studio separation clean — users prepare their paper first, then upload.
+- Ensure the interactive specimen is immediately functional upon page load with fallback and sample fonts.
+
+### Don't
+- Never crowd multiple conflicting primary CTAs into one viewport.
+- Never let long lines of body copy exceed `65ch` in editorial sections.
+- Never use multi-colored status bars; keep progress indicators in monochrome ink and muted tones.
