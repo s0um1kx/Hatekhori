@@ -834,29 +834,11 @@ a:hover {
   margin: 0;
 }
 
-.specimen-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-}
-
-.meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
 .meta-label {
   font-family: var(--font-mono);
   font-size: 11px;
   text-transform: uppercase;
   color: var(--muted);
-}
-
-.meta-val {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--fg);
 }
 
 /* Steps Grid */
@@ -1264,6 +1246,10 @@ a:hover {
 /* ==========================================================================
    VIEW 2: THE STUDIO WORKBENCH
    ========================================================================== */
+
+body.in-studio nav.nav {
+  display: none !important;
+}
 
 .studio-panel {
   padding: 36px 0 80px;

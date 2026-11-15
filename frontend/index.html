@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=4.2" />
+  <link rel="stylesheet" href="style.css?v=4.4" />
 </head>
 <body>
 
@@ -238,48 +238,6 @@
             </p>
           </div>
 
-          <!-- Card 4: Technical Font Metadata -->
-          <div class="specimen-card">
-            <div class="specimen-card-head">
-              <span class="specimen-card-title">Typeface Specifications &amp; OpenType Tables</span>
-              <span class="specimen-card-tag">Engine Metadata</span>
-            </div>
-            <div class="specimen-meta-grid" id="specimen-deck-meta">
-              <div class="meta-item">
-                <span class="meta-label">Family Name</span>
-                <span class="meta-val">Hatekhori Bangla</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Subfamily / Weight</span>
-                <span class="meta-val">Regular (400)</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Binary Format</span>
-                <span class="meta-val">OpenType (.otf) CFF</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Units Per Em</span>
-                <span class="meta-val">1000 UPM</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Total Glyphs</span>
-                <span class="meta-val">62 Glyphs</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Mapped Code Points</span>
-                <span class="meta-val">61 Characters (60 Bengali + Space)</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">Primary Script</span>
-                <span class="meta-val">Bengali (বাংলা)</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">License</span>
-                <span class="meta-val">Personal &amp; Commercial</span>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
@@ -437,16 +395,16 @@
               </div>
             </div>
             <div class="sheet-board-caption">
-              <span>Standard A4 Sheet • 4 Precision Corner Fiducials</span>
+              <span>Standard A4 paper with four corner alignment marks</span>
             </div>
           </div>
 
           <!-- Configuration & Action Column -->
           <div class="sheet-atelier-meta-box">
             <div class="atelier-meta-header">
-              <span class="atelier-badge">STAGE 01 : PREPARE YOUR SHEET</span>
+              <span class="atelier-badge">Step 1: Download guideline sheet</span>
               <h2 id="studio-sheet-title">Get English Guideline Sheet</h2>
-              <p class="atelier-sub" id="studio-sheet-sub">A–Z, a–z, 0–9 &amp; symbols (A4 grid with 4 registration fiducials)</p>
+              <p class="atelier-sub" id="studio-sheet-sub">A to Z, numbers, and basic punctuation on an A4 grid with corner alignment marks.</p>
             </div>
 
             <!-- Language Sheet Selector -->
@@ -462,19 +420,13 @@
               </button>
             </div>
 
-            <div class="sheet-meta-row" id="studio-sheet-meta">
-              <span class="sheet-meta-tag">90 Latin Cells</span>
-              <span class="sheet-meta-tag">A–Z, a–z, 0–9, Punctuation</span>
-              <span class="sheet-meta-tag">A4 (100% scale)</span>
-            </div>
-
             <!-- Guidelines / Instructions Card -->
             <div class="sheet-criteria-card">
               <span class="criteria-card-title">Before you print and write:</span>
               <ul class="criteria-list">
-                <li><strong>100% Scale:</strong> Print on A4 paper with printer scaling at 100% (disable "Fit to Page" or "Shrink to Fit").</li>
-                <li><strong>Dark Pen:</strong> Fill each character cell using a black or dark blue ink pen or fine marker.</li>
-                <li><strong>Corner Markers:</strong> Ensure all 4 black square corner fiducials stay uncreased and visible.</li>
+                <li>Print on standard A4 paper at 100% scale without shrinking to fit.</li>
+                <li>Write inside each cell using a black or dark blue pen.</li>
+                <li>Keep the paper flat and make sure all four black corner squares are clearly in frame.</li>
               </ul>
             </div>
 
@@ -484,7 +436,7 @@
                 <span id="studio-sheet-btn-label">Download English Sheet (Latin)</span>
               </a>
               <button type="button" class="btn btn-outline btn-lg" id="btn-proceed-to-upload">
-                Already filled? Proceed to Upload →
+                Already filled? Go to upload →
               </button>
             </div>
 
@@ -524,8 +476,8 @@
                 <input type="file" id="file-input" class="visually-hidden" accept="image/jpeg,image/png,image/heic" />
                 
                 <div class="dropzone-idle" id="dropzone-idle">
-                  <strong class="dropzone-title">Click to upload sheet photo</strong>
-                  <span class="dropzone-sub">or drag &amp; drop file (JPG, PNG)</span>
+                  <strong class="dropzone-title">Drop your photo here, or click to browse</strong>
+                  <span class="dropzone-sub">Accepts JPG and PNG</span>
                 </div>
 
                 <!-- Upload Preview -->
@@ -613,7 +565,7 @@
             <div class="stage-standby" id="studio-empty-state">
               <h3 class="standby-title">Your Font Canvas</h3>
               <p class="standby-desc">
-                Upload your completed guideline sheet on the left. The engine will vectorize your strokes and mount your live font onto this testing stage.
+                Upload your filled sheet on the left. Once compiled, your font will appear here so you can test typing with it immediately.
               </p>
               <button type="button" class="btn btn-outline" id="studio-load-demo-btn">
                 Test with Demo Handwriting
@@ -759,8 +711,8 @@
       </div>
       <div class="modal-body">
         <div class="policy-section">
-          <h4>1. The Zero-AI Promise</h4>
-          <p>We <strong>never</strong> use your handwriting to train any AI or machine learning models — ours or anyone else's. Not by default, not with an opt-out. There is no opt-in path either, because it is simply not on offer.</p>
+          <h4>1. Zero AI training</h4>
+          <p>Your handwriting is never used to train machine learning models. We do not store training datasets or share uploads with third parties.</p>
         </div>
         <div class="policy-section">
           <h4>2. Strict Ephemeral Data Lifecycle</h4>
@@ -828,7 +780,7 @@
       <div class="sheet-modal-head">
         <div>
           <h3 id="modal-sheet-title" class="sheet-modal-title">English Guideline Sheet (Latin)</h3>
-          <p id="modal-sheet-desc" class="sheet-modal-desc">A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.</p>
+          <p id="modal-sheet-desc" class="sheet-modal-desc">A4 grid with 90 cells and four corner alignment marks.</p>
         </div>
         <button type="button" class="btn btn-outline btn-sm" id="btn-close-sheet-modal" aria-label="Close sheet preview">✕</button>
       </div>
@@ -849,6 +801,6 @@
   <!-- Toast Notification Pill -->
   <div id="toast" class="toast-pill" role="status" aria-live="polite" hidden></div>
 
-  <script src="script.js?v=4.2"></script>
+  <script src="script.js?v=4.4"></script>
 </body>
 </html>

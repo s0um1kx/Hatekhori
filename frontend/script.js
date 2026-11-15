@@ -18,12 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetFile: 'hatekhori-bengali-sheet.png',
       sheetName: 'Bengali Sheet (বাংলা)',
       sheetTitle: 'Get Bengali Guideline Sheet',
-      sheetSubtitle: 'বাংলা বর্ণমালা ও কারচিহ্ন (A4 grid with 4 registration fiducials)',
+      sheetSubtitle: 'বাংলা বর্ণমালা ও কারচিহ্ন, চারটি কোণার চিহ্নসহ A4 গ্রিড।',
       sheetBadge: '10×6 Grid • 60 Cells',
-      sheetMeta: ['60 Bengali Cells', '11 স্বর • 39 ব্যঞ্জন • 10 কার', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
       modalTitle: 'Bengali Guideline Sheet (বাংলা)',
-      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.',
+      modalDesc: 'A4 গ্রিডে ৬০টি ঘর এবং চারটি কোণার নির্দেশক চিহ্ন।',
       rosterTag: '60 Bengali Glyphs • All Supported Characters',
       rosterGroups: [
         { label: 'স্বরবর্ণ (Vowels • 11)', text: 'অ  আ  ই  ঈ  উ  ঊ  ঋ  এ  ঐ  ও  ঔ' },
@@ -36,17 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { size: '24px', cls: 'waterfall-24', text: 'আমি বাংলায় গান গাই, আমি বাংলায় কথা বলি' },
         { size: '18px', cls: 'waterfall-18', text: 'কাগজ আর কালির স্বাভাবিক টানে তৈরি আপনার নিজস্ব বাংলা ফন্ট।' }
       ],
-      prose: 'কাগজে কলমে লেখা প্রতিটি হরফের নিজস্ব একটি টান থাকে। সেই স্বাভাবিক রেখাগুলোকে ধরে রেখে আপনার হাতের লেখাকে সরাসরি ডিজিটাল ফন্টে রূপান্তর করে হাতে খড়ি।',
-      meta: [
-        { label: 'Family Name', val: 'Hatekhori Bangla' },
-        { label: 'Subfamily / Weight', val: 'Regular (400)' },
-        { label: 'Binary Format', val: 'OpenType (.otf) CFF' },
-        { label: 'Units Per Em', val: '1000 UPM' },
-        { label: 'Total Glyphs', val: '62 Glyphs' },
-        { label: 'Mapped Code Points', val: '61 Characters (60 Bengali + Space)' },
-        { label: 'Primary Script', val: 'Bengali (বাংলা)' },
-        { label: 'License', val: 'Personal & Commercial' }
-      ]
+      prose: 'কাগজে কলমে লেখা প্রতিটি হরফের নিজস্ব একটি টান থাকে। সেই স্বাভাবিক রেখাগুলোকে ধরে রেখে আপনার হাতের লেখাকে সরাসরি ডিজিটাল ফন্টে রূপান্তর করে হাতে খড়ি।'
     },
     en: {
       font: "'Hatekhori', 'Kalam', cursive",
@@ -57,12 +46,11 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetFile: 'hatekhori-english-sheet.png',
       sheetName: 'English Sheet (Latin)',
       sheetTitle: 'Get English Guideline Sheet',
-      sheetSubtitle: 'A–Z, a–z, 0–9 & symbols (A4 grid with 4 registration fiducials)',
+      sheetSubtitle: 'A to Z, numbers, and basic punctuation on an A4 grid with corner alignment marks.',
       sheetBadge: '10×9 Grid • 90 Cells',
-      sheetMeta: ['90 Latin Cells', 'A–Z, a–z, 0–9, Punctuation', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (90 Glyphs)',
       modalTitle: 'English Guideline Sheet (Latin)',
-      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.',
+      modalDesc: 'A4 grid with 90 cells and four corner alignment marks.',
       rosterTag: '92 Glyphs • All Supported Characters',
       rosterGroups: [
         { label: 'Uppercase (A–Z)', text: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z' },
@@ -76,17 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { size: '24px', cls: 'waterfall-24', text: 'Sphinx of black quartz, judge my vow. 0123456789' },
         { size: '18px', cls: 'waterfall-18', text: 'How vexingly quick daft zebras jump! Handwritten rhythm preserved in OpenType.' }
       ],
-      prose: 'Handwriting carries the natural rhythm and varying pressure of a real pen. Hatekhori converts those strokes into clean vector glyphs while preserving your natural character spacing.',
-      meta: [
-        { label: 'Family Name', val: 'Hatekhori' },
-        { label: 'Subfamily / Weight', val: 'Regular (400)' },
-        { label: 'Binary Format', val: 'OpenType (.otf) CFF' },
-        { label: 'Units Per Em', val: '1000 UPM' },
-        { label: 'Total Glyphs', val: '92 Glyphs' },
-        { label: 'Mapped Code Points', val: '91 Characters' },
-        { label: 'Multilingual Suite', val: 'English • Bengali • Hindi' },
-        { label: 'License', val: 'Personal & Commercial' }
-      ]
+      prose: 'Handwriting carries the natural rhythm and varying pressure of a real pen. Hatekhori converts those strokes into clean vector glyphs while preserving your natural character spacing.'
     },
     hi: {
       font: "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif",
@@ -97,12 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetFile: 'hatekhori-hindi-sheet.png',
       sheetName: 'Hindi Sheet (हिन्दी)',
       sheetTitle: 'Get Hindi Guideline Sheet',
-      sheetSubtitle: 'देवनागरी वर्णमाला व मात्राएँ (A4 grid with 4 registration fiducials)',
+      sheetSubtitle: 'देवनागरी वर्णमाला और मात्राएँ, चारों कोनों के निशानों सहित A4 ग्रिड।',
       sheetBadge: '10×6 Grid • 60 Cells',
-      sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
       modalTitle: 'Hindi Guideline Sheet (हिन्दी)',
-      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ) with 4 registration fiducials.',
+      modalDesc: 'A4 ग्रिड में ६० खाने और चारों कोनों के चौकोर निशान।',
       rosterTag: '60 Devanagari Glyphs • Primary Characters',
       rosterGroups: [
         { label: 'स्वर (Vowels • 11)', text: 'अ  आ  इ  ई  उ  ऊ  ऋ  ए  ऐ  ओ  औ' },
@@ -115,17 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { size: '24px', cls: 'waterfall-24', text: 'देवनागरी लिपि के स्वर, व्यंजन और मात्राओं का संग्रह' },
         { size: '18px', cls: 'waterfall-18', text: 'हाथ से लिखे अक्षरों में कागज़ और स्याही की एक सहज लय होती है।' }
       ],
-      prose: 'कागज़ पर स्याही से लिखे हर अक्षर में हाथ की एक स्वाभाविक गति होती है। हातेखोड़ी उसी लिखावट को सीधे डिजिटल फ़ॉन्ट में ढालता है, ताकि अक्षरों का मूल रूप बना रहे।',
-      meta: [
-        { label: 'Family Name', val: 'Hatekhori Hindi' },
-        { label: 'Subfamily / Weight', val: 'Regular (400)' },
-        { label: 'Binary Format', val: 'OpenType (.otf) CFF' },
-        { label: 'Units Per Em', val: '1000 UPM' },
-        { label: 'Total Glyphs', val: '62 Glyphs' },
-        { label: 'Mapped Code Points', val: '60 Characters' },
-        { label: 'Primary Script', val: 'Devanagari (हिन्दी)' },
-        { label: 'License', val: 'Personal & Commercial' }
-      ]
+      prose: 'कागज़ पर स्याही से लिखे हर अक्षर में हाथ की एक स्वाभाविक गति होती है। हातेखोड़ी उसी लिखावट को सीधे डिजिटल फ़ॉन्ट में ढालता है, ताकि अक्षरों का मूल रूप बना रहे।'
     }
   };
 
@@ -372,7 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const deckRoster = $('#specimen-deck-roster');
     const deckWaterfall = $('#specimen-deck-waterfall');
     const deckProse = $('#specimen-deck-prose');
-    const deckMeta = $('#specimen-deck-meta');
 
     if (deckTag && s.rosterTag) {
       deckTag.textContent = s.rosterTag;
@@ -399,15 +365,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (deckProse && s.prose) {
       deckProse.textContent = s.prose;
       deckProse.style.fontFamily = s.font;
-    }
-
-    if (deckMeta && s.meta) {
-      deckMeta.innerHTML = s.meta.map((m) => `
-        <div class="meta-item">
-          <span class="meta-label">${m.label}</span>
-          <span class="meta-val">${m.val}</span>
-        </div>
-      `).join('');
     }
   }
 
@@ -482,10 +439,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (studioSheetBtnLabel && s.sheetName) {
       studioSheetBtnLabel.textContent = `Download ${s.sheetName}`;
     }
-    const studioSheetMeta = $('#studio-sheet-meta');
-    if (studioSheetMeta && s.sheetMeta) {
-      studioSheetMeta.innerHTML = s.sheetMeta.map((m) => `<span class="sheet-meta-tag">${m}</span>`).join('');
-    }
     const matrixDrawerTitle = $('#matrix-drawer-title');
     if (matrixDrawerTitle && s.matrixTitle) matrixDrawerTitle.textContent = s.matrixTitle;
 
@@ -521,7 +474,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function switchView(viewName, pushHistory = true) {
+    const mainNav = $('nav.nav');
     if (viewName === 'studio') {
+      document.body.classList.add('in-studio');
+      if (mainNav) mainNav.hidden = true;
       if (landingView) {
         landingView.classList.remove('active-view');
         landingView.hidden = true;
@@ -542,6 +498,8 @@ document.addEventListener("DOMContentLoaded", () => {
         history.pushState({ view: 'studio' }, '', '#studio');
       }
     } else {
+      document.body.classList.remove('in-studio');
+      if (mainNav) mainNav.hidden = false;
       if (studioView) {
         studioView.classList.remove('active-view');
         studioView.hidden = true;
@@ -554,7 +512,7 @@ document.addEventListener("DOMContentLoaded", () => {
         navLaunchStudio.hidden = false;
         navLaunchStudio.innerHTML = `
           <span>Launch Studio</span>
-          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         `;
       }
       if (pushHistory && window.location.hash) {
