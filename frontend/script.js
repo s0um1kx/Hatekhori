@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bn: {
       font: "'Hatekhori Bangla', 'Tiro Bangla', serif",
       fontLabel: 'Hatekhori Bangla (hatekhori-bengali.otf)',
-      text: 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।',
+      text: 'আমার বাংলা ভাষা ও নিজের হাতের লেখা। হাতে খড়ি দিয়ে নিজের বাংলা ফন্ট বানান।',
       glyphs: 'অআইঈউঊঋএঐওঔকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়ৎংঃঁািীুূৃেৈোৌ',
       sheetUrl: 'guideline-sheet-bengali.png',
       sheetFile: 'hatekhori-bengali-sheet.png',
@@ -23,7 +23,30 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetMeta: ['60 Bengali Cells', '11 স্বর • 39 ব্যঞ্জন • 10 কার', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
       modalTitle: 'Bengali Guideline Sheet (বাংলা)',
-      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.'
+      modalDesc: 'A4 grid • 60 cells (11 স্বরবর্ণ, 39 ব্যঞ্জনবর্ণ, 10 কারচিহ্ন) with 4 registration fiducials.',
+      rosterTag: '60 Bengali Glyphs • All Supported Characters',
+      rosterGroups: [
+        { label: 'স্বরবর্ণ (Vowels • 11)', text: 'অ  আ  ই  ঈ  উ  ঊ  ঋ  এ  ঐ  ও  ঔ' },
+        { label: 'ব্যঞ্জনবর্ণ ও বিশেষ চিহ্ন (Consonants & Specials • 39)', text: 'ক  খ  গ  ঘ  ঙ  চ  ছ  জ  ঝ  ঞ  ট  ঠ  ড  ঢ  ণ  ত  থ  দ  ধ  ন  প  ফ  ব  ভ  ম  য  র  ল  শ  ষ  স  হ  ড়  ঢ়  য়  ৎ  ং  ঃ  ঁ' },
+        { label: 'কারচিহ্ন (Vowel Signs / Matras • 10)', text: 'া   ি   ী   ু   ূ   ৃ   ে   ৈ   ো   ৌ' }
+      ],
+      waterfall: [
+        { size: '48px', cls: 'waterfall-48', text: 'আমার বাংলা ভাষা ও নিজের হাতের লেখা' },
+        { size: '32px', cls: 'waterfall-32', text: 'হাতে খড়ি দিয়ে তৈরি আপনার নিজস্ব বাংলা ফন্ট' },
+        { size: '24px', cls: 'waterfall-24', text: 'আমি বাংলায় গান গাই, আমি বাংলায় কথা বলি' },
+        { size: '18px', cls: 'waterfall-18', text: 'স্বরবর্ণ, ব্যঞ্জনবর্ণ ও কারচিহ্নের প্রতিটি রেখায় রয়েছে আপনার নিজস্ব হাতের টান।' }
+      ],
+      prose: 'হাতের লেখা কেবল হরফ নয়, তা মানুষের নিজস্ব ব্যক্তিত্ব ও অনুভূতির এক অনুপম প্রকাশ। হাতে খড়ি আপনার কাগজের কলমের প্রতিটি রেখা ও টানকে নিখুঁত ডিজিটাল ভেক্টর ফন্টে রূপান্তর করে। এতে অক্ষরের স্বাভাবিক ছন্দ ও অনুপাত অক্ষুণ্ণ থাকে।',
+      meta: [
+        { label: 'Family Name', val: 'Hatekhori Bangla' },
+        { label: 'Subfamily / Weight', val: 'Regular (400)' },
+        { label: 'Binary Format', val: 'OpenType (.otf) CFF' },
+        { label: 'Units Per Em', val: '1000 UPM' },
+        { label: 'Total Glyphs', val: '62 Glyphs' },
+        { label: 'Mapped Code Points', val: '61 Characters (60 Bengali + Space)' },
+        { label: 'Primary Script', val: 'Bengali (বাংলা)' },
+        { label: 'License', val: 'Personal & Commercial' }
+      ]
     },
     en: {
       font: "'Hatekhori', 'Kalam', cursive",
@@ -39,7 +62,31 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetMeta: ['90 Latin Cells', 'A–Z, a–z, 0–9, Punctuation', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (90 Glyphs)',
       modalTitle: 'English Guideline Sheet (Latin)',
-      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.'
+      modalDesc: 'A4 grid • 90 cells (A–Z, a–z, 0–9, punctuation) with 4 registration fiducials.',
+      rosterTag: '92 Glyphs • All Supported Characters',
+      rosterGroups: [
+        { label: 'Uppercase (A–Z)', text: 'A B C D E F G H I J K L M N O P Q R S T U V W X Y Z' },
+        { label: 'Lowercase (a–z)', text: 'a b c d e f g h i j k l m n o p q r s t u v w x y z' },
+        { label: 'Figures & Numbers (0–9)', text: '0 1 2 3 4 5 6 7 8 9' },
+        { label: 'Punctuation & Symbols (28 Characters)', text: '. , ! ? \' " ( ) - : ; @ # $ % & * + = / \\ _ [ ] { } < >' }
+      ],
+      waterfall: [
+        { size: '48px', cls: 'waterfall-48', text: 'The quick brown fox jumps over the lazy dog.' },
+        { size: '32px', cls: 'waterfall-32', text: 'Pack my box with five dozen liquor jugs.' },
+        { size: '24px', cls: 'waterfall-24', text: 'Sphinx of black quartz, judge my vow. 0123456789' },
+        { size: '18px', cls: 'waterfall-18', text: 'How vexingly quick daft zebras jump! Handwritten rhythm preserved in OpenType.' }
+      ],
+      prose: 'Handwriting is as distinct as a signature or a human voice. Hatekhori translates the physical strokes of pen on paper into crisp digital vector Béziers, keeping proportional advance widths and authentic rhythm intact without artificial rounding or AI hallucination.',
+      meta: [
+        { label: 'Family Name', val: 'Hatekhori' },
+        { label: 'Subfamily / Weight', val: 'Regular (400)' },
+        { label: 'Binary Format', val: 'OpenType (.otf) CFF' },
+        { label: 'Units Per Em', val: '1000 UPM' },
+        { label: 'Total Glyphs', val: '92 Glyphs' },
+        { label: 'Mapped Code Points', val: '91 Characters' },
+        { label: 'Multilingual Suite', val: 'English • Bengali • Hindi' },
+        { label: 'License', val: 'Personal & Commercial' }
+      ]
     },
     hi: {
       font: "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif",
@@ -55,7 +102,30 @@ document.addEventListener("DOMContentLoaded", () => {
       sheetMeta: ['60 Devanagari Cells', '11 स्वर • 39 व्यंजन • 10 मात्राएँ', 'A4 (100% scale)'],
       matrixTitle: 'Extracted Character Set (60 Glyphs)',
       modalTitle: 'Hindi Guideline Sheet (हिन्दी)',
-      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ) with 4 registration fiducials.'
+      modalDesc: 'A4 grid • 60 cells (11 स्वर, 39 व्यंजन/योगवाह, 10 मात्राएँ) with 4 registration fiducials.',
+      rosterTag: '60 Devanagari Glyphs • Primary Characters',
+      rosterGroups: [
+        { label: 'स्वर (Vowels • 11)', text: 'अ  आ  इ  ई  उ  ऊ  ऋ  ए  ऐ  ओ  औ' },
+        { label: 'व्यंजन व योगवाह (Consonants • 39)', text: 'क  ख  ग  घ  ङ  च  छ  ज  झ  ञ  ट  ठ  ड  ढ  ण  त  थ  द  ध  न  प  फ  ब  भ  म  य  र  ल  व  श  ष  स  ह  ड़  ढ़  ं  ः  ँ  ्' },
+        { label: 'मात्राएँ (Vowel Signs • 10)', text: 'ा   ि   ी   ु   ू   ृ   े   ै   ो   ौ' }
+      ],
+      waterfall: [
+        { size: '48px', cls: 'waterfall-48', text: 'अपने हाथ की लिखावट से बना सुंदर डिजिटल फ़ॉन्ट' },
+        { size: '32px', cls: 'waterfall-32', text: 'कागज़ और कलम की स्वाभाविकता हर अक्षर में मौजूद' },
+        { size: '24px', cls: 'waterfall-24', text: 'देवनागरी लिपि के स्वर, व्यंजन और मात्राओं का संग्रह' },
+        { size: '18px', cls: 'waterfall-18', text: 'हाथ की लिखाई केवल अक्षर नहीं, आपकी अपनी पहचान और अनूठी शैली है।' }
+      ],
+      prose: 'हाथ की लिखावट हर इंसान की एक अलग पहचान होती है। हातेखोड़ी आपके कागज़ पर लिखे गए अक्षरों को एक सुंदर डिजिटल ओपनटाइप फ़ॉन्ट में बदल देता है, जिससे आपकी लिखावट का मूल स्वभाव और लय बरकरार रहती है।',
+      meta: [
+        { label: 'Family Name', val: 'Hatekhori Hindi' },
+        { label: 'Subfamily / Weight', val: 'Regular (400)' },
+        { label: 'Binary Format', val: 'OpenType (.otf) CFF' },
+        { label: 'Units Per Em', val: '1000 UPM' },
+        { label: 'Total Glyphs', val: '62 Glyphs' },
+        { label: 'Mapped Code Points', val: '60 Characters' },
+        { label: 'Primary Script', val: 'Devanagari (हिन्दी)' },
+        { label: 'License', val: 'Personal & Commercial' }
+      ]
     }
   };
 
@@ -298,10 +368,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function updateSpecimenDeck(scriptKey) {
+    const s = SCRIPTS[scriptKey] || SCRIPTS.bn;
+    const deckTag = $('#specimen-deck-tag');
+    const deckRoster = $('#specimen-deck-roster');
+    const deckWaterfall = $('#specimen-deck-waterfall');
+    const deckProse = $('#specimen-deck-prose');
+    const deckMeta = $('#specimen-deck-meta');
+
+    if (deckTag && s.rosterTag) {
+      deckTag.textContent = s.rosterTag;
+    }
+
+    if (deckRoster && s.rosterGroups) {
+      deckRoster.innerHTML = s.rosterGroups.map((g) => `
+        <div>
+          <span class="meta-label">${g.label}</span>
+          <div class="specimen-alphabet-row" style="font-family: ${s.font};">${g.text}</div>
+        </div>
+      `).join('');
+    }
+
+    if (deckWaterfall && s.waterfall) {
+      deckWaterfall.innerHTML = s.waterfall.map((row) => `
+        <div class="waterfall-row">
+          <span class="waterfall-size">${row.size}</span>
+          <p class="waterfall-text ${row.cls}" style="font-family: ${s.font};">${row.text}</p>
+        </div>
+      `).join('');
+    }
+
+    if (deckProse && s.prose) {
+      deckProse.textContent = s.prose;
+      deckProse.style.fontFamily = s.font;
+    }
+
+    if (deckMeta && s.meta) {
+      deckMeta.innerHTML = s.meta.map((m) => `
+        <div class="meta-item">
+          <span class="meta-label">${m.label}</span>
+          <span class="meta-val">${m.val}</span>
+        </div>
+      `).join('');
+    }
+  }
+
   function setScript(key) {
     if (!SCRIPTS[key]) return;
     currentScript = key;
     const s = SCRIPTS[key];
+
+    document.documentElement.style.setProperty('--font-hand', s.font);
 
     scriptTabButtons.forEach((b) => {
       const active = b.dataset.k === key;
@@ -342,8 +459,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const navDownloadSheet = $('#nav-download-sheet');
     if (navDownloadSheet) {
-      navDownloadSheet.href = s.sheetUrl;
-      navDownloadSheet.setAttribute('download', s.sheetFile);
+      navDownloadSheet.href = 'guideline-sheet-english.png';
+      navDownloadSheet.setAttribute('download', 'hatekhori-english-sheet.png');
       navDownloadSheet.textContent = 'Download sheet';
     }
 
@@ -390,6 +507,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     populateCharacterMatrix(key);
     renderStudioGlyphMatrix();
+    updateSpecimenDeck(key);
   }
 
   function setStudioStage(stage) {
@@ -1132,6 +1250,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (stepResult) stepResult.hidden = false;
       updateStepperPill(spillExport);
       skippedBlankGlyphs.clear();
+      if (downloadFontLink) {
+        if (currentScript === 'en') {
+          downloadFontLink.href = 'hatekhori.otf';
+          downloadFontLink.setAttribute('download', 'hatekhori.otf');
+        } else if (currentScript === 'hi') {
+          downloadFontLink.href = 'hatekhori-hindi.otf';
+          downloadFontLink.setAttribute('download', 'hatekhori-hindi.otf');
+        } else {
+          downloadFontLink.href = 'hatekhori-bengali.otf';
+          downloadFontLink.setAttribute('download', 'hatekhori-bengali.otf');
+        }
+      }
       if (previewText) {
         if (currentScript === 'en') {
           previewText.style.fontFamily = "'Hatekhori', 'Kalam', cursive";
@@ -1143,7 +1273,7 @@ document.addEventListener("DOMContentLoaded", () => {
           currentLoadedFontFamily = 'Hatekhori Hindi';
         } else {
           previewText.style.fontFamily = "'Hatekhori Bangla', 'Tiro Bangla', serif";
-          previewText.value = 'নমস্কার, হাতে খড়ি দিয়ে নিজের হাতের লেখা ফন্ট বানান।';
+          previewText.value = 'আমার বাংলা ভাষা ও নিজের হাতের লেখা। হাতে খড়ি দিয়ে তৈরি আপনার নিজস্ব বাংলা ফন্ট।';
           currentLoadedFontFamily = 'Hatekhori Bangla';
         }
       }
@@ -1153,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- 6. Initial Page Boot ---
-  setScript('en');
+  setScript('bn');
   setStudioStage('sheet');
   updateCompileButtonState();
   handleRoute();

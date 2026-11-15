@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=2.4" />
+  <link rel="stylesheet" href="style.css?v=2.5" />
 </head>
 <body>
 
@@ -48,14 +48,14 @@
             Launch Font Studio →
           </button>
           <div class="hero-download-group">
+            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
+              English Sheet (Latin)
+            </a>
             <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="hero-download-sheet">
               Bengali Sheet (বাংলা)
             </a>
             <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="btn btn-outline" id="hero-download-hindi">
               Hindi Sheet (हिन्दी)
-            </a>
-            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
-              English Sheet (Latin)
             </a>
           </div>
         </div>
@@ -84,13 +84,13 @@
         <div class="specimen-box">
           <div class="specimen-bar">
             <div class="script-tabs" role="tablist" aria-label="Script Selection">
-              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="en">English (Latin)</button>
-              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="bn">Bengali (বাংলা)</button>
+              <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="en">English (Latin)</button>
+              <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-k="bn">Bengali (বাংলা)</button>
               <button type="button" class="tab-btn" role="tab" aria-selected="false" data-k="hi">Hindi (हिन्दी)</button>
             </div>
 
             <div class="specimen-font-badge" id="specimen-font-badge">
-              Active Typeface: <strong>Hatekhori Regular (hatekhori.otf)</strong>
+              Active Typeface: <strong>Hatekhori Bangla (hatekhori-bengali.otf)</strong>
             </div>
 
             <div class="specimen-size">
@@ -106,8 +106,8 @@
               rows="3" 
               spellcheck="false" 
               aria-label="Interactive Specimen Text"
-              style="font-family: 'Hatekhori', 'Kalam', cursive;"
-            >The quick brown fox jumps over the lazy dog. 12345</textarea>
+              style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;"
+            >আমার বাংলা ভাষা ও নিজের হাতের লেখা। হাতে খড়ি দিয়ে নিজের বাংলা ফন্ট বানান।</textarea>
           </div>
         </div>
 
@@ -118,8 +118,8 @@
           </div>
           <div class="glyph-card">
             <span class="glyph-card-label">Glyph Inspector</span>
-            <b id="big" class="glyph-card-char">A</b>
-            <span id="cp" class="glyph-card-cp">U+0041</span>
+            <b id="big" class="glyph-card-char" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">অ</b>
+            <span id="cp" class="glyph-card-cp">U+0985</span>
           </div>
         </div>
 
@@ -130,24 +130,20 @@
           <div class="specimen-card">
             <div class="specimen-card-head">
               <span class="specimen-card-title">Character Set &amp; Glyph Roster</span>
-              <span class="specimen-card-tag">92 Glyphs • All Supported Characters</span>
+              <span class="specimen-card-tag" id="specimen-deck-tag">60 Bengali Glyphs • All Supported Characters</span>
             </div>
-            <div class="specimen-alphabet-block">
+            <div class="specimen-alphabet-block" id="specimen-deck-roster">
               <div>
-                <span class="meta-label">Uppercase (A–Z)</span>
-                <div class="specimen-alphabet-row">A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</div>
+                <span class="meta-label">স্বরবর্ণ (Vowels • 11)</span>
+                <div class="specimen-alphabet-row" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">অ  আ  ই  ঈ  উ  ঊ  ঋ  এ  ঐ  ও  ঔ</div>
               </div>
               <div>
-                <span class="meta-label">Lowercase (a–z)</span>
-                <div class="specimen-alphabet-row">a b c d e f g h i j k l m n o p q r s t u v w x y z</div>
+                <span class="meta-label">ব্যঞ্জনবর্ণ ও বিশেষ চিহ্ন (Consonants &amp; Specials • 39)</span>
+                <div class="specimen-alphabet-row" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">ক  খ  গ  ঘ  ঙ  চ  ছ  জ  ঝ  ঞ  ট  ঠ  ড  ঢ  ণ  ত  থ  দ  ধ  ন  প  ফ  ব  ভ  ম  য  র  ল  শ  ষ  স  হ  ড়  ঢ়  য়  ৎ  ং  ঃ  ঁ</div>
               </div>
               <div>
-                <span class="meta-label">Figures &amp; Numbers (0–9)</span>
-                <div class="specimen-alphabet-row">0 1 2 3 4 5 6 7 8 9</div>
-              </div>
-              <div>
-                <span class="meta-label">Punctuation &amp; Symbols (28 Characters)</span>
-                <div class="specimen-alphabet-row">. , ! ? ' " ( ) - : ; @ # $ % &amp; * + = / \ _ [ ] { } &lt; &gt;</div>
+                <span class="meta-label">কারচিহ্ন (Vowel Signs / Matras • 10)</span>
+                <div class="specimen-alphabet-row" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">া   ি   ী   ু   ূ   ৃ   ে   ৈ   ো   ৌ</div>
               </div>
             </div>
           </div>
@@ -158,22 +154,22 @@
               <span class="specimen-card-title">Optical Scale &amp; Proportions</span>
               <span class="specimen-card-tag">Size Waterfall</span>
             </div>
-            <div class="specimen-waterfall">
+            <div class="specimen-waterfall" id="specimen-deck-waterfall">
               <div class="waterfall-row">
                 <span class="waterfall-size">48px</span>
-                <p class="waterfall-text waterfall-48">The quick brown fox jumps over the lazy dog.</p>
+                <p class="waterfall-text waterfall-48" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">আমার বাংলা ভাষা ও নিজের হাতের লেখা</p>
               </div>
               <div class="waterfall-row">
                 <span class="waterfall-size">32px</span>
-                <p class="waterfall-text waterfall-32">Pack my box with five dozen liquor jugs.</p>
+                <p class="waterfall-text waterfall-32" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">হাতে খড়ি দিয়ে তৈরি আপনার নিজস্ব বাংলা ফন্ট</p>
               </div>
               <div class="waterfall-row">
                 <span class="waterfall-size">24px</span>
-                <p class="waterfall-text waterfall-24">Sphinx of black quartz, judge my vow. 0123456789</p>
+                <p class="waterfall-text waterfall-24" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">আমি বাংলায় গান গাই, আমি বাংলায় কথা বলি</p>
               </div>
               <div class="waterfall-row">
                 <span class="waterfall-size">18px</span>
-                <p class="waterfall-text waterfall-18">How vexingly quick daft zebras jump! Handwritten rhythm preserved in OpenType.</p>
+                <p class="waterfall-text waterfall-18" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">স্বরবর্ণ, ব্যঞ্জনবর্ণ ও কারচিহ্নের প্রতিটি রেখায় রয়েছে আপনার নিজস্ব হাতের টান।</p>
               </div>
             </div>
           </div>
@@ -184,8 +180,8 @@
               <span class="specimen-card-title">Editorial Prose &amp; Continuous Rhythm</span>
               <span class="specimen-card-tag">Body Readability</span>
             </div>
-            <p class="specimen-prose">
-              Handwriting is as distinct as a signature or a human voice. Hatekhori translates the physical strokes of pen on paper into crisp digital vector Béziers, keeping proportional advance widths and authentic rhythm intact without artificial rounding or AI hallucination.
+            <p class="specimen-prose" id="specimen-deck-prose" style="font-family: 'Hatekhori Bangla', 'Tiro Bangla', serif;">
+              হাতের লেখা কেবল হরফ নয়, তা মানুষের নিজস্ব ব্যক্তিত্ব ও অনুভূতির এক অনুপম প্রকাশ। হাতে খড়ি আপনার কাগজের কলমের প্রতিটি রেখা ও টানকে নিখুঁত ডিজিটাল ভেক্টর ফন্টে রূপান্তর করে। এতে অক্ষরের স্বাভাবিক ছন্দ ও অনুপাত অক্ষুণ্ণ থাকে।
             </p>
           </div>
 
@@ -195,10 +191,10 @@
               <span class="specimen-card-title">Typeface Specifications &amp; OpenType Tables</span>
               <span class="specimen-card-tag">Engine Metadata</span>
             </div>
-            <div class="specimen-meta-grid">
+            <div class="specimen-meta-grid" id="specimen-deck-meta">
               <div class="meta-item">
                 <span class="meta-label">Family Name</span>
-                <span class="meta-val">Hatekhori</span>
+                <span class="meta-val">Hatekhori Bangla</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Subfamily / Weight</span>
@@ -214,15 +210,15 @@
               </div>
               <div class="meta-item">
                 <span class="meta-label">Total Glyphs</span>
-                <span class="meta-val">92 Glyphs</span>
+                <span class="meta-val">62 Glyphs</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">Mapped Code Points</span>
-                <span class="meta-val">91 Characters</span>
+                <span class="meta-val">61 Characters (60 Bengali + Space)</span>
               </div>
               <div class="meta-item">
-                <span class="meta-label">Multilingual Suite</span>
-                <span class="meta-val">English • Bengali • Hindi</span>
+                <span class="meta-label">Primary Script</span>
+                <span class="meta-val">Bengali (বাংলা)</span>
               </div>
               <div class="meta-item">
                 <span class="meta-label">License</span>
@@ -801,6 +797,6 @@
   <!-- Toast Notification Pill -->
   <div id="toast" class="toast-pill" role="status" aria-live="polite" hidden></div>
 
-  <script src="script.js?v=2.4"></script>
+  <script src="script.js?v=2.5"></script>
 </body>
 </html>
