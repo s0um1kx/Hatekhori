@@ -561,7 +561,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dropzoneIdle) dropzoneIdle.hidden = true;
     if (dropzonePreview) dropzonePreview.hidden = false;
     setStudioStage('workbench');
-    updateStepperPill(spillCompile);
     updateCompileButtonState();
   }
 
@@ -577,7 +576,6 @@ document.addEventListener("DOMContentLoaded", () => {
     previewImg.style.display = 'block';
     if (dropzonePreview) dropzonePreview.hidden = true;
     if (dropzoneIdle) dropzoneIdle.hidden = false;
-    updateStepperPill(spillUpload);
     updateCompileButtonState();
   }
 
@@ -638,11 +636,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getApiBase() {
+    if (window.location.protocol === 'file:') return 'http://127.0.0.1:8000';
+    if (window.location.port && window.location.port !== '8000') return 'http://127.0.0.1:8000';
+    return '';
+  }
+
   async function loadStudioFont(id) {
     if (previewNote) previewNote.hidden = true;
     try {
       const family = `Hatekhori-${id}`;
-      const face = new FontFace(family, `url(/download-font/${id}?inline=true)`);
+      const apiBase = getApiBase();
+      const face = new FontFace(family, `url(${apiBase}/download-font/${id}?inline=true)`);
       await face.load();
       document.fonts.add(face);
       currentLoadedFontFamily = family;
@@ -964,8 +969,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (studioEmptyState) studioEmptyState.hidden = true;
     if (studioProcessingState) studioProcessingState.hidden = true;
     if (stepResult) stepResult.hidden = false;
-    updateStepperPill(spillExport);
-    if (downloadFontLink) downloadFontLink.href = `/download-font/${id}`;
+    const apiBase = getApiBase();
+    if (downloadFontLink) downloadFontLink.href = `${apiBase}/download-font/${id}`;
     if (previewText) {
       if (currentScript === 'en') {
         previewText.value = 'The quick brown fox jumps over the lazy dog. 12345';
@@ -1081,17 +1086,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (studioEmptyState) studioEmptyState.hidden = true;
       if (studioProcessingState) studioProcessingState.hidden = false;
       if (stepResult) stepResult.hidden = true;
-      updateStepperPill(spillCompile);
 
       startProgressPulse();
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
+
       try {
+        const apiBase = getApiBase();
         const formData = new FormData();
         formData.append('file', fileToUpload);
 
-        const ingestRes = await fetch('/ingest', {
+        const ingestRes = await fetch(`${apiBase}/ingest`, {
           method: 'POST',
-          body: formData
+          body: formData,
+          signal: controller.signal
         });
 
         if (!ingestRes.ok) {
@@ -1102,14 +1111,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const { id } = await ingestRes.json();
         activeUploadId = id;
 
-        const genRes = await fetch(`/generate/${id}?script=${currentScript}`, {
-          method: 'POST'
+        const genRes = await fetch(`${apiBase}/generate/${id}?script=${currentScript}`, {
+          method: 'POST',
+          signal: controller.signal
         });
 
         if (!genRes.ok) {
           const errData = await genRes.json().catch(() => ({}));
           throw new Error(errData.detail || `Vector tracing & compilation failed.`);
         }
+
+        clearTimeout(timeoutId);
 
         const genData = await genRes.json();
         stopProgressPulse();
@@ -1123,10 +1135,9 @@ document.addEventListener("DOMContentLoaded", () => {
           if (stepProgress) stepProgress.hidden = true;
           if (studioProcessingState) studioProcessingState.hidden = true;
           if (stepResult) stepResult.hidden = false;
-          updateStepperPill(spillExport);
         }, 350);
 
-        if (downloadFontLink) downloadFontLink.href = `/download-font/${id}`;
+        if (downloadFontLink) downloadFontLink.href = `${apiBase}/download-font/${id}`;
 
         if (previewText) {
           if (currentScript === 'en') {
@@ -1157,12 +1168,20 @@ document.addEventListener("DOMContentLoaded", () => {
           history.replaceState({ view: 'studio', font: id }, '', `#font=${id}`);
         }
       } catch (err) {
+        clearTimeout(timeoutId);
         stopProgressPulse();
         if (stepProgress) stepProgress.hidden = true;
         if (studioProcessingState) studioProcessingState.hidden = true;
         if (studioEmptyState) studioEmptyState.hidden = false;
-        updateStepperPill(spillUpload);
-        lastPipelineError = err.message || 'Processing failed.';
+
+        let errorMsg = err.message || 'Processing failed.';
+        if (err.name === 'AbortError') {
+          errorMsg = 'Request timed out after 45 seconds. The server may be busy or the image took too long to process.';
+        } else if (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+          errorMsg = 'Cannot connect to the Hatekhori backend server at http://127.0.0.1:8000. Please ensure the backend server is running.';
+        }
+
+        lastPipelineError = errorMsg;
         const shouldReport = confirm(`Processing notice:\n\n${lastPipelineError}\n\nWould you like to report this issue to help fix it?`);
         if (shouldReport) {
           openFeedbackModal('bug', lastPipelineError);
@@ -1237,7 +1256,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (studioEmptyState) studioEmptyState.hidden = true;
       if (studioProcessingState) studioProcessingState.hidden = true;
       if (stepResult) stepResult.hidden = false;
-      updateStepperPill(spillExport);
       skippedBlankGlyphs.clear();
       if (downloadFontLink) {
         if (currentScript === 'en') {

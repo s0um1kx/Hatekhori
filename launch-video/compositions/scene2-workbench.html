@@ -1,0 +1,166 @@
+<!-- Scene 2: The Studio Workbench & First Generation (5.0s - 15.0s) -->
+<div id="scene-workbench" class="scene absolute inset-0 flex items-center justify-center p-12 select-none bg-[#F5F2EB]" data-composition-id="scene-workbench">
+  
+  <!-- Floating Studio Application Window (Matching reference video) -->
+  <div id="s2-app-window" class="relative w-full max-w-6xl h-[680px] bg-white rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.08)] border border-[#E5E0D8] flex flex-col overflow-hidden">
+    
+    <!-- Window Titlebar / Navigation Header -->
+    <div class="h-12 border-b border-[#EAE6DF] px-5 flex items-center justify-between bg-[#FAF9F6]">
+      <div class="flex items-center gap-3">
+        <!-- Window Traffic Lights -->
+        <div class="flex items-center gap-1.5 mr-2">
+          <div class="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]"></div>
+        </div>
+        
+        <div class="w-5 h-5 rounded-full bg-[#E85A37] flex items-center justify-center text-[10px] text-white font-bold">
+          H
+        </div>
+        <span class="font-sans font-semibold text-xs text-zinc-800 tracking-wide">Hatekhori Atelier</span>
+        <span class="text-zinc-300">/</span>
+        <span class="font-mono text-xs text-zinc-500">Live Studio</span>
+      </div>
+
+      <!-- App Tabs -->
+      <div class="flex items-center gap-1 font-sans text-xs">
+        <span class="px-3 py-1 rounded-md bg-white border border-[#E5E0D8] font-medium text-zinc-800 shadow-sm">Dashboard</span>
+        <span class="px-3 py-1 rounded-md text-zinc-500 hover:text-zinc-800">Preview</span>
+        <span class="px-3 py-1 rounded-md text-zinc-500 hover:text-zinc-800">Code</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 rounded-lg bg-[#F5F2EB] text-[11px] font-mono text-zinc-600 border border-[#E5E0D8]">OpenType CFF</span>
+        <button class="px-3.5 py-1 rounded-lg bg-black text-white text-xs font-medium shadow-sm hover:scale-105 transition-transform">
+          Export Font
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Workspace Split: Left Agent Stream + Right Live Specimen Canvas -->
+    <div class="flex-1 grid grid-cols-12 overflow-hidden bg-[#FAF9F6]">
+      
+      <!-- Left Sidebar: Pipeline Checklist & Chat (4 Cols) -->
+      <div class="col-span-4 border-r border-[#EAE6DF] p-5 flex flex-col justify-between bg-white/70">
+        <div class="space-y-4">
+          <div class="font-sans text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            Pipeline Stream
+          </div>
+
+          <!-- Step Check Items -->
+          <div id="s2-checklist" class="space-y-2.5 font-mono text-xs">
+            <div class="s2-check-item flex items-center gap-2.5 text-zinc-700 p-2 rounded-lg bg-[#FAF9F6] border border-[#EAE6DF]">
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">✓</span>
+              <span>Wrote sheets/english_90cells</span>
+            </div>
+            <div class="s2-check-item flex items-center gap-2.5 text-zinc-700 p-2 rounded-lg bg-[#FAF9F6] border border-[#EAE6DF]">
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">✓</span>
+              <span>Wrote sheets/bengali_60cells</span>
+            </div>
+            <div class="s2-check-item flex items-center gap-2.5 text-zinc-700 p-2 rounded-lg bg-[#FAF9F6] border border-[#EAE6DF]">
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">✓</span>
+              <span>Wrote sheets/hindi_60cells</span>
+            </div>
+            <div class="s2-check-item flex items-center gap-2.5 text-zinc-700 p-2 rounded-lg bg-[#FAF9F6] border border-[#EAE6DF]">
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">✓</span>
+              <span>Rectified 4-corner perspective</span>
+            </div>
+            <div class="s2-check-item flex items-center gap-2.5 text-zinc-700 p-2 rounded-lg bg-[#FAF9F6] border border-[#EAE6DF]">
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">✓</span>
+              <span>Fitted 210 cubic Bézier contours</span>
+            </div>
+            <div class="s2-check-item flex items-center gap-2.5 text-emerald-800 p-2 rounded-lg bg-emerald-50 border border-emerald-200 font-semibold">
+              <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">✓</span>
+              <span>Compiled hatekhori.otf (16 KB)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat / Agent Input Bar -->
+        <div class="mt-4 pt-3 border-t border-[#EAE6DF]">
+          <div class="flex items-center justify-between p-2.5 rounded-xl border border-[#E5E0D8] bg-[#FAF9F6] text-xs text-zinc-400">
+            <span>Ready to type or install...</span>
+            <div class="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-[10px]">↑</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Main: Live Website / Type Specimen Preview (8 Cols) -->
+      <div class="col-span-8 p-8 overflow-hidden flex flex-col justify-between bg-[#FDFCFA]">
+        
+        <!-- Large Kinetic Editorial Hero Banner -->
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F5F2EB] border border-[#E5E0D8] text-[11px] font-mono text-zinc-600 mb-3">
+            <span>INDIC & LATIN DIGITAL TYPE ATELIER</span>
+          </div>
+
+          <!-- English Dominant Title -->
+          <div class="font-serif text-7xl font-bold tracking-tight text-zinc-900 leading-none mb-2">
+            HATEKHORI
+          </div>
+          <div class="flex items-center gap-4 text-2xl font-light text-zinc-600 mb-4">
+            <span class="font-bengali text-zinc-800 text-3xl">হাতে খড়ি</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-[#E85A37]"></span>
+            <span class="font-hindi text-zinc-700 text-2xl">हातेखोड़ी</span>
+          </div>
+
+          <p class="font-sans text-sm text-zinc-500 max-w-lg leading-relaxed">
+            Small-batch digital typeface atelier crafted from real human hand. Ownable, installable, and free forever.
+          </p>
+        </div>
+
+        <!-- 3 Visual Handwriting Feature Blocks -->
+        <div class="grid grid-cols-3 gap-4 my-4">
+          
+          <div class="rounded-xl border border-[#EAE6DF] bg-white p-3 shadow-sm flex flex-col justify-between h-40">
+            <div class="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+              <span class="text-blue-600 font-medium">1. English</span>
+              <span>90 Cells</span>
+            </div>
+            <div class="relative flex-1 my-1 rounded overflow-hidden flex items-center justify-center bg-[#FAF9F6]">
+              <img src="assets/images/guideline-sheet-english.png" alt="English Sheet" class="w-full h-full object-contain p-1" />
+            </div>
+            <span class="text-[11px] text-zinc-500 font-mono">A–Z · a–z · 0–9</span>
+          </div>
+
+          <div class="rounded-xl border border-[#EAE6DF] bg-white p-3 shadow-sm flex flex-col justify-between h-40">
+            <div class="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+              <span class="text-red-600 font-medium">2. Bengali</span>
+              <span>60 Cells</span>
+            </div>
+            <div class="relative flex-1 my-1 rounded overflow-hidden flex items-center justify-center bg-[#FAF9F6]">
+              <img src="assets/images/guideline-sheet-bengali.png" alt="Bengali Sheet" class="w-full h-full object-contain p-1" />
+            </div>
+            <span class="text-[11px] text-zinc-500 font-mono">বাংলা স্বরবর্ণ · ব্যঞ্জন</span>
+          </div>
+
+          <div class="rounded-xl border border-[#EAE6DF] bg-white p-3 shadow-sm flex flex-col justify-between h-40">
+            <div class="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+              <span class="text-amber-600 font-medium">3. Hindi</span>
+              <span>60 Cells</span>
+            </div>
+            <div class="relative flex-1 my-1 rounded overflow-hidden flex items-center justify-center bg-[#FAF9F6]">
+              <img src="assets/images/guideline-sheet-hindi.png" alt="Hindi Sheet" class="w-full h-full object-contain p-1" />
+            </div>
+            <span class="text-[11px] text-zinc-500 font-mono">देवनागरी मात्रा · वर्ण</span>
+          </div>
+
+        </div>
+
+        <!-- Live Font Tester Waterfall Footer -->
+        <div class="pt-3 border-t border-[#EAE6DF] flex items-center justify-between text-xs font-mono text-zinc-500">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-zinc-800 font-medium">Live OTF Active</span>
+          </span>
+          <span>Zero Machine Learning Model Training</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

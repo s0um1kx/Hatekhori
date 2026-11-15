@@ -1,0 +1,115 @@
+<!-- Scene 3: The Atelier Engine & Vectorization (11.0s - 17.5s) -->
+<div id="scene-vector" class="scene absolute inset-0 flex flex-col items-center justify-between py-16 px-24 select-none" data-composition-id="scene-vector">
+
+  <!-- Header: English Dominant -->
+  <div class="relative z-10 text-center max-w-4xl pt-2">
+    <div id="s3-tag" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md text-xs font-mono tracking-wider text-zinc-300 mb-3 shadow-lg">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      <span>THE ATELIER ENGINE</span>
+    </div>
+    <h2 id="s3-headline" class="font-serif text-6xl text-chalk font-normal tracking-tight leading-tight">
+      From handwritten ink to installable OpenType.
+    </h2>
+    <p id="s3-subline" class="font-sans text-lg text-zinc-400 mt-2 max-w-2xl mx-auto font-light">
+      Snap a photo. Our deterministic contour engine extracts authentic human strokes, fits Bézier curves, and compiles an installable .otf font in seconds.
+    </p>
+  </div>
+
+  <!-- Dual View Workbench -->
+  <div id="s3-stage" class="relative w-full max-w-5xl h-[470px] grid grid-cols-2 gap-8 my-auto items-center">
+    
+    <!-- Left: Optical Scanner with 4-Corner Rectification -->
+    <div id="s3-capture-panel" class="relative h-full bg-gradient-to-b from-[#181818] to-[#111111] border border-white/[0.08] rounded-2xl p-6 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)]">
+      <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+        <div class="flex items-center gap-2 font-mono text-xs text-zinc-200">
+          <span class="w-2 h-2 rounded-full bg-red-accent animate-pulse shadow-[0_0_8px_#D2271B]"></span>
+          <span class="font-semibold">OPTICAL SHEET SCANNER</span>
+        </div>
+        <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-white/[0.05] text-zinc-400 border border-white/[0.06]">EXIF SCRUBBED</span>
+      </div>
+
+      <div class="relative flex-1 my-4 bg-zinc-950 rounded-xl overflow-hidden border border-white/[0.06] flex items-center justify-center p-4">
+        <!-- Physical Paper Texture Preview -->
+        <div class="relative w-full h-full bg-[#FAFAFA] rounded flex flex-col items-center justify-center p-4 shadow-inner">
+          <div class="text-zinc-900 font-serif text-5xl font-bold tracking-widest select-none opacity-90 mb-1">
+            Hatekhori
+          </div>
+          <div class="text-zinc-700 font-bengali text-3xl select-none opacity-80">
+            হাতে খড়ি · हातेखोड़ी
+          </div>
+          
+          <!-- 4 Vermilion Calibration Targets -->
+          <div class="s3-marker absolute top-2 left-2 w-7 h-7 border-t-2 border-l-2 border-red-accent flex items-center justify-center">
+            <div class="w-2 h-2 bg-red-accent rounded-full shadow-[0_0_8px_#D2271B]"></div>
+          </div>
+          <div class="s3-marker absolute top-2 right-2 w-7 h-7 border-t-2 border-r-2 border-red-accent flex items-center justify-center">
+            <div class="w-2 h-2 bg-red-accent rounded-full shadow-[0_0_8px_#D2271B]"></div>
+          </div>
+          <div class="s3-marker absolute bottom-2 left-2 w-7 h-7 border-b-2 border-l-2 border-red-accent flex items-center justify-center">
+            <div class="w-2 h-2 bg-red-accent rounded-full shadow-[0_0_8px_#D2271B]"></div>
+          </div>
+          <div class="s3-marker absolute bottom-2 right-2 w-7 h-7 border-b-2 border-r-2 border-red-accent flex items-center justify-center">
+            <div class="w-2 h-2 bg-red-accent rounded-full shadow-[0_0_8px_#D2271B]"></div>
+          </div>
+          
+          <!-- Laser Sweep -->
+          <div id="s3-scan-laser" class="absolute left-0 right-0 h-0.5 bg-red-accent shadow-[0_0_16px_#D2271B]"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between font-mono text-xs text-zinc-400">
+        <span>Arishe: 4-Corner Rectified</span>
+        <span class="text-emerald-400 font-medium">100% PERSPECTIVE LOCK</span>
+      </div>
+    </div>
+
+    <!-- Right: Precision Bézier Contour Tracer -->
+    <div id="s3-vector-panel" class="relative h-full bg-gradient-to-b from-[#181818] to-[#111111] border border-white/[0.08] rounded-2xl p-6 flex flex-col justify-between overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)]">
+      <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+        <div class="flex items-center gap-2 font-mono text-xs text-zinc-200">
+          <span class="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60A5FA]"></span>
+          <span class="font-semibold">BÉZIER CONTOUR TRACER</span>
+        </div>
+        <span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">GLYPH LATIN 'H' + BENGALI 'অ'</span>
+      </div>
+
+      <div class="relative flex-1 my-4 bg-zinc-950 rounded-xl overflow-hidden border border-white/[0.06] flex items-center justify-center p-4">
+        <div class="relative w-48 h-48 flex items-center justify-center">
+          <div class="absolute inset-0 grid grid-cols-4 grid-rows-4 border border-zinc-800/40 opacity-40"></div>
+          <div class="absolute w-full h-[1px] bg-red-accent/40 top-[75%]"></div>
+          <div class="absolute w-full h-[1px] bg-blue-400/40 top-[25%]"></div>
+
+          <!-- Dual Script Vector Paths -->
+          <svg class="w-44 h-44 relative z-10" viewBox="0 0 100 100">
+            <!-- Architectural Letter H Vector -->
+            <path id="s3-glyph-path" d="M 22 20 L 36 20 L 36 44 L 64 44 L 64 20 L 78 20 L 78 80 L 64 80 L 64 56 L 36 56 L 36 80 L 22 80 Z" fill="none" stroke="#F0F0F0" stroke-width="4.0" stroke-linejoin="round" />
+            <!-- Anchor Nodes -->
+            <circle class="s3-node" cx="22" cy="20" r="3.2" fill="#D2271B" />
+            <circle class="s3-node" cx="36" cy="20" r="3.2" fill="#3B82F6" />
+            <circle class="s3-node" cx="64" cy="20" r="3.2" fill="#3B82F6" />
+            <circle class="s3-node" cx="78" cy="20" r="3.2" fill="#D2271B" />
+            <circle class="s3-node" cx="78" cy="80" r="3.2" fill="#10B981" />
+            <circle class="s3-node" cx="22" cy="80" r="3.2" fill="#10B981" />
+          </svg>
+        </div>
+      </div>
+
+      <div id="s3-telemetry" class="font-mono text-xs text-zinc-400 flex items-center justify-between">
+        <span>Nodes: 38 Fitted</span>
+        <span class="text-zinc-200">Curve: Cubic Bézier</span>
+        <span class="text-emerald-400 font-medium">TrueType / CFF Ready</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Privacy Proof Bar -->
+  <div id="s3-bottom-bar" class="flex items-center gap-6 text-xs font-mono text-zinc-400 border border-white/10 rounded-full px-7 py-2 bg-white/[0.02] backdrop-blur-md shadow-lg">
+    <span class="text-zinc-200">Zero Cloud Storage</span>
+    <span class="text-zinc-600">·</span>
+    <span class="text-zinc-200">Ephemeral Ingest (Immediate Sheet Deletion)</span>
+    <span class="text-zinc-600">·</span>
+    <span class="text-red-accent font-medium">Zero Machine Learning Training</span>
+  </div>
+
+</div>

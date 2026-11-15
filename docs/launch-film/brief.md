@@ -47,7 +47,15 @@ A 20-second product launch film for **Hatekhori (হাতে খড়ি)** �
 - **Verification**: Zero console errors, zero clocks/timers/randomness, seamless loop validation via `check.mjs`
 
 ## Status
-- **Current Step**: Step 0 (Brief & Plan Prepared)
-- **Done**: Repository code audited; brand guidelines and fonts located; creative brief & beat map written.
-- **Next**: User approval on creative brief and choice of visual style (Chalk & Slate vs. Paper & Charcoal).
-- **Open**: User confirmation to proceed to Step 3 (Build).
+- **Current Step**: Step 6 (Video Render in progress) & Step 8 (Single-File Build Complete)
+- **Done**: 
+  - Complete repository audit; brand tokens and fonts located.
+  - Creative brief, director decisions, and beat map approved.
+  - Pure seek(t) deterministic animation engine implemented in `src/` (`index.html`, `film.css`, `core.js`, `device.js`, `scenes.js`, `main.js`, `assets.js`).
+  - All assets (3 authentic fonts, 6 vector/PNG images) packed into `assets.js` (0.17 MB).
+  - 120 BPM synced audio track with sfx cues synthesized to `audio/edit.wav` and `audio/edit.m4a` (3.4 MB).
+  - Full check validation with `check.mjs`: zero clocks/timers/randomness/CSS animations, zero seek errors across 1200 frames, seamless loop verified.
+  - Single standalone file compiled to `dist/hatekhori-launch.html` (4.9 MB) and verified pixel-for-pixel against source.
+  - Keyframe stills rendered to `out/t*.png` and hero poster saved to `out/hatekhori-launch-poster.png`.
+- **Next**: Final MP4 render completion and delivery report.
+- **Open**: None.

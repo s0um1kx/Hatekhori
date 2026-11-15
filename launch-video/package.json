@@ -1,0 +1,25 @@
+{
+  "name": "hatekhori-launch-video",
+  "version": "1.0.0",
+  "description": "Premium cinematic product launch video for Hatekhori - The Indic handwriting preservation engine and digital typeface atelier",
+  "scripts": {
+    "preview": "npx hyperframes preview --port 3000 --open",
+    "check": "npx hyperframes check",
+    "lint": "npx hyperframes lint",
+    "render": "npx hyperframes render --output dist/hatekhori-launch-60fps.mp4 --fps 60 --quality high --chroma-subsampling 444",
+    "render-draft": "npx hyperframes render --output dist/hatekhori-draft.mp4 --quality draft --fps 30",
+    "generate-audio": "python scripts/generate_audio.py"
+  },
+  "keywords": [
+    "hyperframes",
+    "hatekhori",
+    "typography",
+    "bengali",
+    "hindi",
+    "indic-type",
+    "product-launch",
+    "gsap"
+  ],
+  "author": "Hatekhori",
+  "license": "MIT"
+}
