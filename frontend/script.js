@@ -34,9 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
         { size: '48px', cls: 'waterfall-48', text: 'আমার বাংলা ভাষা ও নিজের হাতের লেখা' },
         { size: '32px', cls: 'waterfall-32', text: 'হাতে খড়ি দিয়ে তৈরি আপনার নিজস্ব বাংলা ফন্ট' },
         { size: '24px', cls: 'waterfall-24', text: 'আমি বাংলায় গান গাই, আমি বাংলায় কথা বলি' },
-        { size: '18px', cls: 'waterfall-18', text: 'স্বরবর্ণ, ব্যঞ্জনবর্ণ ও কারচিহ্নের প্রতিটি রেখায় রয়েছে আপনার নিজস্ব হাতের টান।' }
+        { size: '18px', cls: 'waterfall-18', text: 'কাগজ আর কালির স্বাভাবিক টানে তৈরি আপনার নিজস্ব বাংলা ফন্ট।' }
       ],
-      prose: 'হাতের লেখা কেবল হরফ নয়, তা মানুষের নিজস্ব ব্যক্তিত্ব ও অনুভূতির এক অনুপম প্রকাশ। হাতে খড়ি আপনার কাগজের কলমের প্রতিটি রেখা ও টানকে নিখুঁত ডিজিটাল ভেক্টর ফন্টে রূপান্তর করে। এতে অক্ষরের স্বাভাবিক ছন্দ ও অনুপাত অক্ষুণ্ণ থাকে।',
+      prose: 'কাগজে কলমে লেখা প্রতিটি হরফের নিজস্ব একটি টান থাকে। সেই স্বাভাবিক রেখাগুলোকে ধরে রেখে আপনার হাতের লেখাকে সরাসরি ডিজিটাল ফন্টে রূপান্তর করে হাতে খড়ি।',
       meta: [
         { label: 'Family Name', val: 'Hatekhori Bangla' },
         { label: 'Subfamily / Weight', val: 'Regular (400)' },
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
         { size: '24px', cls: 'waterfall-24', text: 'Sphinx of black quartz, judge my vow. 0123456789' },
         { size: '18px', cls: 'waterfall-18', text: 'How vexingly quick daft zebras jump! Handwritten rhythm preserved in OpenType.' }
       ],
-      prose: 'Handwriting is as distinct as a signature or a human voice. Hatekhori translates the physical strokes of pen on paper into crisp digital vector Béziers, keeping proportional advance widths and authentic rhythm intact without artificial rounding or AI hallucination.',
+      prose: 'Handwriting carries the natural rhythm and varying pressure of a real pen. Hatekhori converts those strokes into clean vector glyphs while preserving your natural character spacing.',
       meta: [
         { label: 'Family Name', val: 'Hatekhori' },
         { label: 'Subfamily / Weight', val: 'Regular (400)' },
@@ -113,9 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
         { size: '48px', cls: 'waterfall-48', text: 'अपने हाथ की लिखावट से बना सुंदर डिजिटल फ़ॉन्ट' },
         { size: '32px', cls: 'waterfall-32', text: 'कागज़ और कलम की स्वाभाविकता हर अक्षर में मौजूद' },
         { size: '24px', cls: 'waterfall-24', text: 'देवनागरी लिपि के स्वर, व्यंजन और मात्राओं का संग्रह' },
-        { size: '18px', cls: 'waterfall-18', text: 'हाथ की लिखाई केवल अक्षर नहीं, आपकी अपनी पहचान और अनूठी शैली है।' }
+        { size: '18px', cls: 'waterfall-18', text: 'हाथ से लिखे अक्षरों में कागज़ और स्याही की एक सहज लय होती है।' }
       ],
-      prose: 'हाथ की लिखावट हर इंसान की एक अलग पहचान होती है। हातेखोड़ी आपके कागज़ पर लिखे गए अक्षरों को एक सुंदर डिजिटल ओपनटाइप फ़ॉन्ट में बदल देता है, जिससे आपकी लिखावट का मूल स्वभाव और लय बरकरार रहती है।',
+      prose: 'कागज़ पर स्याही से लिखे हर अक्षर में हाथ की एक स्वाभाविक गति होती है। हातेखोड़ी उसी लिखावट को सीधे डिजिटल फ़ॉन्ट में ढालता है, ताकि अक्षरों का मूल रूप बना रहे।',
       meta: [
         { label: 'Family Name', val: 'Hatekhori Hindi' },
         { label: 'Subfamily / Weight', val: 'Regular (400)' },
@@ -201,8 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Specimen Section
   const heroLiveText = $('#hero-live-text');
-  const heroSizeSlider = $('#hero-size-slider');
-  const heroSizeReadout = $('#hero-size-readout');
   const scriptTabButtons = $$('.script-tabs .tab-btn');
   const cellsContainer = $('#cells');
   const bigGlyph = $('#big');
@@ -648,12 +646,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function startProgressPulse(pstepsList, onStepChange) {
     let current = 0;
     const steps = [
-      { text: "Ingesting scan & scrub EXIF privacy data...", duration: 600 },
-      { text: "Detecting 4 corner registration fiducials...", duration: 800 },
-      { text: "Correcting perspective keystone...", duration: 700 },
-      { text: "Slicing guideline matrix cells...", duration: 900 },
-      { text: "Tracing sub-pixel Bézier contours (Potrace)...", duration: 1100 },
-      { text: "Compiling OpenType (.otf) font tables...", duration: 1200 }
+      { text: "Ingesting scan and removing photo metadata...", duration: 600 },
+      { text: "Locating corner alignment markers...", duration: 800 },
+      { text: "Straightening and aligning page...", duration: 700 },
+      { text: "Isolating individual letter cells...", duration: 900 },
+      { text: "Tracing ink strokes into vector outlines...", duration: 1100 },
+      { text: "Building installable OpenType font tables...", duration: 1200 }
     ];
 
     function runStep() {
@@ -917,15 +915,6 @@ document.addEventListener("DOMContentLoaded", () => {
           btnSubmitFeedback.textContent = 'Submit Feedback';
         }
       }
-    });
-  }
-
-  // Specimen font slider
-  if (heroSizeSlider && heroLiveText && heroSizeReadout) {
-    heroSizeSlider.addEventListener('input', (e) => {
-      const val = e.target.value;
-      heroLiveText.style.fontSize = `${val}px`;
-      heroSizeReadout.textContent = `${val}px`;
     });
   }
 

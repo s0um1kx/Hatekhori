@@ -190,6 +190,19 @@ a:hover {
   transform: translateX(3px);
 }
 
+.btn-back-arrow {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  stroke: currentColor;
+  margin-right: 6px;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover .btn-back-arrow {
+  transform: translateX(-3px);
+}
+
 .inline-arrow {
   display: inline-block;
   vertical-align: -1px;
@@ -616,20 +629,6 @@ a:hover {
   font-weight: 500;
 }
 
-.specimen-size {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-family: var(--font-mono);
-  color: var(--muted);
-}
-
-.specimen-size input {
-  accent-color: var(--fg);
-  width: 120px;
-}
-
 .specimen-canvas {
   padding: 24px;
   background: var(--bg);
@@ -642,7 +641,7 @@ a:hover {
   background: transparent;
   color: var(--fg);
   font-family: var(--font-hand);
-  font-size: 48px;
+  font-size: clamp(32px, 4vw, 48px);
   line-height: 1.35;
   resize: vertical;
   outline: none;
@@ -893,43 +892,18 @@ a:hover {
 }
 
 /* ==========================================================================
-   Full-Bleed Atmospheric Video CTA Banner
+   Atmospheric CTA Banner
    ========================================================================== */
 .cta-section {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   padding: 120px 0;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  background: #090909;
-  z-index: 20;
-}
-
-.cta-video-backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.cta-video-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  filter: brightness(0.6) contrast(1.18);
-  transform: scale(1.02);
-}
-
-.cta-video-overlay {
-  position: absolute;
-  inset: 0;
   background: 
-    radial-gradient(circle at center, rgba(9, 9, 9, 0.45) 0%, rgba(9, 9, 9, 0.88) 85%),
-    linear-gradient(to bottom, rgba(13, 13, 13, 0.85) 0%, transparent 22%, transparent 78%, rgba(13, 13, 13, 0.95) 100%);
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(38, 38, 38, 0.85) 0%, rgba(13, 13, 13, 0.98) 100%),
+    #0D0D0D;
+  z-index: 20;
 }
 
 .cta-content {
@@ -1116,19 +1090,12 @@ a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cta-video-bg {
-    display: none;
-  }
-  .cta-video-backdrop {
-    background-image: url('hatekhori-chalk-poster.jpg');
-    background-size: cover;
-    background-position: center;
-  }
   .btn-glass,
   #nav-launch-studio,
   #hero-enter-studio,
   .btn-cta-primary,
   .btn-arrow,
+  .btn-back-arrow,
   .inline-arrow {
     transition: none !important;
     transform: none !important;
@@ -1142,6 +1109,7 @@ a:hover {
   .btn-cta-primary:hover,
   .btn-cta-primary:active,
   .btn:hover .btn-arrow,
+  .btn:hover .btn-back-arrow,
   .fathom-action-link:hover .inline-arrow {
     transform: none !important;
   }
