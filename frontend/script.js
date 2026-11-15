@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       font: "'Hatekhori Hindi', 'Tiro Devanagari Hindi', 'Kalam', serif",
       fontLabel: 'Hatekhori Hindi (hatekhori-hindi.otf)',
       text: 'नमस्ते, अपने हाथ की लिखाई को डिजिटल फॉन्ट में बदलें। १२३४५',
-      glyphs: 'अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहड़ढ़ंःँ्ािीुूृेैोौ',
+      glyphs: 'अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहड़ढ़ंःँ्ािीुूृेैोौ',
       sheetUrl: 'guideline-sheet-hindi.png',
       sheetFile: 'hatekhori-hindi-sheet.png',
       sheetName: 'Hindi Sheet (हिन्दी)',
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
       rosterTag: '60 Devanagari Glyphs • Primary Characters',
       rosterGroups: [
         { label: 'स्वर (Vowels • 11)', text: 'अ  आ  इ  ई  उ  ऊ  ऋ  ए  ऐ  ओ  औ' },
-        { label: 'व्यंजन व योगवाह (Consonants • 39)', text: 'क  ख  ग  घ  ङ  च  छ  ज  झ  ञ  ट  ठ  ड  ढ  ण  त  थ  द  ध  न  प  फ  ब  भ  म  य  र  ल  व  श  ष  स  ह  ड़  ढ़  ं  ः  ँ  ्' },
+        { label: 'व्यंजन व योगवाह (Consonants • 39)', text: 'क  ख  ग  घ  ङ  च  छ  ज  झ  ञ  ट  ठ  ड  ढ  ण  त  थ  द  ध  न  प  फ  ब  भ  म  य  र  ल  व  श  ष  स  ह  ड़  ढ़  ं  ः  ँ  ्' },
         { label: 'मात्राएँ (Vowel Signs • 10)', text: 'ा   ि   ी   ु   ू   ृ   े   ै   ो   ौ' }
       ],
       waterfall: [
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     'प', 'फ', 'ब', 'भ', 'म',
     'य', 'र', 'ल', 'व',
     'श', 'ष', 'स', 'ह',
-    'ड़', 'ढ़',
+    'ड़', 'ढ़',
     'ं', 'ः', 'ँ', '्',
     'ा', 'ि', 'ी', 'ु', 'ू', 'ृ', 'े', 'ै', 'ो', 'ौ'
   ];
@@ -1290,7 +1290,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- 6. Initial Page Boot ---
-  setScript('bn');
+  setScript('en');
   setStudioStage('sheet');
   updateCompileButtonState();
   handleRoute();
