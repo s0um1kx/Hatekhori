@@ -178,6 +178,30 @@ a:hover {
   width: 100%;
 }
 
+.btn-arrow {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  stroke: currentColor;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+.inline-arrow {
+  display: inline-block;
+  vertical-align: -1px;
+  margin-left: 4px;
+  stroke: currentColor;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.fathom-action-link:hover .inline-arrow {
+  transform: translateX(3px);
+}
+
 .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -332,27 +356,12 @@ a:hover {
     transform: translateY(0) scale(1);
     pointer-events: auto;
   }
-
-  .cta-sheet-dropdown:hover .sheet-dropdown-menu {
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
 }
 
 /* Nav dropdown alignment */
 .nav-sheet-dropdown .sheet-dropdown-menu {
   top: calc(100% + 14px);
   left: 0;
-}
-
-/* CTA centered dropdown alignment */
-.cta-sheet-dropdown .sheet-dropdown-menu {
-  left: 50%;
-  transform: translateX(-50%) translateY(-8px) scale(0.96);
-  transform-origin: top center;
-}
-
-.cta-sheet-dropdown.is-open .sheet-dropdown-menu {
-  transform: translateX(-50%) translateY(0) scale(1);
 }
 
 .sheet-dropdown-item {
@@ -430,12 +439,6 @@ a:hover {
     min-width: 270px;
     max-width: calc(100vw - 32px);
   }
-
-  .cta-sheet-dropdown .sheet-dropdown-menu {
-    left: 50%;
-    min-width: 270px;
-    max-width: calc(100vw - 32px);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -474,6 +477,12 @@ a:hover {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.hero-actions .btn {
+  height: 46px;
+  border-radius: 6px;
 }
 
 /* Hero Grid & Media Layout */
@@ -883,9 +892,259 @@ a:hover {
   margin: 0;
 }
 
-/* CTA & Footer */
+/* ==========================================================================
+   Full-Bleed Atmospheric Video CTA Banner
+   ========================================================================== */
 .cta-section {
-  background: var(--subtle);
+  position: relative;
+  overflow: visible;
+  padding: 120px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: #090909;
+  z-index: 20;
+}
+
+.cta-video-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cta-video-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.6) contrast(1.18);
+  transform: scale(1.02);
+}
+
+.cta-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at center, rgba(9, 9, 9, 0.45) 0%, rgba(9, 9, 9, 0.88) 85%),
+    linear-gradient(to bottom, rgba(13, 13, 13, 0.85) 0%, transparent 22%, transparent 78%, rgba(13, 13, 13, 0.95) 100%);
+}
+
+.cta-content {
+  position: relative;
+  z-index: 2;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 4.5vw, 56px);
+  font-weight: 400;
+  color: #FFFFFF !important;
+  line-height: 1.1;
+  margin: 0 0 16px 0;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.8);
+}
+
+.cta-sub {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
+}
+
+.cta-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Tactile Glassmorphism & Depth Buttons (Launch Font Studio)
+   ========================================================================== */
+.btn-glass,
+#nav-launch-studio,
+#hero-enter-studio,
+.btn-cta-primary {
+  position: relative;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  user-select: none;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+
+/* Light Mode / Default Obsidian Glass */
+.btn-glass,
+#nav-launch-studio,
+#hero-enter-studio {
+  background: linear-gradient(180deg, rgba(28, 28, 30, 0.94) 0%, rgba(12, 12, 14, 0.98) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35),
+    0 10px 28px -4px rgba(0, 0, 0, 0.30),
+    0 3px 8px rgba(0, 0, 0, 0.20);
+}
+
+.btn-glass:hover,
+#nav-launch-studio:hover,
+#hero-enter-studio:hover {
+  background: linear-gradient(180deg, rgba(40, 40, 44, 0.96) 0%, rgba(18, 18, 20, 1) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.40) !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.50),
+    0 14px 36px -4px rgba(0, 0, 0, 0.40),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.btn-glass:active,
+#nav-launch-studio:active,
+#hero-enter-studio:active {
+  transform: translateY(0) scale(0.97) !important;
+  background: linear-gradient(180deg, rgba(16, 16, 18, 0.98) 0%, rgba(8, 8, 10, 1) 100%) !important;
+  box-shadow: 
+    inset 0 2px 4px 0 rgba(0, 0, 0, 0.45),
+    0 4px 10px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Dark Mode (Luminous Frosted Glass with Specular Edge) */
+@media (prefers-color-scheme: dark) {
+  .btn-glass,
+  #nav-launch-studio,
+  #hero-enter-studio {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.07) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25),
+      0 12px 32px -4px rgba(0, 0, 0, 0.55),
+      0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .btn-glass:hover,
+  #nav-launch-studio:hover,
+  #hero-enter-studio:hover {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.12) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.55) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2),
+      0 16px 40px -4px rgba(0, 0, 0, 0.65),
+      0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-glass:active,
+  #nav-launch-studio:active,
+  #hero-enter-studio:active {
+    transform: translateY(0) scale(0.97) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+    box-shadow: 
+      inset 0 2px 4px 0 rgba(0, 0, 0, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+/* Sizing variations */
+#nav-launch-studio {
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+#hero-enter-studio {
+  height: 46px;
+  padding: 0 24px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.btn-cta-primary {
+  height: 48px;
+  padding: 0 28px;
+  font-size: 15px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.07) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.32) !important;
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25),
+    0 12px 32px -4px rgba(0, 0, 0, 0.55),
+    0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.btn-cta-primary:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.12) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2),
+    0 16px 40px -4px rgba(0, 0, 0, 0.65),
+    0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.btn-cta-primary:active {
+  transform: translateY(0) scale(0.97) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+  box-shadow: 
+    inset 0 2px 4px 0 rgba(0, 0, 0, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+@media (max-width: 640px) {
+  .cta-section {
+    padding: 80px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-video-bg {
+    display: none;
+  }
+  .cta-video-backdrop {
+    background-image: url('hatekhori-chalk-poster.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+  .btn-glass,
+  #nav-launch-studio,
+  #hero-enter-studio,
+  .btn-cta-primary,
+  .btn-arrow,
+  .inline-arrow {
+    transition: none !important;
+    transform: none !important;
+  }
+  .btn-glass:hover,
+  .btn-glass:active,
+  #nav-launch-studio:hover,
+  #nav-launch-studio:active,
+  #hero-enter-studio:hover,
+  #hero-enter-studio:active,
+  .btn-cta-primary:hover,
+  .btn-cta-primary:active,
+  .btn:hover .btn-arrow,
+  .fathom-action-link:hover .inline-arrow {
+    transform: none !important;
+  }
 }
 
 .text-center {
