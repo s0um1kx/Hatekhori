@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=2.7" />
+  <link rel="stylesheet" href="style.css?v=2.9" />
 </head>
 <body>
 
@@ -65,7 +65,8 @@
 
     <!-- Hero Section -->
     <header class="hero">
-      <div class="wrap">
+      <div class="wrap hero-grid">
+        <div class="hero-content">
         <h1 class="hero-title">Your handwriting, set as type.</h1>
         <p class="hero-lead">
           Print one sheet. Write with your pen. Snap a photo with your phone and get an installable OpenType font in your own hand. Built for English, Bengali, and Hindi.
@@ -106,18 +107,26 @@
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="hero-meta">
-          <span>Zero AI hallucinations</span>
-          <span class="sep">•</span>
-          <span>100% Vector Béziers</span>
-          <span class="sep">•</span>
-          <span>1,000+ Indic Glyphs</span>
-          <span class="sep">•</span>
-          <span>OpenType (.otf)</span>
+      <div class="hero-media">
+        <div class="hero-video-card">
+          <video
+            id="hero-video"
+            class="hero-video"
+            src="hatekhori-chalk.mp4"
+            poster="hatekhori-chalk-poster.jpg"
+            autoplay
+            loop
+            muted
+            playsinline
+            preload="auto"
+            aria-label="Hand writing with chalk on slate"
+          ></video>
         </div>
       </div>
-    </header>
+    </div>
+  </header>
 
     <!-- Minimal Specimen Section -->
     <section class="section" id="specimen">
@@ -871,6 +880,6 @@
   <!-- Toast Notification Pill -->
   <div id="toast" class="toast-pill" role="status" aria-live="polite" hidden></div>
 
-  <script src="script.js?v=2.6"></script>
+  <script src="script.js?v=2.9"></script>
 </body>
 </html>
