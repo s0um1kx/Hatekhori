@@ -450,25 +450,11 @@ document.addEventListener("DOMContentLoaded", () => {
       specimenFontBadge.innerHTML = `Active Typeface: <strong>${s.fontLabel}</strong>`;
     }
 
-    // Dynamic Sheet Links & Meta Sync across navigation, studio, CTA, and lightbox modal
+    // Dynamic Sheet Links & Meta Sync across studio workspace and lightbox modal
     const studioDownloadSheet = $('#studio-download-sheet');
     if (studioDownloadSheet) {
       studioDownloadSheet.href = s.sheetUrl;
       studioDownloadSheet.setAttribute('download', s.sheetFile);
-    }
-
-    const navDownloadSheet = $('#nav-download-sheet');
-    if (navDownloadSheet) {
-      navDownloadSheet.href = 'guideline-sheet-english.png';
-      navDownloadSheet.setAttribute('download', 'hatekhori-english-sheet.png');
-      navDownloadSheet.textContent = 'Download sheet';
-    }
-
-    const ctaDownloadSheet = $('#cta-download-sheet');
-    if (ctaDownloadSheet) {
-      ctaDownloadSheet.href = s.sheetUrl;
-      ctaDownloadSheet.setAttribute('download', s.sheetFile);
-      ctaDownloadSheet.textContent = `Download ${s.sheetName}`;
     }
 
     // Update Studio Card 1 visual preview showcase
@@ -957,6 +943,52 @@ document.addEventListener("DOMContentLoaded", () => {
   const footerLaunchStudio = $('#footer-launch-studio');
   if (footerLaunchStudio) footerLaunchStudio.addEventListener('click', () => switchView('studio'));
   if (studioBackBtn) studioBackBtn.addEventListener('click', () => switchView('landing'));
+
+  // --- Sheet Download Dropdowns (Navbar, Hero, CTA) ---
+  const sheetDropdowns = $$('.sheet-dropdown');
+
+  function closeAllSheetDropdowns() {
+    sheetDropdowns.forEach((dd) => {
+      dd.classList.remove('is-open');
+      const trigger = dd.querySelector('[aria-haspopup="true"]');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  sheetDropdowns.forEach((dd) => {
+    const trigger = dd.querySelector('[aria-haspopup="true"]');
+    const menu = dd.querySelector('.sheet-dropdown-menu');
+    if (!trigger || !menu) return;
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dd.classList.contains('is-open');
+      closeAllSheetDropdowns();
+      if (!isOpen) {
+        dd.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    menu.querySelectorAll('.sheet-dropdown-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        closeAllSheetDropdowns();
+        showToast('Guideline sheet download started.');
+      });
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.sheet-dropdown')) {
+      closeAllSheetDropdowns();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllSheetDropdowns();
+    }
+  });
 
   // Stage tabs & navigation controls
   if (tabStageSheet) tabStageSheet.addEventListener('click', () => setStudioStage('sheet'));

@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Tiro+Bangla&family=Tiro+Devanagari+Hindi&family=Kalam:wght@400;700&family=DM+Mono:wght@400;500&display=swap" />
 
-  <link rel="stylesheet" href="style.css?v=2.5" />
+  <link rel="stylesheet" href="style.css?v=2.6" />
 </head>
 <body>
 
@@ -22,7 +22,35 @@
       <div class="nav-links">
         <a href="#how">How it works</a>
         <a href="#specimen">Specimen</a>
-        <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" id="nav-download-sheet">Download sheet</a>
+        <div class="sheet-dropdown nav-sheet-dropdown" id="nav-sheet-dropdown">
+          <button type="button" class="nav-dropdown-trigger" id="nav-sheet-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Download guideline sheets">
+            <span>Download sheet</span>
+            <svg class="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="sheet-dropdown-menu" role="menu" aria-labelledby="nav-sheet-trigger">
+            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="sheet-dropdown-item" role="menuitem">
+              <div class="sheet-item-row">
+                <span class="sheet-item-title">English Sheet (Latin)</span>
+                <span class="sheet-item-tag">90 Cells</span>
+              </div>
+              <span class="sheet-item-desc">A4 grid • A–Z, a–z, 0–9 &amp; punctuation</span>
+            </a>
+            <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="sheet-dropdown-item" role="menuitem">
+              <div class="sheet-item-row">
+                <span class="sheet-item-title">Bengali Sheet (বাংলা)</span>
+                <span class="sheet-item-tag">60 Cells</span>
+              </div>
+              <span class="sheet-item-desc">A4 grid • ১১ স্বরবর্ণ, ৩৯ ব্যঞ্জনবর্ণ, ১০ কারচিহ্ন</span>
+            </a>
+            <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="sheet-dropdown-item" role="menuitem">
+              <div class="sheet-item-row">
+                <span class="sheet-item-title">Hindi Sheet (हिन्दी)</span>
+                <span class="sheet-item-tag">60 Cells</span>
+              </div>
+              <span class="sheet-item-desc">A4 grid • ११ स्वर, ३९ व्यंजन, १० मात्राएँ</span>
+            </a>
+          </div>
+        </div>
         <button type="button" class="nav-link-btn" id="nav-feedback-btn">Feedback</button>
         <button type="button" class="nav-link-btn" id="nav-privacy-btn">Privacy &amp; Terms</button>
       </div>
@@ -47,16 +75,35 @@
           <button type="button" class="btn btn-primary" id="hero-enter-studio">
             Launch Font Studio →
           </button>
-          <div class="hero-download-group">
-            <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="hero-download-english">
-              English Sheet (Latin)
-            </a>
-            <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="btn btn-outline" id="hero-download-sheet">
-              Bengali Sheet (বাংলা)
-            </a>
-            <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="btn btn-outline" id="hero-download-hindi">
-              Hindi Sheet (हिन्दी)
-            </a>
+          <div class="sheet-dropdown hero-sheet-dropdown" id="hero-sheet-dropdown">
+            <button type="button" class="btn btn-outline btn-dropdown" id="hero-sheet-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Download guideline sheets">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download Sheet</span>
+              <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sheet-dropdown-menu" role="menu" aria-labelledby="hero-sheet-trigger">
+              <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="sheet-dropdown-item" role="menuitem">
+                <div class="sheet-item-row">
+                  <span class="sheet-item-title">English Sheet (Latin)</span>
+                  <span class="sheet-item-tag">90 Cells</span>
+                </div>
+                <span class="sheet-item-desc">A4 grid • A–Z, a–z, 0–9 &amp; punctuation (100% scale)</span>
+              </a>
+              <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="sheet-dropdown-item" role="menuitem">
+                <div class="sheet-item-row">
+                  <span class="sheet-item-title">Bengali Sheet (বাংলা)</span>
+                  <span class="sheet-item-tag">60 Cells</span>
+                </div>
+                <span class="sheet-item-desc">A4 grid • ১১ স্বরবর্ণ, ৩৯ ব্যঞ্জনবর্ণ, ১০ কারচিহ্ন</span>
+              </a>
+              <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="sheet-dropdown-item" role="menuitem">
+                <div class="sheet-item-row">
+                  <span class="sheet-item-title">Hindi Sheet (हिन्दी)</span>
+                  <span class="sheet-item-tag">60 Cells</span>
+                </div>
+                <span class="sheet-item-desc">A4 grid • ११ स्वर, ३९ व्यंजन, १० मात्राएँ</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -268,9 +315,36 @@
           <button type="button" class="btn btn-primary" id="cta-enter-studio">
             Launch Font Studio →
           </button>
-          <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="btn btn-outline" id="cta-download-sheet">
-            Download Guideline Sheet (A4)
-          </a>
+          <div class="sheet-dropdown cta-sheet-dropdown" id="cta-sheet-dropdown">
+            <button type="button" class="btn btn-outline btn-dropdown" id="cta-sheet-trigger" aria-haspopup="true" aria-expanded="false" aria-label="Download guideline sheets">
+              <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download Guideline Sheet</span>
+              <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="sheet-dropdown-menu" role="menu" aria-labelledby="cta-sheet-trigger">
+              <a href="guideline-sheet-english.png" download="hatekhori-english-sheet.png" class="sheet-dropdown-item" role="menuitem">
+                <div class="sheet-item-row">
+                  <span class="sheet-item-title">English Sheet (Latin)</span>
+                  <span class="sheet-item-tag">90 Cells</span>
+                </div>
+                <span class="sheet-item-desc">A4 grid • A–Z, a–z, 0–9 &amp; punctuation (100% scale)</span>
+              </a>
+              <a href="guideline-sheet-bengali.png" download="hatekhori-bengali-sheet.png" class="sheet-dropdown-item" role="menuitem">
+                <div class="sheet-item-row">
+                  <span class="sheet-item-title">Bengali Sheet (বাংলা)</span>
+                  <span class="sheet-item-tag">60 Cells</span>
+                </div>
+                <span class="sheet-item-desc">A4 grid • ১১ স্বরবর্ণ, ৩৯ ব্যঞ্জনবর্ণ, ১০ কারচিহ্ন</span>
+              </a>
+              <a href="guideline-sheet-hindi.png" download="hatekhori-hindi-sheet.png" class="sheet-dropdown-item" role="menuitem">
+                <div class="sheet-item-row">
+                  <span class="sheet-item-title">Hindi Sheet (हिन्दी)</span>
+                  <span class="sheet-item-tag">60 Cells</span>
+                </div>
+                <span class="sheet-item-desc">A4 grid • ११ स्वर, ३९ व्यंजन, १० मात्राएँ</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -797,6 +871,6 @@
   <!-- Toast Notification Pill -->
   <div id="toast" class="toast-pill" role="status" aria-live="polite" hidden></div>
 
-  <script src="script.js?v=2.5"></script>
+  <script src="script.js?v=2.6"></script>
 </body>
 </html>
