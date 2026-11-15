@@ -1,1 +1,0 @@
-Introducing Hatekhori (হাতে খড়ি) — turn your real handwriting into an ownable, installable font. Works with Bengali (বাংলা), Hindi (हिन्दी), and English. Free, private, and 100% open source: write on paper, snap a photo, and own your digital typeface forever with zero AI training. Try the live interactive studio: https://hatekhori.org
